@@ -1,0 +1,98 @@
+{
+ "mobile|home-now": {
+  "fcp": 1016,
+  "lcp": 3660,
+  "cls": 0.07,
+  "tbt": 1588,
+  "maxTask": 1021,
+  "KB": 6662.46,
+  "jsKB": 486.21,
+  "reqs": 58,
+  "fps": 1.39,
+  "longPct": 100
+ },
+ "mobile|home-clone": {
+  "fcp": 1444,
+  "lcp": 1532,
+  "cls": 0.07,
+  "tbt": 424,
+  "maxTask": 244,
+  "KB": 2828.62,
+  "jsKB": 209.41,
+  "reqs": 43,
+  "fps": 57.04,
+  "longPct": 5.19
+ },
+ "mobile|about-now": {
+  "fcp": 932,
+  "lcp": 20092,
+  "cls": 0,
+  "tbt": 779,
+  "maxTask": 449,
+  "KB": 5428.84,
+  "jsKB": 284.62,
+  "reqs": 36,
+  "fps": 10.88,
+  "longPct": 100
+ },
+ "mobile|about-clone": {
+  "fcp": 1568,
+  "lcp": 1568,
+  "cls": 0,
+  "tbt": 413,
+  "maxTask": 311,
+  "KB": 1806.39,
+  "jsKB": 146.43,
+  "reqs": 32,
+  "fps": 57.28,
+  "longPct": 4.21
+ },
+ "desktop|home-now": {
+  "fcp": 1284,
+  "lcp": 1504,
+  "cls": 0,
+  "tbt": 11449,
+  "maxTask": 4467,
+  "KB": 6521.73,
+  "jsKB": 486.03,
+  "reqs": 57,
+  "fps": 0.47,
+  "longPct": 100
+ },
+ "desktop|home-clone": {
+  "fcp": 596,
+  "lcp": 596,
+  "cls": 0.31,
+  "tbt": 540,
+  "maxTask": 94,
+  "KB": 2168.86,
+  "jsKB": 209.41,
+  "reqs": 47,
+  "fps": 49.33,
+  "longPct": 16.55
+ },
+ "desktop|about-clone": {
+  "fcp": 472,
+  "lcp": 508,
+  "cls": 0.01,
+  "tbt": 9,
+  "maxTask": 59,
+  "KB": 2239.75,
+  "jsKB": 146.43,
+  "reqs": 33,
+  "fps": 48.42,
+  "longPct": 5.45
+ },
+ "desktop|about-now": {
+  "fcp": 584,
+  "lcp": 928,
+  "cls": 0.01,
+  "tbt": 200,
+  "maxTask": 185,
+  "KB": 5406.6,
+  "jsKB": 285.29,
+  "reqs": 35,
+  "fps": 25.48,
+  "longPct": 74.6
+ }
+}
