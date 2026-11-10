@@ -177,51 +177,65 @@
     });
   }
 
-  // --- Курсор-подсказка «Drag / View / Next» ---
+  // --- Что под курсором: проверяется при движении мыши И при прокрутке ---
+  // (если страница уезжает из-под неподвижной мыши, браузер не сообщает об уходе с элемента)
   var cur = d.querySelector('.cur'), curT = cur && cur.querySelector('span');
-  if (cur) {
-    var cx = mx, cy = my, curOn = false;
-    d.querySelectorAll('[data-cursor]').forEach(function (el) {
-      var tr = el.closest('.track'); if (tr && tr !== el) return;
-      el.addEventListener('mouseenter', function () {
-        curT.textContent = el.dataset.cursor; curOn = true;
-        cur.classList.toggle('light', !el.closest('[data-dark]'));
-        cur.classList.add('on'); cx = mx; cy = my; wake();
-      });
-      el.addEventListener('mouseleave', function (e) {
-        var to = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('[data-cursor]');
-        if (to) return;
-        curOn = false; cur.classList.remove('on');
-      });
-    });
-    jobs.push(function () {
-      cx = lerp(cx, mx, 0.2); cy = lerp(cy, my, 0.2);
-      cur.style.transform = 'translate3d(' + cx + 'px,' + cy + 'px,0)';
-      return curOn && (Math.abs(cx - mx) > 0.3 || Math.abs(cy - my) > 0.3);
-    });
-  }
-
-  // --- Плавающее превью у списка изданий ---
   var list = d.querySelector('[data-peek-list]'), peek = d.querySelector('.peek');
-  if (list && peek) {
-    var pin = peek.querySelector('.peek-in'), pks = peek.querySelectorAll('.pk'), px = mx, py = my, pOn = false, rot = 0;
-    list.querySelectorAll('[data-peek]').forEach(function (row) {
-      row.addEventListener('mouseenter', function () {
-        pks.forEach(function (p, i) { p.classList.toggle('on', i === +row.dataset.peek); });
+  var pin = peek && peek.querySelector('.peek-in'), pks = peek ? peek.querySelectorAll('.pk') : [];
+  var cx = mx, cy = my, curOn = false, curLabel = '';
+  var px = mx, py = my, pOn = false, pIdx = -1, rot = 0;
+  var hasMouse = false;
+
+  function check() {
+    if (!hasMouse) return;
+    var el = d.elementFromPoint(mx, my);
+    // курсор-подсказка
+    var host = el && el.closest && el.closest('[data-cursor]');
+    if (host) { var tr = host.closest('.track'); if (tr) host = tr; }
+    if (cur) {
+      if (host) {
+        if (!curOn) { cx = mx; cy = my; }
+        if (host.dataset.cursor !== curLabel) { curLabel = host.dataset.cursor; curT.textContent = curLabel; }
+        cur.classList.toggle('light', !host.closest('[data-dark]'));
+        curOn = true; cur.classList.add('on'); root.classList.add('cur-hide');
+      } else if (curOn) {
+        curOn = false; cur.classList.remove('on'); root.classList.remove('cur-hide');
+      }
+    }
+    // превью изданий
+    if (peek) {
+      var row = el && el.closest && el.closest('[data-peek]');
+      if (row) {
+        var i = +row.dataset.peek;
+        if (i !== pIdx) { pks.forEach(function (p, k) { p.classList.toggle('on', k === i); }); pIdx = i; }
         if (!pOn) { px = mx; py = my; }
-        pOn = true; peek.classList.add('on'); wake();
-      });
-    });
-    list.addEventListener('mouseleave', function () { pOn = false; peek.classList.remove('on'); });
-    jobs.push(function () {
-      var nx = lerp(px, mx, 0.12), ny = lerp(py, my, 0.12);
-      rot = lerp(rot, Math.max(-8, Math.min(8, (nx - px) * 0.6)), 0.2);
-      px = nx; py = ny;
-      peek.style.transform = 'translate3d(' + px + 'px,' + py + 'px,0)';
-      pin.style.setProperty('--rot', rot.toFixed(2) + 'deg');
-      return pOn && (Math.abs(px - mx) > 0.3 || Math.abs(py - my) > 0.3 || Math.abs(rot) > 0.05);
-    });
+        pOn = true; peek.classList.add('on');
+      } else if (pOn) { pOn = false; pIdx = -1; peek.classList.remove('on'); }
+    }
+    if (curOn || pOn) wake();
   }
+  var root = d.documentElement;
+  addEventListener('mousemove', function () { hasMouse = true; check(); }, { passive: true });
+  var sTick = false;
+  addEventListener('scroll', function () {
+    if (sTick) return; sTick = true;
+    requestAnimationFrame(function () { sTick = false; check(); });
+  }, { passive: true });
+  d.addEventListener('mouseleave', function () { hasMouse = false; curOn = pOn = false; if (cur) cur.classList.remove('on'); if (peek) peek.classList.remove('on'); root.classList.remove('cur-hide'); });
+
+  if (cur) jobs.push(function () {
+    cx = lerp(cx, mx, 0.2); cy = lerp(cy, my, 0.2);
+    cur.style.transform = 'translate3d(' + cx + 'px,' + cy + 'px,0)';
+    return curOn && (Math.abs(cx - mx) > 0.3 || Math.abs(cy - my) > 0.3);
+  });
+  if (peek) jobs.push(function () {
+    var nx = lerp(px, mx, 0.12), ny = lerp(py, my, 0.12);
+    rot = lerp(rot, Math.max(-8, Math.min(8, (nx - px) * 0.6)), 0.2);
+    px = nx; py = ny;
+    peek.style.transform = 'translate3d(' + px + 'px,' + py + 'px,0)';
+    pin.style.setProperty('--rot', rot.toFixed(2) + 'deg');
+    return pOn && (Math.abs(px - mx) > 0.3 || Math.abs(py - my) > 0.3 || Math.abs(rot) > 0.05);
+  });
 
   // --- «Магнитные» кнопки ---
   d.querySelectorAll('.mag, .ctrl button').forEach(function (b) {

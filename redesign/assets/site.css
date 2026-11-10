@@ -423,7 +423,8 @@ body{line-height:1.6}
   display:grid;place-items:center;font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;transform:scale(0);transition:transform .45s var(--ease)}
 .cur.on span{transform:scale(1)}
 .cur.light span{background:var(--ink);color:var(--paper)}
-@media (hover:hover) and (pointer:fine){ [data-cursor]{cursor:none} }
+/* Системный курсор прячется, только пока над элементом показана подсказка */
+html.cur-hide,html.cur-hide *{cursor:none!important}
 
 /* Галерея: перетаскивание мышью */
 .track.dragging{scroll-snap-type:none;cursor:grabbing}
