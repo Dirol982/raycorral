@@ -10,8 +10,8 @@
 
   Почему легче: один шейдер в один проход вместо 5 слоёв Unicorn в двух
   экземплярах; шум считается только возле края пятна; библиотека не нужна
-  (~5 КБ вместо ~150 КБ); рендер стоит на паузе, когда экран не виден
-  или вкладка свёрнута; на телефоне 30 кадров/с.
+  (~5 КБ вместо ~150 КБ); рендер стоит на паузе во время прокрутки, когда первый экран
+  закрыт следующими блоками или вкладка свёрнута; на телефоне 30 кадров/с, в покое 24 кадра/с.
 -->
 <canvas class="ink-canvas" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;display:block;background:#eeeeee"></canvas>
 <script>
@@ -24,8 +24,9 @@
 
   var coarse = matchMedia('(pointer: coarse)').matches;
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var DPR = Math.min(window.devicePixelRatio || 1, coarse ? 1 : 1.5);
-  var FRAME = coarse ? 1000 / 30 : 1000 / 60;
+  var DPR = 1;
+  // 60 кадров/с, пока пятно догоняет мышь или раскрывается; в покое края «кипят» на 24 кадрах/с
+  var FAST = coarse ? 1000 / 30 : 1000 / 60, IDLE = 1000 / 24;
 
   var VS = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
   var FS = [
@@ -91,11 +92,19 @@
   function eIOExpo(t) { return t <= 0 ? 0 : t >= 1 ? 1 : t < .5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2; }
   function eIOQuart(t) { t = Math.max(0, Math.min(1, t)); return t < .5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2; }
 
-  var visible = true, running = false, last = 0, seedT = -1;
+  var visible = true, running = false, last = 0, seedT = -1, scrolling = false, scrollTimer = 0;
+  // Первый экран «прилипает», следующие блоки наезжают на него: когда он закрыт — не рисуем
+  function covered() { return window.scrollY >= hero.offsetHeight - 2; }
+  // Во время прокрутки пятно замирает и оживает через 150 мс после остановки
+  addEventListener('scroll', function () {
+    scrolling = true; clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function () { scrolling = false; wake(); }, 150);
+  }, { passive: true });
   function frame(now) {
-    if (!visible || document.hidden) { running = false; return; }
+    if (!visible || document.hidden || scrolling || covered()) { running = false; return; }
     requestAnimationFrame(frame);
-    if (now - last < FRAME - 1) return;
+    var moving = Math.abs(tx - mx) + Math.abs(ty - my) > 0.002 || now - t0 < 2400;
+    if (now - last < (moving ? FAST : IDLE) - 1) return;
     last = now;
     var el = now - t0;
     var w = 1 + (0.2698 - 1) * eIOExpo((el - 100) / 2000);
@@ -109,7 +118,7 @@
     gl.uniform1f(U.uTrack, tr);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
-  function wake() { if (!running && visible && !document.hidden && !reduced) { running = true; requestAnimationFrame(frame); } }
+  function wake() { if (!running && visible && !document.hidden && !reduced && !scrolling) { running = true; requestAnimationFrame(frame); } }
 
   if (reduced) { t0 = -1e6; frame(performance.now()); visible = false; return; }
   new IntersectionObserver(function (es) { visible = es[0].isIntersecting; if (visible) wake(); }).observe(canvas);

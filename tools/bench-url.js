@@ -39,7 +39,7 @@ async function once(b, mode, url) {
 }
 (async () => {
   const b = await chromium.launch(); const res = {};
-  for (const mode of ['mobile', 'desktop']) for (const t of targets) {
+  for (const mode of (process.env.MODES || 'mobile,desktop').split(',')) for (const t of targets) {
     const [name, url] = t.split('=');
     const runs = []; for (let i = 0; i < RUNS; i++) runs.push(await once(b, mode, url));
     res[`${mode}|${name}`] = Object.fromEntries(Object.keys(runs[0]).map(k => [k, +med(runs.map(r => r[k])).toFixed(2)]));
