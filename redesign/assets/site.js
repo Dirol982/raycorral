@@ -13,7 +13,7 @@
   var io = new IntersectionObserver(function (es) {
     es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { rootMargin: '0px 0px -8% 0px' });
-  d.querySelectorAll('.rv, .sign.draw').forEach(function (el) { io.observe(el); });
+  d.querySelectorAll('.rv, .sign.draw, .hl').forEach(function (el) { io.observe(el); });
 
   // Шапка: прячется при прокрутке вниз, меняет цвет над тёмными секциями
   var hdr = d.querySelector('.hdr');
@@ -90,5 +90,138 @@
     dl.querySelectorAll('[data-close]').forEach(function (x) { x.addEventListener('click', function () { dl.close(); }); });
     var f = dl.querySelector('form');
     if (f) f.addEventListener('submit', function (e) { e.preventDefault(); f.classList.add('sent'); });
+  });
+})();
+
+/* Интерактив: один общий цикл анимации, который спит, когда всё неподвижно. */
+(function () {
+  'use strict';
+  var d = document;
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var lerp = function (a, b, n) { return a + (b - a) * n; };
+
+  // --- Счётчики 650+, 1.3M ---
+  var cio = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (!e.isIntersecting) return; cio.unobserve(e.target);
+      var el = e.target, to = parseFloat(el.dataset.count), from = parseFloat(el.dataset.from || 0);
+      var dec = +(el.dataset.dec || 0), suf = el.dataset.suffix || '', t0 = performance.now(), dur = 1600;
+      if (reduced) return;
+      (function step(t) {
+        var k = Math.min(1, (t - t0) / dur), v = from + (to - from) * (1 - Math.pow(2, -10 * k));
+        el.textContent = (k < 1 ? v : to).toFixed(dec) + suf;
+        if (k < 1) requestAnimationFrame(step);
+      })(t0);
+    });
+  }, { threshold: 0.6 });
+  d.querySelectorAll('[data-count]').forEach(function (el) { cio.observe(el); });
+
+  // --- Галерея: перетаскивание мышью с инерцией ---
+  d.querySelectorAll('.track').forEach(function (tr) {
+    var down = false, moved = false, sx = 0, sl = 0, lx = 0, lt = 0, v = 0;
+    tr.addEventListener('pointerdown', function (e) {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      down = true; moved = false; sx = lx = e.clientX; sl = tr.scrollLeft; lt = performance.now(); v = 0;
+    });
+    addEventListener('pointermove', function (e) {
+      if (!down) return;
+      var dx = e.clientX - sx;
+      if (!moved && Math.abs(dx) > 6) { moved = true; tr.classList.add('dragging'); }
+      if (!moved) return;
+      var now = performance.now(); v = (e.clientX - lx) / Math.max(1, now - lt); lx = e.clientX; lt = now;
+      tr.scrollLeft = sl - dx;
+    });
+    addEventListener('pointerup', function () {
+      if (!down) return; down = false;
+      if (!moved) return;
+      var vel = -v * 16;
+      (function glide() {
+        if (Math.abs(vel) > 0.5 && !reduced) { tr.scrollLeft += vel; vel *= 0.92; requestAnimationFrame(glide); }
+        else tr.classList.remove('dragging');
+      })();
+    });
+    tr.addEventListener('click', function (e) { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
+    tr.addEventListener('dragstart', function (e) { e.preventDefault(); });
+  });
+
+  if (!fine || reduced) return;
+
+  // --- Общая позиция мыши и цикл ---
+  var mx = innerWidth / 2, my = innerHeight / 2, running = false, jobs = [];
+  function loop() {
+    var busy = false;
+    for (var i = 0; i < jobs.length; i++) if (jobs[i]()) busy = true;
+    if (busy) requestAnimationFrame(loop); else running = false;
+  }
+  function wake() { if (!running) { running = true; requestAnimationFrame(loop); } }
+  addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; wake(); }, { passive: true });
+
+  // --- Портрет на главной слегка следует за мышью ---
+  var hero = d.querySelector('[data-hero]'), par = hero && hero.querySelector('.hero-par');
+  if (par) {
+    var hx = 0, hy = 0, heroOn = true;
+    new IntersectionObserver(function (es) { heroOn = es[0].isIntersecting; }).observe(hero);
+    jobs.push(function () {
+      var tx = heroOn ? (mx / innerWidth - 0.5) * 2 : 0, ty = heroOn ? (my / innerHeight - 0.5) * 2 : 0;
+      hx = lerp(hx, tx, 0.06); hy = lerp(hy, ty, 0.06);
+      par.style.setProperty('--mx', hx.toFixed(3)); par.style.setProperty('--my', hy.toFixed(3));
+      return Math.abs(hx - tx) > 0.002 || Math.abs(hy - ty) > 0.002;
+    });
+  }
+
+  // --- Курсор-подсказка «Drag / View / Next» ---
+  var cur = d.querySelector('.cur'), curT = cur && cur.querySelector('span');
+  if (cur) {
+    var cx = mx, cy = my, curOn = false;
+    d.querySelectorAll('[data-cursor]').forEach(function (el) {
+      var tr = el.closest('.track'); if (tr && tr !== el) return;
+      el.addEventListener('mouseenter', function () {
+        curT.textContent = el.dataset.cursor; curOn = true;
+        cur.classList.toggle('light', !el.closest('[data-dark]'));
+        cur.classList.add('on'); cx = mx; cy = my; wake();
+      });
+      el.addEventListener('mouseleave', function (e) {
+        var to = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('[data-cursor]');
+        if (to) return;
+        curOn = false; cur.classList.remove('on');
+      });
+    });
+    jobs.push(function () {
+      cx = lerp(cx, mx, 0.2); cy = lerp(cy, my, 0.2);
+      cur.style.transform = 'translate3d(' + cx + 'px,' + cy + 'px,0)';
+      return curOn && (Math.abs(cx - mx) > 0.3 || Math.abs(cy - my) > 0.3);
+    });
+  }
+
+  // --- Плавающее превью у списка изданий ---
+  var list = d.querySelector('[data-peek-list]'), peek = d.querySelector('.peek');
+  if (list && peek) {
+    var pin = peek.querySelector('.peek-in'), pks = peek.querySelectorAll('.pk'), px = mx, py = my, pOn = false, rot = 0;
+    list.querySelectorAll('[data-peek]').forEach(function (row) {
+      row.addEventListener('mouseenter', function () {
+        pks.forEach(function (p, i) { p.classList.toggle('on', i === +row.dataset.peek); });
+        if (!pOn) { px = mx; py = my; }
+        pOn = true; peek.classList.add('on'); wake();
+      });
+    });
+    list.addEventListener('mouseleave', function () { pOn = false; peek.classList.remove('on'); });
+    jobs.push(function () {
+      var nx = lerp(px, mx, 0.12), ny = lerp(py, my, 0.12);
+      rot = lerp(rot, Math.max(-8, Math.min(8, (nx - px) * 0.6)), 0.2);
+      px = nx; py = ny;
+      peek.style.transform = 'translate3d(' + px + 'px,' + py + 'px,0)';
+      pin.style.setProperty('--rot', rot.toFixed(2) + 'deg');
+      return pOn && (Math.abs(px - mx) > 0.3 || Math.abs(py - my) > 0.3 || Math.abs(rot) > 0.05);
+    });
+  }
+
+  // --- «Магнитные» кнопки ---
+  d.querySelectorAll('.mag, .ctrl button').forEach(function (b) {
+    b.addEventListener('mousemove', function (e) {
+      var r = b.getBoundingClientRect();
+      b.style.transform = 'translate(' + ((e.clientX - r.left - r.width / 2) * 0.28).toFixed(1) + 'px,' + ((e.clientY - r.top - r.height / 2) * 0.35).toFixed(1) + 'px)';
+    });
+    b.addEventListener('mouseleave', function () { b.style.transform = ''; });
   });
 })();

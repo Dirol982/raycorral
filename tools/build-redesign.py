@@ -99,7 +99,8 @@ def head(title, desc, path, extra=''):
 
 def header(active):
     links = ''.join(f'<a href="{url(p)}"{" aria-current=page" if p == active else ""}><span>{n}</span></a>' for p, n in NAV)
-    return f'''<header class="hdr wrap">
+    return f'''<div class="progress" aria-hidden="true"></div>
+<header class="hdr wrap">
   <a class="logo" href="{url()}" aria-label="Ray Corral — home">{sign()}</a>
   <nav class="nav" aria-label="Main">{links}</nav>
   <button class="menu-btn" type="button" aria-expanded="false" aria-label="Menu"><svg viewBox="0 0 30 12" fill="none"><path d="M0 1h30M0 11h30" stroke="currentColor" stroke-width="2"/></svg></button>
@@ -120,8 +121,9 @@ def footer():
       <a class="ig" href="{INSTAGRAM}" rel="noopener">{IG}<span>@raycorralartist</span></a></div>
   </div>
   {sign('big-sign', draw=True)}
-  <div class="ftr-bot"><span>© 2026 Ray Corral · Miami, FL</span><span>New York <span data-clock>--:--:--</span></span></div>
+  <div class="ftr-bot"><span>© 2026 Ray Corral · Miami, FL</span><a class="lnk" href="#main">Back to top</a><span>New York <span data-clock>--:--:--</span></span></div>
 </footer>
+<div class="cur" aria-hidden="true"><span></span></div>
 '''
 
 def end(dialogs=''):
@@ -137,9 +139,25 @@ def case_card(slug, i, sizes, img=None, h='h-s'):
     img = img or HOME_BG.get(slug) or c['imgs'][0]
     title = fix_title(c['title'])
     k, m = split_title(c['title'])
-    return (f'<a class="card" href="{url("selected-work/" + fix_slug(slug))}">'
-            f'<div class="media">{pic(img, sizes, title + " — mosaic by Ray Corral")}</div>'
+    return (f'<a class="card" href="{url("selected-work/" + fix_slug(slug))}" data-cursor="View">'
+            f'<div class="media" style="view-transition-name:p-{fix_slug(slug)}">{pic(img, sizes, title + " — mosaic by Ray Corral")}</div>'
             f'<div class="ttl"><div><span class="k">{e(k)}</span><h3 class="{h}">{e(m)}</h3></div><span class="num">No. {i:02d}</span></div></a>')
+
+def hl(text):
+    """Разбивает текст на слова для проявления при прокрутке (без библиотек в браузере)."""
+    out, i = [], 0
+    for tok in re.split(r'(<[^>]+>)', text):
+        if tok.startswith('<'):
+            out.append(tok); continue
+        parts = re.split(r'(\s+)', tok)
+        for w in parts:
+            if not w: continue
+            if w.isspace(): out.append(' '); continue
+            out.append(f'<span class="w" style="--i:{i}">{w}</span>'); i += 1
+    return ''.join(out)
+
+def letters(word, start=0):
+    return ''.join(f'<span class="ch" style="--i:{start + k}">{c}</span>' for k, c in enumerate(word))
 
 ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X']
 HOME_BG = dict(zip(ORDER, D['home_bg']))
@@ -154,12 +172,12 @@ def split_title(t):
 
 def works_slider(dark=True, title='Selected Works'):
     cards = ''.join(case_card(s, i + 1, '(max-width: 767px) 86vw, min(78vw, 980px)') for i, s in enumerate(ORDER))
-    return f'''<section class="sec works{" dark" if dark else ""}" data-works {"data-dark" if dark else ""} id="works" aria-label="{title}">
+    return f'''<section class="sec works arc{" dark" if dark else ""}" data-works {"data-dark" if dark else ""} id="works" aria-label="{title}">
   <div class="wrap sec-head">
     <div class="stack"><span class="tag rv">{title}</span><h2 class="h-l rv d1">Eight commissions,<br>one craft</h2></div>
     <div class="ctrl rv d2"><button type="button" data-dir="-1" aria-label="Previous project">{LEFT}</button><span class="count">01 / 08</span><button type="button" data-dir="1" aria-label="Next project">{RIGHT}</button></div>
   </div>
-  <div class="track">{cards}</div>
+  <div class="track" data-cursor="Drag">{cards}</div>
   <div class="wrap"><div class="bar"><i></i></div></div>
 </section>
 '''
@@ -189,30 +207,30 @@ def page_home():
                 f'<img src="{asset("img/" + md["name"] + "-960.webp")}" width="{md["w"]}" height="{md["h"]}" alt="Ray Corral, mosaic artist" loading="eager" fetchpriority="high" decoding="async"></picture>')
     recog = ''
     for i, r in enumerate(D['recog']):
-        recog += (f'<a href="{e(r["url"])}" rel="noopener"><span class="n">{i+1:02d}</span><span class="t">{e(r["name"])}</span>'
-                  f'<span class="y">{e(r["years"])}</span>{ARROW.replace("<svg", "<svg class=ar")}'
-                  f'<span class="thumb">{pic(r["img"], "220px", r["name"])}</span></a>')
+        recog += (f'<a href="{e(r["url"])}" rel="noopener" data-peek="{i}"><span class="n">{i+1:02d}</span><span class="t">{e(r["name"])}</span>'
+                  f'<span class="y">{e(r["years"])}</span>{ARROW.replace("<svg", "<svg class=ar")}</a>')
+    peek = ''.join(f'<div class="pk">{pic(r["img"], "280px", "")}</div>' for r in D['recog'])
     imgs = D['phil_imgs']
     strip = ''.join(f'<div class="media">{pic(u, "(max-width: 767px) 180px, 22vw", "Mosaic Art Fund event")}</div>' for u in imgs + imgs)
     body = f'''
-<section class="hero" aria-label="Intro">
+<section class="hero" aria-label="Intro" data-hero>
   <div class="hero-title wrap">
-    <h1 aria-label="Ray Corral"><span class="ln"><span>Ray</span></span><span class="ln"><span>Corral</span></span></h1>
+    <h1 aria-label="Ray Corral"><span class="ln" aria-hidden="true">{letters('Ray')}</span><span class="ln" aria-hidden="true">{letters('Corral', 3)}</span></h1>
     <p class="hero-tagline"><span class="it">The art of creating a legacy</span>{sign(draw=True, label='')}</p>
     <div class="hero-meta">
       <p class="roles rv">Mosaic Artist<br>Architectural Designer<br>Philanthropist</p>
       <p class="intro rv d1"><b>Ray Corral</b> is an American mosaic artist and the Founder and Creative Director of Mosaicist — House of Mosaic Arts.</p>
     </div>
   </div>
-  <div class="hero-img">{hero_pic}</div>
-  <div class="hero-bot wrap"><span class="side">© 2026</span><a class="btn" href="#works">Begin the journey {ARROW}</a><span class="side">Miami, FL</span></div>
+  <div class="hero-img"><div class="hero-par">{hero_pic}</div></div>
+  <div class="hero-bot wrap"><span class="side">© 2026</span><a class="btn mag" href="#works">Begin the journey {ARROW}</a><span class="side">Miami, FL</span></div>
 </section>
 {works_slider()}
 <section class="sec wrap" aria-label="Story">
   <div class="split">
     <div class="c1-9 stack">
       <span class="tag rv">The story</span>
-      <h2 class="h-m rv d1">Before founding Mosaicist, Ray Corral built a career as a professional percussionist, co-writing music throughout the 1990s while becoming a partner in <span class="red">Mecca Multi Media (M3),</span> one of the Southeast’s leading recording studios.</h2>
+      <h2 class="h-m hl">{hl('Before founding Mosaicist, Ray Corral built a career as a professional percussionist, co-writing music throughout the 1990s while becoming a partner in <span class="red">Mecca Multi Media (M3),</span> one of the Southeast’s leading recording studios.')}</h2>
     </div>
     <div class="c9-13 stack rv d2" style="align-self:end">
       <p class="lead">By the end of the decade, music gave way to mosaic. Since then, it has remained the focus of his life’s work.</p>
@@ -220,15 +238,16 @@ def page_home():
     </div>
   </div>
   <div class="facts" style="margin-top:clamp(48px,7vw,100px)">
-    <div class="fact rv"><b>1999</b><span class="body">Mosaicist founded in Miami</span></div>
-    <div class="fact rv d1"><b>650+</b><span class="body">Bespoke mosaic commissions</span></div>
-    <div class="fact rv d2"><b>1.3M</b><span class="body">Hand-cut tesserae in the largest glass rooftop mosaic in the US</span></div>
+    <div class="fact rv"><b data-count="1999" data-from="1960">1999</b><span class="body">Mosaicist founded in Miami</span></div>
+    <div class="fact rv d1"><b data-count="650" data-suffix="+">650+</b><span class="body">Bespoke mosaic commissions</span></div>
+    <div class="fact rv d2"><b data-count="1.3" data-suffix="M" data-dec="1">1.3M</b><span class="body">Hand-cut tesserae in the largest glass rooftop mosaic in the US</span></div>
   </div>
 </section>
-<section class="sec dark wrap" data-dark aria-label="Recognition">
+<section class="sec dark wrap arc" data-dark aria-label="Recognition">
   <div class="sec-head"><div class="stack"><span class="tag rv">Recognition</span><h2 class="h-l rv d1">As featured in</h2></div>
     <p class="body rv d2" style="max-width:30ch">Leading global design and luxury lifestyle publications, 2012–2026.</p></div>
-  <div class="list rv">{recog}</div>
+  <div class="list rv" data-peek-list>{recog}</div>
+  <div class="peek" aria-hidden="true"><div class="peek-in">{peek}</div></div>
   <p style="margin-top:40px"><a class="lnk" href="{url('press')}">All press {ARROW}</a></p>
 </section>
 <section class="sec" aria-label="Philanthropy">
@@ -236,8 +255,8 @@ def page_home():
   <div class="wrap split" style="margin-top:clamp(40px,6vw,90px)">
     <div class="c1-7 stack">
       <span class="tag rv">Philanthropy</span>
-      <h2 class="h-m rv d1">In 2023, Ray Corral and Catherine Cathers established <span class="red">the Mosaic Art Fund,</span> a grant program dedicated to supporting working visual artists.</h2>
-      <p class="rv d2"><a class="btn red" href="{url('philanthropy')}">Read the full story {ARROW}</a></p>
+      <h2 class="h-m hl">{hl('In 2023, Ray Corral and Catherine Cathers established <span class="red">the Mosaic Art Fund,</span> a grant program dedicated to supporting working visual artists.')}</h2>
+      <p class="rv d2"><a class="btn red mag" href="{url('philanthropy')}">Read the full story {ARROW}</a></p>
     </div>
     <div class="c9-13 rv d2" style="max-width:260px;justify-self:end;width:100%">{pic(D['phil_logo'], '(max-width: 767px) 60vw, 26vw', 'Mosaic Art Fund logo')}</div>
   </div>
@@ -262,12 +281,12 @@ def page_about():
     body = f'''
 <section class="about-hero wrap page-hero" data-dark aria-label="About">
   <h1 class="h-xl"><span class="js-rise"><span>About</span></span></h1>
-  <div class="portrait">{portrait}</div>
+  <div class="portrait" data-par>{portrait}</div>
   <div class="meta-row wrap"><span>© 2026</span><span>Miami, FL</span></div>
 </section>
 <section class="sec wrap" aria-label="Recognition">
   <div class="split">
-    <h2 class="h-l c1-9 rv">Ray Corral is recognized as one of the leading figures in architectural mosaic art.</h2>
+    <h2 class="h-l c1-9 hl">{hl('Ray Corral is recognized as one of the leading figures in architectural mosaic art.')}</h2>
   </div>
   <div class="split" style="margin-top:clamp(40px,6vw,90px)">
     <div class="c1-6 media r-11 rv">{pic(about_img('about_ray-img'), '(max-width: 767px) 100vw, 45vw', 'Ray Corral seated in his studio')}</div>
@@ -287,7 +306,7 @@ def page_about():
 </section>
 {works_slider(title='Commissions')}
 <section class="sec wrap" aria-label="Twenty-five years">
-  <h2 class="h-l rv" style="text-align:center;max-width:22ch;margin:0 auto">Over the past twenty-five years, Mosaicist — House of Mosaic Arts has completed <span class="red">more than 650 bespoke mosaic commissions</span> under Ray Corral’s creative direction.</h2>
+  <h2 class="h-l hl" style="text-align:center;max-width:22ch;margin:0 auto">{hl('Over the past twenty-five years, Mosaicist — House of Mosaic Arts has completed <span class="red">more than 650 bespoke mosaic commissions</span> under Ray Corral’s creative direction.')}</h2>
   <p class="body rv d1" style="margin:clamp(28px,3vw,44px) auto 0;text-align:center">The Mosaicist’s portfolio includes the largest hand-cut glass rooftop mosaic in the United States, comprising more than 1.3 million individually placed tesserae, the country’s largest hand-cut mosaic swimming pool, and commissions for private residences, luxury resorts, and public spaces across the United States and internationally.</p>
 </section>
 <section class="bg-sec sec" data-dark aria-label="Public service">
@@ -299,7 +318,7 @@ def page_about():
   <div class="split">
     <div class="c1-7 stack" style="align-self:center">
       <span class="tag rv">Today</span>
-      <h2 class="h-m rv d1">Today, Corral continues to lead <span class="red">Mosaicist — House of Mosaic Arts,</span> creating architectural mosaic commissions around the world while <span class="red">supporting artists</span> through philanthropic initiatives and cultural organizations.</h2>
+      <h2 class="h-m hl">{hl('Today, Corral continues to lead <span class="red">Mosaicist — House of Mosaic Arts,</span> creating architectural mosaic commissions around the world while <span class="red">supporting artists</span> through philanthropic initiatives and cultural organizations.')}</h2>
       <p class="rv d2"><a class="btn red" href="https://en.wikipedia.org/wiki/Ray_Corral" rel="noopener">Read the full biography {ARROW}</a></p>
     </div>
     <div class="c8-13 media r-34 rv d1">{pic(bg['.hover-distort.about-page'], '(max-width: 767px) 100vw, 40vw', 'Ray Corral standing on a blue mosaic pool floor')}</div>
@@ -340,7 +359,7 @@ def page_case(slug, idx):
     intro = f'<p class="lead rv">{e(paras[0])}</p>' + (f'<p class="body rv d1">{e(paras[1])}</p>' if len(paras) > 1 else '')
     body = f'''
 <section class="case-hero" data-dark aria-label="{e(title)}">
-  {hero}
+  <div class="case-hero-img" style="view-transition-name:p-{fix_slug(slug)}">{hero}</div>
   <div class="inner wrap">
     <span class="tag">Selected work · No. {idx+1:02d} of {len(ORDER):02d}</span>
     <h1><span class="js-rise"><span><span class="k it">{e(k)}</span>{e(mname)}</span></span></h1>
@@ -348,11 +367,13 @@ def page_case(slug, idx):
 </section>
 <section class="sec wrap" style="padding-bottom:clamp(48px,6vw,96px)"><div class="case-intro">{intro}</div></section>
 <section class="wrap"><div class="case-gal">{gal}</div></section>
-<section class="sec wrap" aria-label="More projects">
-  <nav class="pager" aria-label="Projects">
-    <a href="{url('selected-work/' + fix_slug(prev_s))}"><span class="cap">← Previous</span><span class="h-s">{e(fix_title(CASES[prev_s]['title']))}</span></a>
-    <a class="nx" href="{url('selected-work/' + fix_slug(next_s))}"><span class="cap">Next →</span><span class="h-s">{e(fix_title(CASES[next_s]['title']))}</span></a>
-  </nav>
+<section class="sec wrap" aria-label="More projects" style="padding-bottom:clamp(40px,5vw,72px)">
+  <a class="next" href="{url('selected-work/' + fix_slug(next_s))}" data-cursor="Next">
+    <span class="cap">Next project →</span>
+    <div class="next-media media">{pic(HOME_BG.get(next_s) or CASES[next_s]['imgs'][0], '100vw', '')}</div>
+    <span class="next-t"><span class="k it">{e(split_title(CASES[next_s]['title'])[0])}</span>{e(split_title(CASES[next_s]['title'])[1])}</span>
+  </a>
+  <p style="margin-top:28px"><a class="lnk" href="{url('selected-work/' + fix_slug(prev_s))}">← {e(fix_title(CASES[prev_s]['title']))}</a> &nbsp;·&nbsp; <a class="lnk" href="{url('work')}">All work</a></p>
 </section>
 '''
     return (head(f'{title} Mosaic — Ray Corral', f'{title}: hand-cut mosaic by Ray Corral and Mosaicist — House of Mosaic Arts.', '',
@@ -397,7 +418,7 @@ def page_phil():
 </section>
 <section class="sec wrap" aria-label="Mosaic Art Fund">
   <div class="split">
-    <h2 class="h-l c1-9 rv">In 2023, Ray Corral and Catherine Cathers established the <span class="red">Mosaic Art Fund</span> through the Coral Gables Community Foundation.</h2>
+    <h2 class="h-l c1-9 hl">{hl('In 2023, Ray Corral and Catherine Cathers established the <span class="red">Mosaic Art Fund</span> through the Coral Gables Community Foundation.')}</h2>
   </div>
   <div class="split" style="margin-top:clamp(40px,6vw,90px)">
     <div class="c1-5 rv" style="max-width:min(260px,60vw)">{pic(D['phil_logo'], '(max-width: 767px) 70vw, 28vw', 'Mosaic Art Fund logo')}</div>
