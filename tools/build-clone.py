@@ -136,7 +136,7 @@ def build(html, fname):
     # 5. Фото
     h = pictures(h)
     # <source> внутри <picture style=display:contents> не должен становиться элементом flex/grid
-    h = h.replace('</head>', '<style>picture>source{display:none!important}</style></head>', 1)
+    h = h.replace('</head>', '<style>picture>source{display:none!important}html,body{overflow-x:clip}</style></head>', 1)
     h = hero_preload(h)
     return h
 
