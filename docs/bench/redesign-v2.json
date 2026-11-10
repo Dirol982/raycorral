@@ -1,0 +1,50 @@
+{
+ "mobile|home-new": {
+  "fcp": 804,
+  "lcp": 1940,
+  "cls": 0,
+  "tbt": 97,
+  "maxTask": 124,
+  "KB": 504.69,
+  "jsKB": 1.97,
+  "reqs": 16,
+  "fps": 60,
+  "longPct": 0
+ },
+ "mobile|about-new": {
+  "fcp": 788,
+  "lcp": 792,
+  "cls": 0,
+  "tbt": 71,
+  "maxTask": 98,
+  "KB": 827.44,
+  "jsKB": 1.97,
+  "reqs": 13,
+  "fps": 60,
+  "longPct": 0
+ },
+ "desktop|home-new": {
+  "fcp": 288,
+  "lcp": 288,
+  "cls": 0,
+  "tbt": 0,
+  "maxTask": 0,
+  "KB": 817.85,
+  "jsKB": 1.97,
+  "reqs": 24,
+  "fps": 59.78,
+  "longPct": 0.38
+ },
+ "desktop|about-new": {
+  "fcp": 372,
+  "lcp": 456,
+  "cls": 0,
+  "tbt": 0,
+  "maxTask": 0,
+  "KB": 966.98,
+  "jsKB": 1.97,
+  "reqs": 13,
+  "fps": 60,
+  "longPct": 0
+ }
+}

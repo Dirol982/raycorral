@@ -151,6 +151,21 @@ td.grp{font-weight:600;background:var(--cobalt-soft);color:var(--cobalt)}
 .shots figure img{border:1px solid var(--line);border-radius:4px}
 .shots figcaption{color:var(--muted);font-size:.84rem}
 @media (max-width:700px){.shots{grid-template-columns:1fr 1fr}.shots figure:last-child{grid-column:1/-1;max-width:220px}}
+.vs{display:grid;gap:clamp(28px,4vw,48px)}
+.vs-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.vs-row figure img{border:1px solid var(--line);border-radius:4px}
+.vs-row figcaption{font-size:.88rem;color:var(--muted)}
+.vs-row figcaption b{color:var(--fg);font-weight:600}
+.vs-head{display:flex;align-items:baseline;gap:12px;grid-column:1/-1}
+.vs-head h3{font-size:1.5rem}
+.lbl{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:99px}
+.lbl.now{background:var(--bad-soft);color:var(--bad)}.lbl.new{background:var(--good-soft);color:var(--good)}
+@media (max-width:600px){.vs-row{grid-template-columns:1fr}}
+.cmp td{white-space:normal;vertical-align:top;min-width:150px}
+.cmp td:first-child{font-weight:600;min-width:130px}
+.cmp td.new{color:var(--good)}
+.kept{display:flex;flex-wrap:wrap;gap:8px}
+.kept span{border:1px solid var(--line);border-radius:99px;padding:5px 12px;font-size:.88rem;background:var(--surface)}
 .divider{display:flex;align-items:center;gap:14px}
 .divider::after{content:"";flex:1;height:1px;background:var(--line)}
 .st ul{margin:0;padding-left:1.1em;display:grid;gap:5px}
@@ -197,7 +212,7 @@ code{font-size:.9em}
 
 <section class="pad" style="padding-top:0;border-top:0"><div class="wrap">
   <div class="kpis">
-    <div class="kpi"><span class="v">0,46 <span class="ru">МБ</span><span class="en">MB</span><small>−93%</small></span><span class="from"><span class="ru">было 6,7 МБ</span><span class="en">was 6.7 MB</span></span><span class="l"><span class="ru">вес главной на телефоне (редизайн)</span><span class="en">home page weight on a phone (redesign)</span></span></div>
+    <div class="kpi"><span class="v">0,5 <span class="ru">МБ</span><span class="en">MB</span><small>−92%</small></span><span class="from"><span class="ru">было 6,7 МБ</span><span class="en">was 6.7 MB</span></span><span class="l"><span class="ru">вес главной на телефоне (редизайн)</span><span class="en">home page weight on a phone (redesign)</span></span></div>
     <div class="kpi"><span class="v">60 <span class="ru">кадр/с</span><span class="en">fps</span></span><span class="from"><span class="ru">было ~1 кадр/с</span><span class="en">was ~1 fps</span></span><span class="l"><span class="ru">плавность прокрутки главной (редизайн)</span><span class="en">home page scrolling smoothness (redesign)</span></span></div>
     <div class="kpi"><span class="v">0,8 <span class="ru">с</span><span class="en">s</span><small>−96%</small></span><span class="from"><span class="ru">было 20,4 с</span><span class="en">was 20.4 s</span></span><span class="l"><span class="ru">About: главный кадр на телефоне (редизайн)</span><span class="en">About: main image on a phone (redesign)</span></span></div>
     <div class="kpi"><span class="v">2 <span class="ru">КБ</span><span class="en">KB</span></span><span class="from"><span class="ru">было 487 КБ</span><span class="en">was 487 KB</span></span><span class="l"><span class="ru">скриптов на странице (редизайн)</span><span class="en">of scripts per page (redesign)</span></span></div>
@@ -221,7 +236,7 @@ code{font-size:.9em}
       <span class="eyebrow"><span class="ru">Вариант B</span><span class="en">Option B</span></span>
       <h3><span class="ru">Облегчённый редизайн</span><span class="en">Lightweight redesign</span></h3>
       <p class="muted"><span class="ru">Тот же характер: крупный гротеск, чёрно-белая подача, фирменный красный, подпись Рэя. Но без перегруза: вместо 3D-фона и заставки подпись прорисовывается прямо на главной, блоки мягко появляются при прокрутке, галерея листается пальцем.</span><span class="en">The same character: bold grotesque type, black-and-white imagery, the signature red, Ray’s signature. But without the overload: instead of a 3D background and an intro screen, the signature draws itself on the home page, blocks fade in as you scroll, and the gallery swipes natively.</span></p>
-      <ul><li><span class="ru">Главная в 14 раз легче: 0,46 МБ вместо 6,7 МБ</span><span class="en">Home page 14× lighter: 0.46 MB instead of 6.7 MB</span></li><li><span class="ru">Прокрутка 60 кадров/с на телефоне и компьютере</span><span class="en">60 fps scrolling on phones and computers</span></li><li><span class="ru">Внутри уже: исправленные адреса, описания страниц, подписи к фото</span><span class="en">Already included: fixed URLs, page descriptions, image text</span></li></ul>
+      <ul><li><span class="ru">Главная в 13 раз легче: 0,5 МБ вместо 6,7 МБ</span><span class="en">Home page 13× lighter: 0.5 MB instead of 6.7 MB</span></li><li><span class="ru">Прокрутка 60 кадров/с на телефоне и компьютере</span><span class="en">60 fps scrolling on phones and computers</span></li><li><span class="ru">Внутри уже: исправленные адреса, описания страниц, подписи к фото</span><span class="en">Already included: fixed URLs, page descriptions, image text</span></li></ul>
       <div class="pr"><span class="price">$4 200</span><span class="chip"><span class="ru">3 недели</span><span class="en">3 weeks</span></span></div>
       <p><a class="btn primary" href="https://dirol982.github.io/raycorral/redesign/"><span class="ru">Открыть вариант B</span><span class="en">Open option B</span></a></p>
     </div>
@@ -229,8 +244,35 @@ code{font-size:.9em}
 </div></section>
 
 <section class="pad"><div class="wrap">
+  <span class="eyebrow"><span class="ru">Почему вариант B</span><span class="en">Why option B</span></span>
+  <h2><span class="ru">Почему редизайн лучше того, что есть</span><span class="en">Why the redesign beats what is there today</span></h2>
+  <p class="lead"><span class="ru">В премиум-сегменте сайт работает как визитка мастерской: заказчик судит о качестве мозаики по тому, как выглядит и ощущается страница. Сейчас сайт красив на статичном скриншоте, но в руках тормозит и заставляет ждать. Редизайн сохраняет характер и убирает всё, что мешает ощущению дорогой вещи.</span><span class="en">In the premium segment a website is the studio’s calling card: clients judge the quality of the mosaics by how the page looks and feels. Today the site is beautiful in a static screenshot but stutters in the hand and makes people wait. The redesign keeps the character and removes everything that gets in the way of a premium feel.</span></p>
+  <div class="vs"><div class="vs-row">
+      <div class="vs-head"><h3><span class="ru">Первые 2 секунды</span><span class="en">The first 2 seconds</span></h3></div>
+      <figure><img src="img/cmp-home-now.jpg" alt="" loading="lazy" width="800" height="500"><figcaption><span class="lbl now"><span class="ru">Сейчас</span><span class="en">Now</span></span> <span class="ru">Через 2 секунды посетитель всё ещё видит чёрный экран с тонкой подписью. Дорогой сайт, который заставляет ждать, читается как медленный.</span><span class="en">After 2 seconds the visitor still sees a black screen with a thin signature. A premium site that makes people wait reads as a slow one.</span></figcaption></figure>
+      <figure><img src="img/cmp-home-new.jpg" alt="" loading="lazy" width="800" height="500"><figcaption><span class="lbl new"><span class="ru">Редизайн</span><span class="en">Redesign</span></span> <span class="ru">Через 2 секунды на экране имя, портрет и девиз. Подпись Рэя прорисовывается прямо на главной: тот же жест, но без ожидания.</span><span class="en">After 2 seconds the name, the portrait and the motto are on screen. Ray’s signature draws itself right on the home page: the same gesture, without the wait.</span></figcaption></figure>
+    </div><div class="vs-row">
+      <div class="vs-head"><h3><span class="ru">Портфолио</span><span class="en">Portfolio</span></h3></div>
+      <figure><img src="img/cmp-work-now.jpg" alt="" loading="lazy" width="800" height="500"><figcaption><span class="lbl now"><span class="ru">Сейчас</span><span class="en">Now</span></span> <span class="ru">Бесконечное поле миниатюр, которое нужно тащить мышью. Работы мелкие, без названий, понять, где какой проект, трудно.</span><span class="en">An endless field of thumbnails you have to drag with the mouse. The works are small and untitled, and it is hard to tell projects apart.</span></figcaption></figure>
+      <figure><img src="img/cmp-work-new.jpg" alt="" loading="lazy" width="800" height="500"><figcaption><span class="lbl new"><span class="ru">Редизайн</span><span class="en">Redesign</span></span> <span class="ru">Журнальная раскладка: крупные кадры, у каждой работы стиль и название, один клик ведёт в проект. Так подают работы галереи и аукционные дома.</span><span class="en">An editorial layout: large images, each work with its style and name, one click into the project. This is how galleries and auction houses present work.</span></figcaption></figure>
+    </div><div class="vs-row">
+      <div class="vs-head"><h3><span class="ru">Страница проекта</span><span class="en">Project page</span></h3></div>
+      <figure><img src="img/cmp-case-now.jpg" alt="" loading="lazy" width="800" height="500"><figcaption><span class="lbl now"><span class="ru">Сейчас</span><span class="en">Now</span></span> <span class="ru">Мелкий красный заголовок, текст мелким кеглем и лента фото. Главная работа не получает главного места.</span><span class="en">A small red heading, small text and a strip of photos. The work itself never takes centre stage.</span></figcaption></figure>
+      <figure><img src="img/cmp-case-new.jpg" alt="" loading="lazy" width="800" height="500"><figcaption><span class="lbl new"><span class="ru">Редизайн</span><span class="en">Redesign</span></span> <span class="ru">Полноэкранный кадр как обложка журнала, затем описание и фото с подписями в стиле каталога: Plate I, II, III.</span><span class="en">A full-screen image like a magazine cover, then the description and photos captioned catalogue-style: Plate I, II, III.</span></figcaption></figure>
+    </div></div>
+  <div class="tbl cmp"><table>
+    <thead><tr><th><span class="ru">Что важно</span><span class="en">What matters</span></th><th><span class="ru">Сейчас</span><span class="en">Now</span></th><th><span class="ru">Редизайн</span><span class="en">Redesign</span></th></tr></thead>
+    <tbody><tr><td><span class="ru">Первое впечатление</span><span class="en">First impression</span></td><td><span class="ru">Заставка 4,5 с на каждом заходе</span><span class="en">4.5 s intro on every visit</span></td><td class="new"><span class="ru">Контент сразу, подпись рисуется поверх</span><span class="en">Content at once, the signature draws over it</span></td></tr><tr><td><span class="ru">Ощущение качества</span><span class="en">Feel of quality</span></td><td><span class="ru">Прокрутка рывками: около 1 кадра в секунду на главной в тесте</span><span class="en">Choppy scrolling: about 1 fps on the home page in the test</span></td><td class="new"><span class="ru">60 кадров в секунду на телефоне и компьютере</span><span class="en">60 fps on phones and computers</span></td></tr><tr><td><span class="ru">Телефон</span><span class="en">Phone</span></td><td><span class="ru">6,7 МБ на главной; на 4G страница About показывает главный кадр через 20 с</span><span class="en">6.7 MB home page; on 4G the About page shows its main image after 20 s</span></td><td class="new"><span class="ru">0,5 МБ; About за 0,8 с</span><span class="en">0.5 MB; About in 0.8 s</span></td></tr><tr><td><span class="ru">Типографика</span><span class="en">Typography</span></td><td><span class="ru">Один гротеск во всех ролях</span><span class="en">One grotesque for everything</span></td><td class="new"><span class="ru">Гротеск для заголовков и курсивная антиква для акцентов, как в люксовых журналах</span><span class="en">Grotesque for headlines plus an italic serif for accents, as in luxury magazines</span></td></tr><tr><td><span class="ru">Фото</span><span class="en">Photos</span></td><td><span class="ru">Большие файлы, мелкие миниатюры, без подписей</span><span class="en">Heavy files, small thumbnails, no captions</span></td><td class="new"><span class="ru">Крупно, раскрываются «шторкой», чёткие на Retina, подписаны</span><span class="en">Large, revealed like a curtain, sharp on Retina, captioned</span></td></tr><tr><td><span class="ru">Управление</span><span class="en">Navigation</span></td><td><span class="ru">Кастомный курсор прячет обычный, прокрутка перехвачена скриптом</span><span class="en">A custom cursor hides the normal one, scrolling is hijacked by a script</span></td><td class="new"><span class="ru">Привычное поведение браузера, мягкие переходы между страницами</span><span class="en">Native browser behaviour, smooth transitions between pages</span></td></tr><tr><td><span class="ru">Для людей и Google</span><span class="en">For people and Google</span></td><td><span class="ru">Пустые описания фото, опечатки в адресах, без описаний страниц</span><span class="en">Empty image descriptions, URL typos, no page descriptions</span></td><td class="new"><span class="ru">Описано и исправлено; уважает настройку «уменьшить движение»</span><span class="en">Described and fixed; respects the “reduce motion” setting</span></td></tr><tr><td><span class="ru">Надёжность</span><span class="en">Reliability</span></td><td><span class="ru">18 подключённых скриптов с 5 разных серверов, включая чужой демо-сайт</span><span class="en">18 scripts from 5 different servers, including someone else’s demo site</span></td><td class="new"><span class="ru">Один собственный скрипт на 2 КБ</span><span class="en">One own script of 2 KB</span></td></tr></tbody>
+  </table></div>
+  <div class="stack" style="display:grid;gap:10px">
+    <strong><span class="ru">Что сохранили</span><span class="en">What we kept</span></strong>
+    <div class="kept"><span><span class="ru">Подпись Рэя</span><span class="en">Ray’s signature</span></span><span><span class="ru">Крупный жирный гротеск</span><span class="en">Big bold grotesque</span></span><span><span class="ru">Чёрно-белая подача</span><span class="en">Black-and-white imagery</span></span><span><span class="ru">Фирменный красный</span><span class="en">The signature red</span></span><span><span class="ru">Весь текст и все фото</span><span class="en">All copy and all photos</span></span><span><span class="ru">Все 15 страниц и адреса</span><span class="en">All 15 pages and URLs</span></span></div>
+  </div>
+</div></section>
+
+<section class="pad"><div class="wrap">
   <span class="eyebrow"><span class="ru">Вариант B · редизайн</span><span class="en">Option B · redesign</span></span>
-  <h2><span class="ru">Тот же характер, в 14 раз легче</span><span class="en">Same character, 14× lighter</span></h2>
+  <h2><span class="ru">Тот же характер, в 13 раз легче</span><span class="en">Same character, 13× lighter</span></h2>
   <p class="lead"><span class="ru">Все 15 страниц уже собраны и опубликованы: главная, About, Work, восемь проектов, Press, Philanthropy, Contact и Media Kit. Откройте на телефоне: так сайт увидит большинство заказчиков.</span><span class="en">All 15 pages are already built and live: Home, About, Work, eight projects, Press, Philanthropy, Contact and Media Kit. Open it on a phone: that is how most clients will see it.</span></p>
   <div class="shots">
     <figure><img src="img/rd-home.jpg" alt="Redesign: home page" loading="lazy" width="960" height="600"><figcaption><span class="ru">Главная: подпись прорисовывается вместо экрана-заставки</span><span class="en">Home: the signature draws itself instead of an intro screen</span></figcaption></figure>
@@ -241,18 +283,18 @@ code{font-size:.9em}
     <thead><tr><th><span class="ru">Телефон, 4G</span><span class="en">Phone, 4G</span></th><th><span class="ru">Сейчас</span><span class="en">Now</span></th><th><span class="ru">Редизайн</span><span class="en">Redesign</span></th><th><span class="ru">Изменение</span><span class="en">Change</span></th></tr></thead>
     <tbody>
       <tr><td class="grp" colspan="4"><span class="ru">Главная</span><span class="en">Home page</span></td></tr>
-      <tr><td><span class="ru">Главный контент на экране (LCP)</span><span class="en">Main content on screen (LCP)</span></td><td>3,70 s</td><td>1,89 s</td><td class="g">−49%</td></tr>
-      <tr><td><span class="ru">Блокировка экрана (TBT)</span><span class="en">Total blocking time (TBT)</span></td><td>1 442 ms</td><td>75 ms</td><td class="g">−95%</td></tr>
-      <tr><td><span class="ru">Вес страницы</span><span class="en">Page weight</span></td><td>6,66 MB</td><td>0,46 MB</td><td class="g">−93%</td></tr>
+      <tr><td><span class="ru">Главный контент на экране (LCP)</span><span class="en">Main content on screen (LCP)</span></td><td>3,70 s</td><td>1,94 s</td><td class="g">−48%</td></tr>
+      <tr><td><span class="ru">Блокировка экрана (TBT)</span><span class="en">Total blocking time (TBT)</span></td><td>1 442 ms</td><td>97 ms</td><td class="g">−93%</td></tr>
+      <tr><td><span class="ru">Вес страницы</span><span class="en">Page weight</span></td><td>6,66 MB</td><td>0,50 MB</td><td class="g">−92%</td></tr>
       <tr><td><span class="ru">Скрипты</span><span class="en">Scripts</span></td><td>487 KB</td><td>2 KB</td><td class="g">−99%</td></tr>
-      <tr><td><span class="ru">Запросы</span><span class="en">Requests</span></td><td>58</td><td>15</td><td class="g">−74%</td></tr>
+      <tr><td><span class="ru">Запросы</span><span class="en">Requests</span></td><td>58</td><td>16</td><td class="g">−72%</td></tr>
       <tr><td><span class="ru">Плавность прокрутки</span><span class="en">Scrolling smoothness</span></td><td>1 fps</td><td>60 fps</td><td class="g">×40</td></tr>
       <tr><td class="grp" colspan="4">About</td></tr>
-      <tr><td><span class="ru">Главный контент на экране (LCP)</span><span class="en">Main content on screen (LCP)</span></td><td>20,4 s</td><td>0,76 s</td><td class="g">−96%</td></tr>
-      <tr><td><span class="ru">Вес страницы</span><span class="en">Page weight</span></td><td>5,43 MB</td><td>0,79 MB</td><td class="g">−86%</td></tr>
+      <tr><td><span class="ru">Главный контент на экране (LCP)</span><span class="en">Main content on screen (LCP)</span></td><td>20,4 s</td><td>0,79 s</td><td class="g">−96%</td></tr>
+      <tr><td><span class="ru">Вес страницы</span><span class="en">Page weight</span></td><td>5,43 MB</td><td>0,83 MB</td><td class="g">−85%</td></tr>
       <tr><td><span class="ru">Плавность прокрутки</span><span class="en">Scrolling smoothness</span></td><td>12 fps</td><td>60 fps</td><td class="g">×5</td></tr>
       <tr><td class="grp" colspan="4"><span class="ru">Главная, компьютер</span><span class="en">Home page, desktop</span></td></tr>
-      <tr><td><span class="ru">Первый кадр с контентом</span><span class="en">First content on screen</span></td><td>1,32 s</td><td>0,31 s</td><td class="g">−76%</td></tr>
+      <tr><td><span class="ru">Первый кадр с контентом</span><span class="en">First content on screen</span></td><td>1,32 s</td><td>0,29 s</td><td class="g">−78%</td></tr>
       <tr><td><span class="ru">Блокировка экрана (TBT)</span><span class="en">Total blocking time (TBT)</span></td><td>10 610 ms</td><td>0 ms</td><td class="g">−100%</td></tr>
       <tr><td><span class="ru">Плавность прокрутки</span><span class="en">Scrolling smoothness</span></td><td>0,5 fps</td><td>60 fps</td><td class="g">×120</td></tr>
     </tbody>
