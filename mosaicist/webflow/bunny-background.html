@@ -1,0 +1,102 @@
+<!--
+  MOSAICIST · ФОНОВОЕ ВИДЕО (блоки с атрибутом data-bunny-background-init)
+  Куда: туда, где сейчас стоит скрипт initBunnyPlayerBackground
+  (Home → Page settings → Before </body>, либо Embed). Замените его этим кодом.
+  hls.js на сайте больше не нужен: видео — обычные MP4-файлы.
+
+  На каждом блоке видео в Webflow (Element settings → Custom attributes) добавьте:
+    data-src-desktop = ссылка на версию 1080p   (например, …/hero-1080.mp4)
+    data-src-mobile  = ссылка на версию 720p    (например, …/hero-720.mp4)
+    data-src-desktop-av1 / data-src-mobile-av1 = те же ролики в AV1 (вдвое легче),
+    браузер возьмёт их, если умеет; иначе — H.264 из атрибутов выше
+  Атрибут data-player-src можно оставить: он используется, если двух новых нет.
+
+  Что изменилось:
+  - видео подбирается под экран: 1080p на компьютере, 720p на телефоне
+    (было 4K везде, 52 и 142 МБ);
+  - ролик начинает грузиться, только когда блок подходит к экрану, а на
+    первом экране — сразу после загрузки страницы, чтобы не мешать ей;
+  - вне экрана видео на паузе и не качается;
+  - раньше MP4 открывался через hls.js как потоковый плейлист, и браузер тянул
+    файл целиком, даже если блок не видели; теперь браузер берёт файл частями
+    по мере просмотра;
+  - при «экономии трафика» и «уменьшить движение» остаётся статичный кадр.
+  Атрибуты data-player-status / data-player-activated работают как раньше,
+  поэтому стили и анимации Webflow, завязанные на них, не ломаются.
+-->
+<script>
+(function () {
+  'use strict';
+  var mobile = window.matchMedia('(max-width: 767px)').matches;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var saveData = !!(navigator.connection && navigator.connection.saveData);
+  // AV1 вдвое легче H.264 при том же качестве; старые браузеры получают H.264
+  var av1 = document.createElement('video').canPlayType('video/mp4; codecs="av01.0.08M.08"') === 'probably';
+
+  function init() {
+    var players = document.querySelectorAll('[data-bunny-background-init]');
+    players.forEach(function (player, index) {
+      var video = player.querySelector('video');
+      if (!video) return;
+      var g = function (n) { return player.getAttribute(n); };
+      var src = (av1 && ((mobile && g('data-src-mobile-av1')) || g('data-src-desktop-av1'))) ||
+                (mobile && g('data-src-mobile')) || g('data-src-desktop') || g('data-player-src');
+      if (!src) return;
+
+      function setStatus(s) { player.setAttribute('data-player-status', s); }
+      function setActivated(v) { player.setAttribute('data-player-activated', v ? 'true' : 'false'); }
+
+      video.removeAttribute('autoplay');
+      video.preload = 'none';
+      video.muted = true; video.loop = true; video.playsInline = true;
+      video.setAttribute('muted', ''); video.setAttribute('playsinline', '');
+      if ('disableRemotePlayback' in video) video.disableRemotePlayback = true;
+      setActivated(false); setStatus('idle');
+      if (reduced || saveData) return;               // остаётся статичный кадр
+
+      var attached = false, inView = false, manualPause = false;
+      function attach() {
+        if (attached) return; attached = true;
+        video.preload = 'auto';
+        video.src = src;
+      }
+      function play() {
+        if (manualPause) return;
+        attach();
+        setStatus('loading');
+        var p = video.play(); if (p && p.catch) p.catch(function () {});
+      }
+
+      video.addEventListener('playing', function () { setActivated(true); setStatus('playing'); });
+      video.addEventListener('pause', function () { setStatus('paused'); });
+      video.addEventListener('waiting', function () { if (inView) setStatus('loading'); });
+
+      // Кнопки, если они есть в разметке
+      player.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-player-control]');
+        if (!btn) return;
+        var t = btn.getAttribute('data-player-control');
+        if (t === 'mute') { video.muted = !video.muted; player.setAttribute('data-player-muted', String(video.muted)); return; }
+        if (video.paused) { manualPause = false; play(); } else { manualPause = true; video.pause(); }
+      });
+
+      // Первый экран: старт после загрузки страницы; остальные — на подходе к экрану
+      var ready = index === 0 ? new Promise(function (res) {
+        if (document.readyState === 'complete') res(); else window.addEventListener('load', res, { once: true });
+      }) : Promise.resolve();
+
+      ready.then(function () {
+        new IntersectionObserver(function (es) {
+          es.forEach(function (e) {
+            inView = e.isIntersecting;
+            if (inView) play(); else if (!video.paused) video.pause();
+          });
+        }, { rootMargin: '200px 0px' }).observe(player);
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>

@@ -1,0 +1,150 @@
+<!-- Исходный код Embed плеера SoundCloud (mosaicist.com, 10.11.2026). Для отката. -->
+<style>
+  .sc-wrap{width:20vw;min-width:200px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+  @media(max-width:768px){.sc-wrap{width:35vw;min-width:0}}
+  /* DESKTOP: change padding-top below */
+  .sc-player{background:#121212;border-radius:10px;padding:14px;padding-top:28px;color:#fff}
+  /* MOBILE: change padding-top below */
+  @media(max-width:768px){
+    .sc-player{padding:8px;padding-top:24px}
+    .sc-cover{width:32px;height:32px}
+    .sc-title{font-size:10px}
+    .sc-artist{font-size:9px}
+    .sc-play{width:24px;height:24px}
+    .sc-play svg{width:10px;height:10px}
+    .sc-btn svg{width:12px;height:12px}
+    .sc-ctrls{gap:10px}
+    .sc-times{font-size:9px}
+  }
+  .sc-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+  .sc-cover{width:52px;height:52px;border-radius:6px;background:#2a2a2a;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .sc-cover img{width:100%;height:100%;object-fit:cover;border-radius:6px}
+  .sc-info{flex:1;overflow:hidden}
+  .sc-title{font-size:13px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sc-artist{font-size:11px;color:#b3b3b3;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sc-bar{height:3px;background:#3a3a3a;border-radius:2px;margin-bottom:4px;cursor:pointer;position:relative}
+  .sc-fill{height:100%;background:#ff5500;border-radius:2px;width:0%;transition:width 0.3s}
+  .sc-times{display:flex;justify-content:space-between;font-size:10px;color:#b3b3b3;margin-bottom:10px}
+  .sc-ctrls{display:flex;align-items:center;justify-content:center;gap:16px}
+  .sc-btn{background:none;border:none;cursor:pointer;color:#b3b3b3;display:flex;align-items:center;padding:4px}
+  .sc-btn:hover{color:#fff}
+  .sc-play{width:32px;height:32px;background:#ff5500;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .sc-play:hover{background:#e64d00}
+  .sc-loading{font-size:12px;color:#b3b3b3;text-align:center;padding:10px 0}
+</style>
+
+<div class="sc-wrap">
+  <div class="sc-player">
+    <div class="sc-loading" id="sc-loading">Loading...</div>
+    <div id="sc-content" style="display:none">
+      <div class="sc-top">
+        <div class="sc-cover" id="sc-cover">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#555"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+        </div>
+        <div class="sc-info">
+          <div class="sc-title" id="sc-title">—</div>
+          <div class="sc-artist" id="sc-artist">—</div>
+        </div>
+      </div>
+      <div class="sc-bar" id="sc-bar">
+        <div class="sc-fill" id="sc-fill"></div>
+      </div>
+      <div class="sc-times">
+        <span id="sc-cur">0:00</span>
+        <span id="sc-dur">0:00</span>
+      </div>
+      <div class="sc-ctrls">
+        <button class="sc-btn" id="sc-prev">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+        <button class="sc-play" id="sc-playbtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="sc-btn" id="sc-next">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2.5-6 8.5 6V6z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <iframe id="sc-iframe"
+    src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/alex-go-905507782/sets/mosaicist-website-playlist&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false"
+    style="width:1px;height:1px;position:absolute;left:-9999px;visibility:hidden"
+    allow="autoplay">
+  </iframe>
+</div>
+
+<script src="https://w.soundcloud.com/player/api.js"></script>
+<script>
+(function(){
+  var iframe = document.getElementById('sc-iframe');
+  var widget, playing = false, duration = 0;
+
+  function fmt(ms){
+    var s = Math.floor(ms/1000), m = Math.floor(s/60);
+    return m+':'+String(s%60).padStart(2,'0');
+  }
+
+  function setIcon(p){
+    var btn = document.getElementById("sc-playbtn");
+    btn.innerHTML = p
+      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'
+      : '<svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>';
+  }
+
+  function updateSound(){
+    widget.getCurrentSound(function(sound){
+      if(!sound) return;
+      document.getElementById('sc-title').textContent = sound.title || '—';
+      document.getElementById('sc-artist').textContent = sound.user ? sound.user.username : '—';
+      if(sound.artwork_url){
+        var img = sound.artwork_url.replace('large','t300x300');
+        document.getElementById('sc-cover').innerHTML = '<img src="'+img+'" alt="">';
+      }
+    });
+    widget.getDuration(function(d){
+      duration = d;
+      document.getElementById('sc-dur').textContent = fmt(d);
+    });
+  }
+
+  function init(){
+    if(typeof SC === 'undefined'){ setTimeout(init, 200); return; }
+    widget = SC.Widget(iframe);
+
+    widget.bind(SC.Widget.Events.READY, function(){
+      document.getElementById('sc-loading').style.display='none';
+      document.getElementById('sc-content').style.display='block';
+      updateSound();
+    });
+
+    widget.bind(SC.Widget.Events.PLAY, function(){
+      playing = true; setIcon(true); updateSound();
+    });
+    widget.bind(SC.Widget.Events.PAUSE, function(){ playing = false; setIcon(false); });
+    widget.bind(SC.Widget.Events.FINISH, function(){ playing = false; setIcon(false); });
+
+    widget.bind(SC.Widget.Events.PLAY_PROGRESS, function(e){
+      if(duration > 0){
+        document.getElementById('sc-fill').style.width = (e.currentPosition/duration*100)+'%';
+        document.getElementById('sc-cur').textContent = fmt(e.currentPosition);
+      }
+    });
+
+    document.getElementById('sc-playbtn').onclick = function(){
+      if(playing){ widget.pause(); playing=false; setIcon(false); }
+      else { widget.play(); playing=true; setIcon(true); }
+    };
+    document.getElementById('sc-prev').onclick = function(){ widget.prev(); };
+    document.getElementById('sc-next').onclick = function(){ widget.next(); };
+
+    document.getElementById('sc-bar').onclick = function(e){
+      var rect = this.getBoundingClientRect();
+      var pct = (e.clientX - rect.left) / rect.width;
+      widget.seekTo(pct * duration);
+    };
+  }
+
+  init();
+})();
+</script>
