@@ -176,7 +176,6 @@ start = [
 monthly = [
  ('Истории проектов', 'Project stories', 'задача, стиль, материалы, фото процесса; ведут в страницу проекта', 'brief, style, materials, process photos; each leads to the project page', '2 статьи, 1 200–1 800 слов', '2 articles, 1,200–1,800 words'),
  ('Экспертные статьи от имени Рэя', 'Expert articles by Ray', 'выбор мозаики для бассейна, ручная резка стекла и фабричная плитка, история стилей, уход', 'choosing a pool mosaic, hand-cut glass versus factory tile, the history of styles, care', '2 статьи, 1 500–2 500 слов', '2 articles, 1,500–2,500 words'),
- ('Колонка Forbes Councils', 'Forbes Councils column', 'подготовка текста колонки и ссылка на сайт', 'drafting the column with a link to the site', '1 материал', '1 piece'),
  ('Внешние публикации', 'External placements', 'гостевые статьи и интервью в профильных и lifestyle-изданиях со ссылкой на сайт', 'guest articles and interviews in trade and lifestyle media linking to the site', '2 публикации', '2 placements'),
  ('Новые проекты', 'New projects', 'оформление новых работ в CMS: описание, фото, подписи', 'publishing new work in the CMS: write-up, photos, captions', 'до 2 проектов', 'up to 2 projects'),
  ('Поддержка материалов', 'Content upkeep', 'обновление посадочных страниц, перелинковка новых статей и проектов, описания для Google', 'refreshing landing pages, linking new articles and projects, Google descriptions', 'постоянно', 'ongoing')]
