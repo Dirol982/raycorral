@@ -513,3 +513,15 @@ body{line-height:1.6}
 
 .ctrl button{transition:background .2s,color .2s,transform .5s var(--ease)}
 @media (max-width:767px){.hero-img{margin-top:-42vw}.hero-meta .intro{max-width:24ch}}
+
+/* Ширина считается от контейнера, а не от окна: полоса прокрутки Windows (~17px)
+   больше не раздвигает первый экран. */
+.hero{grid-template-columns:minmax(0,1fr)}
+.hero>*{min-width:0}
+.hero-title{container-type:inline-size}
+.hero-title h1{font-size:calc(100cqw / 5.76)}
+/* Портрет чуть крупнее рамки, чтобы при следовании за мышью не открывались края */
+.hero-par{transform:translate3d(calc(var(--mx,0) * -14px),calc(var(--my,0) * -8px),0) scale(1.025);transform-origin:50% 100%}
+.track,.page-hero,.about-hero{max-width:100%}
+/* Галерея прокручивается только по горизонтали и не перехватывает вертикальную прокрутку */
+.track{overflow-y:hidden;overscroll-behavior-y:auto;overscroll-behavior-x:auto}

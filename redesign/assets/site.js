@@ -143,6 +143,13 @@
     });
     tr.addEventListener('click', function (e) { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
     tr.addEventListener('dragstart', function (e) { e.preventDefault(); });
+    // Вертикальное колесо/тачпад над галереей всегда прокручивает страницу
+    tr.addEventListener('wheel', function (e) {
+      if (e.shiftKey || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      e.preventDefault();
+      var k = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1;
+      scrollBy(0, e.deltaY * k);
+    }, { passive: false });
   });
 
   if (!fine || reduced) return;
