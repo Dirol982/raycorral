@@ -48,10 +48,11 @@ def build_after(html, page):
     styles = ''.join(re.findall(r'<style.*?</style>', tail, re.S))  # стили страницы оставить
     html = html[:last.end()] + styles + '\n__FOOTER__\n' + html[body_end:]
     # 2) head: убрать внешние lenis.css, добавить общий head-код
-    html = re.sub(r'<link rel="stylesheet" href="https://(?:cdn\.jsdelivr\.net|unpkg\.com)/npm/lenis[^>]*>', '', html)
+    html = re.sub(r'<link rel="stylesheet" href="https://(?:cdn\.jsdelivr\.net/npm|unpkg\.com)/lenis[^>]*>', '', html)
     html = html.replace('</head>', read('webflow/01-site-head.html') + '</head>', 1)
     # 3) embeds
     html = replace_embed(html, 'cursor-css', read('webflow/embeds/cursor.html'))
+    html = replace_embed(html, 'cursor-js', '')   # старый курсор с бесконечным циклом: заменён кодом из cursor.html
     html = replace_embed(html, 'time_js', read('webflow/embeds/current-time.html'))
     html = replace_embed(html, 'unicorn-bg_embed', read('webflow/embeds/hero-unicorn.html'), strip_attrs=True)
     # 4) footer + page code
