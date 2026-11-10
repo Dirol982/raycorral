@@ -135,6 +135,9 @@ def build(html, fname):
     h = h.replace('</head>', '<link rel="preconnect" href="https://cdn.prod.website-files.com" crossorigin>' + fonts + '</head>', 1)
     # 5. Фото
     h = pictures(h)
+    if fname == 'work.html':
+        # Прогрессивное размытие над движущейся сеткой: 1 слой вместо 5 (тот же вид, в 3+ раза дешевле)
+        h = h.replace('</head>', '<style>.progressive-blur__layer.is--1,.progressive-blur__layer.is--2,.progressive-blur__layer.is--3,.progressive-blur__layer.is--5{display:none!important}.progressive-blur__layer.is--4{-webkit-mask:linear-gradient(#0000 55%,#000 100%)!important;mask:linear-gradient(#0000 55%,#000 100%)!important;-webkit-backdrop-filter:blur(.9em)!important;backdrop-filter:blur(.9em)!important}</style></head>', 1)
     # <source> внутри <picture style=display:contents> не должен становиться элементом flex/grid
     h = h.replace('</head>', '<style>picture>source{display:none!important}html,body{overflow-x:clip}</style></head>', 1)
     h = hero_preload(h)
