@@ -111,6 +111,7 @@ def footer():
     nav = ''.join(f'<a href="{url(p)}">{n}</a>' for p, n in NAV)
     return f'''</main>
 <footer class="ftr dark wrap" data-dark>
+  <p class="ftr-line rv">The art of creating a legacy.</p>
   <div class="ftr-grid">
     <div><p class="name">Ray Corral</p><p class="roles">Mosaic Artist<br>Architectural Designer<br>Philanthropist</p></div>
     <div><p class="cap">Navigation</p><nav aria-label="Footer">{nav}</nav></div>
@@ -135,11 +136,21 @@ def case_card(slug, i, sizes, img=None, h='h-s'):
     c = CASES[slug]
     img = img or HOME_BG.get(slug) or c['imgs'][0]
     title = fix_title(c['title'])
+    k, m = split_title(c['title'])
     return (f'<a class="card" href="{url("selected-work/" + fix_slug(slug))}">'
             f'<div class="media">{pic(img, sizes, title + " — mosaic by Ray Corral")}</div>'
-            f'<div class="ttl"><h3 class="{h}">{e(title)}</h3><span class="num">{i:02d}</span></div></a>')
+            f'<div class="ttl"><div><span class="k">{e(k)}</span><h3 class="{h}">{e(m)}</h3></div><span class="num">No. {i:02d}</span></div></a>')
 
+ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X']
 HOME_BG = dict(zip(ORDER, D['home_bg']))
+
+def split_title(t):
+    t = fix_title(t)
+    if ' - ' in t:
+        a, b = t.split(' - ', 1)
+        return a.strip(), b.strip()
+    return '', t
+
 
 def works_slider(dark=True, title='Selected Works'):
     cards = ''.join(case_card(s, i + 1, '(max-width: 767px) 86vw, min(78vw, 980px)') for i, s in enumerate(ORDER))
@@ -186,7 +197,8 @@ def page_home():
     body = f'''
 <section class="hero" aria-label="Intro">
   <div class="hero-title wrap">
-    <h1 aria-label="Ray Corral"><span class="ln"><span>Ray Corral</span></span></h1>
+    <h1 aria-label="Ray Corral"><span class="ln"><span>Ray</span></span><span class="ln"><span>Corral</span></span></h1>
+    <p class="hero-tagline"><span class="it">The art of creating a legacy</span>{sign(draw=True, label='')}</p>
     <div class="hero-meta">
       <p class="roles rv">Mosaic Artist<br>Architectural Designer<br>Philanthropist</p>
       <p class="intro rv d1"><b>Ray Corral</b> is an American mosaic artist and the Founder and Creative Director of Mosaicist — House of Mosaic Arts.</p>
@@ -204,7 +216,7 @@ def page_home():
     </div>
     <div class="c9-13 stack rv d2" style="align-self:end">
       <p class="lead">By the end of the decade, music gave way to mosaic. Since then, it has remained the focus of his life’s work.</p>
-      <p><a class="btn" href="{url('about')}">Read the full story {ARROW}</a></p>
+      <p><a class="lnk" href="{url('about')}">Read the full story {ARROW}</a></p>
     </div>
   </div>
   <div class="facts" style="margin-top:clamp(48px,7vw,100px)">
@@ -217,7 +229,7 @@ def page_home():
   <div class="sec-head"><div class="stack"><span class="tag rv">Recognition</span><h2 class="h-l rv d1">As featured in</h2></div>
     <p class="body rv d2" style="max-width:30ch">Leading global design and luxury lifestyle publications, 2012–2026.</p></div>
   <div class="list rv">{recog}</div>
-  <p style="margin-top:32px"><a class="btn light" href="{url('press')}">All press {ARROW}</a></p>
+  <p style="margin-top:40px"><a class="lnk" href="{url('press')}">All press {ARROW}</a></p>
 </section>
 <section class="sec" aria-label="Philanthropy">
   <div class="marquee rv" aria-hidden="true"><div class="row">{strip}</div></div>
@@ -317,18 +329,24 @@ def page_case(slug, idx):
     title = fix_title(c['title'])
     prev_s, next_s = ORDER[idx - 1], ORDER[(idx + 1) % len(ORDER)]
     imgs = c['imgs']
+    k, mname = split_title(c['title'])
+    hero = pic(imgs[0], '100vw', f"{title} — mosaic by Ray Corral", eager=True)
     gal = ''
-    for i, u in enumerate(imgs):
+    for i, u in enumerate(imgs[1:]):
         sizes = '100vw' if i == 0 else '(max-width: 767px) 100vw, 50vw'
-        gal += f'<div class="media rv">{pic(u, sizes, f"{title} — mosaic by Ray Corral, view {i+1}", eager=(i == 0))}</div>'
-    paras = ''.join(f'<p class="{"lead" if i == 0 else "body"} rv d{i+1}">{e(p)}</p>' for i, p in enumerate(c['paras']))
+        gal += (f'<figure><div class="media rv">{pic(u, sizes, f"{title} — mosaic by Ray Corral, plate {ROMAN[i]}")}</div>'
+                f'<figcaption>Plate {ROMAN[i]}</figcaption></figure>')
+    paras = c['paras']
+    intro = f'<p class="lead rv">{e(paras[0])}</p>' + (f'<p class="body rv d1">{e(paras[1])}</p>' if len(paras) > 1 else '')
     body = f'''
-<section class="page-hero wrap" aria-label="{e(title)}">
-  <div class="split">
-    <div class="c1-7 stack"><span class="tag">Selected work · {idx+1:02d}/{len(ORDER):02d}</span><h1 class="h-l red"><span class="js-rise"><span>{e(title)}</span></span></h1></div>
-    <div class="c8-13 stack" style="align-self:end">{paras}</div>
+<section class="case-hero" data-dark aria-label="{e(title)}">
+  {hero}
+  <div class="inner wrap">
+    <span class="tag">Selected work · No. {idx+1:02d} of {len(ORDER):02d}</span>
+    <h1><span class="js-rise"><span><span class="k it">{e(k)}</span>{e(mname)}</span></span></h1>
   </div>
 </section>
+<section class="sec wrap" style="padding-bottom:clamp(48px,6vw,96px)"><div class="case-intro">{intro}</div></section>
 <section class="wrap"><div class="case-gal">{gal}</div></section>
 <section class="sec wrap" aria-label="More projects">
   <nav class="pager" aria-label="Projects">
@@ -339,7 +357,7 @@ def page_case(slug, idx):
 '''
     return (head(f'{title} Mosaic — Ray Corral', f'{title}: hand-cut mosaic by Ray Corral and Mosaicist — House of Mosaic Arts.', '',
                  preload(imgs[0], '100vw'))
-            + header('work') + body + footer() + end())
+            + header('work').replace('class="hdr wrap"', 'class="hdr wrap on-dark"') + body + footer() + end())
 
 def page_press():
     secs = ''

@@ -294,3 +294,102 @@ form.sent .ok{display:block}
   .js .sign.draw path{stroke-dashoffset:0}
   @view-transition{navigation:none}
 }
+
+/* =====================================================================
+   Премиальный слой: антиква-курсив для акцентов, кинематографичное
+   раскрытие фото, больше воздуха, сдержанные кнопки.
+   ===================================================================== */
+@font-face{
+  font-family:"Cormorant";
+  src:url("../fonts/cormorant-italic-latin.woff2") format("woff2");
+  font-weight:400 600;font-style:italic;font-display:swap;
+  unicode-range:U+0000-00FF,U+2000-206F,U+2122;
+}
+:root{
+  --paper:#F4F2ED; --paper-2:#E8E4DB; --ink:#0E0D0C; --ink-2:#181715;
+  --muted:#6E6A62; --muted-d:#A19C92; --line:rgba(14,13,12,.12); --line-d:rgba(244,242,237,.14);
+  --red:#8A1512; --red-d:#C9443A;
+  --serif:"Cormorant","Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --ease:cubic-bezier(.16,.84,.24,1);
+}
+body{line-height:1.6}
+.it{font-family:var(--serif);font-style:italic;font-weight:500;text-transform:none;letter-spacing:0}
+.tag{font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(1.1rem,1.4vw,1.35rem);letter-spacing:0;gap:12px}
+.tag::before{width:32px;height:1px;border-radius:0;background:currentColor;opacity:.6}
+.dark .tag::before{background:currentColor}
+.sec{padding-top:clamp(96px,13vw,210px);padding-bottom:clamp(96px,13vw,210px)}
+.body{line-height:1.7}
+.lead{line-height:1.45}
+
+/* Кнопки: тише и дороже */
+.btn{padding:15px 26px;font-size:.72rem;letter-spacing:.14em;font-weight:600;gap:12px}
+.btn:hover{transform:none;background:var(--red)}
+.btn.light:hover{background:var(--paper-2)}
+.btn.red:hover{background:var(--ink)}
+.lnk{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-size:.74rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  padding-bottom:6px;background:linear-gradient(currentColor,currentColor) 0 100%/100% 1px no-repeat;transition:background-size .5s var(--ease)}
+.lnk:hover{background-size:0 1px;background-position:100% 100%}
+.lnk svg{width:11px;height:11px}
+
+/* Раскрытие фото «шторкой» с лёгким наездом камеры */
+.js .media.rv{opacity:1;transform:none;clip-path:inset(100% 0 0 0);transition:clip-path 1.5s var(--ease)}
+.js .media.rv img{transform:scale(1.14);transition:transform 2s var(--ease)}
+.js .media.rv.in{clip-path:inset(0 0 0 0)}
+.js .media.rv.in img{transform:none}
+
+/* Главный экран */
+.hero-title h1 .ln{display:inline-block;vertical-align:top}
+.hero-title h1 .ln+.ln{margin-left:.22em}
+.js .hero-title h1 .ln:nth-child(2) span{animation-delay:.12s}
+.hero-tagline{position:relative;z-index:3;display:flex;justify-content:flex-end;align-items:center;gap:14px;margin-top:clamp(6px,1vw,14px);
+  font-size:clamp(1.4rem,2.6vw,2.7rem);line-height:1}
+.hero-tagline .sign{width:clamp(56px,6vw,96px)}
+.hero-tagline .sign path{stroke-width:1.6}
+@media (max-width:767px){.hero-tagline{justify-content:flex-start}}
+
+/* Галерея работ */
+.track{grid-auto-columns:min(84vw,1180px)}
+.card .media{aspect-ratio:16/9}
+.card .ttl{align-items:end;padding-top:6px;border-top:1px solid var(--line-d)}
+.card .k{display:block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;opacity:.6;margin-bottom:8px}
+.card .num{font-family:var(--serif);font-style:italic;font-weight:500;font-size:1.25rem;opacity:.7}
+.grid-works .card .ttl,.light-cards .card .ttl{border-top-color:var(--line)}
+@media (max-width:767px){.track{grid-auto-columns:88vw}}
+
+/* Страница проекта: полноэкранный кадр */
+.case-hero{position:relative;height:92svh;min-height:520px;overflow:hidden;color:var(--paper);background:var(--ink)}
+.case-hero>picture{position:absolute;inset:0}
+.case-hero>picture img{width:100%;height:100%;object-fit:cover}
+.js .case-hero>picture img{animation:zoomout 2.4s var(--ease) both}
+@keyframes zoomout{from{transform:scale(1.12)}}
+.case-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,13,12,.35),rgba(14,13,12,0) 30%,rgba(14,13,12,.15) 55%,rgba(14,13,12,.78))}
+.case-hero .inner{position:absolute;left:0;right:0;bottom:0;z-index:1;padding-bottom:clamp(28px,4vw,56px);display:grid;gap:14px}
+.case-hero h1{font-size:clamp(2.6rem,7.4vw,8.4rem);letter-spacing:-.05em;line-height:.86}
+.case-hero h1 .k{display:block;font-size:.34em;letter-spacing:-.02em;margin-bottom:.25em;opacity:.85}
+.case-intro{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:clamp(16px,2vw,32px)}
+.case-intro .lead{grid-column:1/8;font-size:clamp(1.25rem,2vw,1.8rem);max-width:none;line-height:1.35;letter-spacing:-.01em}
+.case-intro .body{grid-column:8/13;align-self:end}
+@media (max-width:767px){.case-hero{height:72svh}.case-intro .lead,.case-intro .body{grid-column:1/-1}}
+.case-gal figure{margin:0;display:grid;gap:10px}
+.case-gal figure:nth-child(1){grid-column:1/-1}
+.case-gal figure:nth-child(2){grid-column:1/8}
+.case-gal figure:nth-child(3){grid-column:8/13;align-self:end}
+.case-gal figure:nth-child(n+4){grid-column:span 6}
+.case-gal figure:nth-child(5){margin-top:clamp(40px,8vw,140px)}
+.case-gal .media{aspect-ratio:3/2!important;grid-column:auto!important}
+.case-gal figure:nth-child(1) .media{aspect-ratio:16/8!important}
+.case-gal figure:nth-child(3) .media{aspect-ratio:4/5!important}
+.case-gal figcaption{font-family:var(--serif);font-style:italic;font-size:1.05rem;color:var(--muted)}
+.case-gal{row-gap:clamp(40px,6vw,96px)}
+@media (max-width:767px){.case-gal figure{grid-column:1/-1!important;margin-top:0!important}}
+
+/* Подвал */
+.ftr-line{font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(2rem,5.4vw,5.6rem);line-height:1;letter-spacing:-.01em;
+  margin-bottom:clamp(48px,7vw,100px);max-width:16ch}
+
+/* Цитата-девиз */
+.motto{text-align:center;display:grid;justify-items:center;gap:22px}
+.motto p{font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(2.2rem,6vw,6.4rem);line-height:1.02;max-width:18ch}
+.motto .sign{width:clamp(120px,14vw,200px)}
+.case-hero .js-rise{display:block;overflow:hidden;padding-bottom:.04em}
+.js .case-hero .js-rise>span{display:block;animation:rise 1.2s .25s var(--ease) both}
