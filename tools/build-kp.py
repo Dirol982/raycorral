@@ -156,16 +156,8 @@ landings = [
 ld_rows = ''.join(f'<tr><td>{n}</td><td>{L(a,b)}</td><td style="text-align:right">{c}</td></tr>' for n, a, b, c in landings)
 ld_total = sum(x[3] for x in landings)
 
-start = [('Анализ конкурентов', 'Competitor analysis', 'мастерские и художники-мозаичисты в США: какие страницы и запросы приводят им заказчиков', 'US mosaic studios and artists: which pages and queries bring them clients', '10–15 сайтов', '10–15 sites'),
- ('Семантическое ядро', 'Keyword research', 'сбор и кластеризация англоязычных запросов: услуги, стили, города, вопросы заказчиков', 'collecting and clustering English queries: services, styles, cities, client questions', '600–800 запросов', '600–800 queries'),
- ('Структура и ТЗ', 'Structure and briefs', 'структура разделов услуг, стилей, городов и журнала; ТЗ на каждую страницу', 'structure for services, styles, cities and journal; a brief for every page', '19 ТЗ', '19 briefs'),
- ('Контент-план', 'Content plan', 'темы статей с привязкой к запросам и посадочным страницам', 'article topics tied to queries and landing pages', 'на 6 месяцев', '6 months'),
- ('Посадочные страницы', 'Landing pages', 'тексты 800–1 500 слов, фото из архива с подписями, блок вопросов, разметка, ссылки на проекты', 'copy of 800–1,500 words, archive photos with captions, FAQ block, structured data, links to projects', '19 страниц', '19 pages'),
- ('Раздел Journal', 'Journal section', 'коллекция статей в CMS Webflow, шаблон статьи, авторская подпись Рэя, связь с проектами', 'an article collection in the Webflow CMS, an article template, Ray’s byline, links to projects', '1 раздел', '1 section'),
- ('Доработка проектов', 'Upgrading projects', 'описания до 500–800 слов: задача, стиль, материалы, техника; подписи к фото', 'write-ups extended to 500–800 words: brief, style, materials, technique; captions', '8 страниц', '8 pages'),
- ('Страница автора', 'Author page', 'расширенная биография Рэя: обучение в Италии, 650+ работ, награды, публикации — доверие для Google и заказчиков', 'an extended bio: training in Italy, 650+ works, awards, press — trust for Google and clients', '1 страница', '1 page'),
- ('Возврат упоминаний', 'Link reclamation', 'издания, которые уже писали о Рэе без ссылки на сайт: просьба добавить ссылку', 'outlets that wrote about Ray without linking: request a link', 'все найденные', 'all found'),
- ('Search Console для контента', 'Search Console for content', 'настройка отслеживания позиций и показов по направлениям запросов', 'tracking positions and impressions by search direction', '1 настройка', '1 setup')]
+from kp_start import START as start
+
 monthly = [('Истории проектов', 'Project stories', 'задача, стиль, материалы, фото процесса; ведут в страницу проекта', 'brief, style, materials, process photos; each leads to the project page', '2 статьи, 1 200–1 800 слов', '2 articles, 1,200–1,800 words'),
  ('Экспертные статьи от имени Рэя', 'Expert articles by Ray', 'выбор мозаики для бассейна, ручная резка стекла и фабричная плитка, история стилей, уход', 'choosing a pool mosaic, hand-cut glass vs factory tile, history of styles, care', '2 статьи, 1 500–2 500 слов', '2 articles, 1,500–2,500 words'),
  ('Внешние публикации', 'External placements', 'гостевые статьи и интервью в профильных и lifestyle-изданиях со ссылкой на сайт', 'guest articles and interviews in trade and lifestyle media linking to the site', '2 публикации', '2 placements'),
@@ -187,7 +179,7 @@ promo_html = f"""<section class="pad"><div class="wrap">
   <h3 style="margin-top:12px">{L(f'Посадочные страницы: {ld_total}', f'Landing pages: {ld_total}')}</h3>
   <div class="tbl wide"><table><thead><tr><th>{L('Страница','Page')}</th><th>{L('Содержание','Content')}</th><th style="text-align:right">{L('Кол-во','Qty')}</th></tr></thead><tbody>{ld_rows}</tbody></table></div>
 
-  <h3 style="margin-top:12px">{L('Объём работ на старте', 'Starting scope')}</h3>
+  <h3 style="margin-top:12px">{L('Объём работ на старте: медиаконтент и метаданные', 'Starting scope: media and metadata')}</h3>
   {tbl3(start, [('Работа','Work'),('Что делаем','What we do'),('Объём','Volume')])}
 
   <h3 style="margin-top:12px">{L('Объём работ каждый месяц', 'Monthly scope')}</h3>

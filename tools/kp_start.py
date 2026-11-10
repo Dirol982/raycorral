@@ -1,0 +1,15 @@
+# Объём работ на старте продвижения: техническая работа с медиаконтентом и метаданными (без статей)
+START = [
+('Инвентаризация медиа', 'Media inventory', 'все фото, иконки и логотипы в Webflow Assets: дубли, неиспользуемые файлы, исходники в плохом качестве', 'every photo, icon and logo in Webflow Assets: duplicates, unused files, low-quality sources', '≈ 70 файлов', '≈ 70 files'),
+('Имена файлов', 'File names', 'понятные имена вместо «Rectangle 53.webp»: стиль, объект, автор (art-deco-mosaic-pool-ray-corral)', 'descriptive names instead of “Rectangle 53.webp”: style, object, author (art-deco-mosaic-pool-ray-corral)', '≈ 64 фото', '≈ 64 photos'),
+('Alt-тексты', 'Alt text', 'описание каждого фото на английском: стиль, материал, объект, автор — для Google Картинок и экранных дикторов', 'an English description of every photo: style, material, object, author — for Google Images and screen readers', '≈ 64 фото', '≈ 64 photos'),
+('Подписи к фото (captions)', 'Captions', 'подписи к фото в проектах и галереях: что изображено, где, какая техника', 'captions for photos in projects and galleries: what, where, which technique', '≈ 36 фото', '≈ 36 photos'),
+('Title и description', 'Titles and descriptions', 'заголовок и описание для поиска у каждой страницы и проекта, под ключевые запросы', 'a search title and description for every page and project, aligned to key queries', '15 страниц', '15 pages'),
+('SEO-поля проектов в CMS', 'Project SEO fields in the CMS', 'адрес, title, description, картинка для превью у каждого проекта; шаблон, чтобы новые проекты заполнялись так же', 'URL, title, description, preview image for every project; a template so new projects are filled the same way', '8 проектов + шаблон', '8 projects + template'),
+('Превью для соцсетей и мессенджеров', 'Social and messenger previews', 'обложки 1200×630, заголовки и описания Open Graph и Twitter Card', '1200×630 covers, Open Graph and Twitter Card titles and descriptions', '15 обложек', '15 covers'),
+('Разметка фото', 'Image markup', 'ImageObject и CreativeWork для фото проектов: автор, название, описание', 'ImageObject and CreativeWork for project photos: author, title, description', '8 проектов', '8 projects'),
+('Карта изображений', 'Image sitemap', 'отдельная карта фото для Google Картинок, отправка в Search Console', 'a dedicated image sitemap for Google Images, submitted in Search Console', '1 карта', '1 sitemap'),
+('Логотипы изданий', 'Press logos', 'alt, подписи и ссылки у логотипов и превью публикаций в блоке прессы', 'alt text, captions and links for press logos and publication previews', '7 изданий', '7 outlets'),
+('Иконки сайта', 'Site icons', 'проверка favicon и иконок для телефонов на всех размерах', 'check favicon and phone icons at all sizes', '1 набор', '1 set'),
+('Google Картинки в Search Console', 'Google Images in Search Console', 'настройка отслеживания показов и кликов из поиска по картинкам', 'tracking impressions and clicks from image search', '1 настройка', '1 setup'),
+]
