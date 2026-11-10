@@ -1,0 +1,49 @@
+<!--
+  RAY CORRAL · ЧАСЫ В ПОДВАЛЕ (Нью-Йорк)
+  Куда: элемент Embed с классом "time_js" в подвале (общий символ Footer).
+  Замените весь код Embed на этот.
+
+  Что изменилось: форматировщик времени создаётся один раз, а не каждую секунду
+  для каждого элемента; часы обновляются только когда вкладка видна.
+-->
+<script>
+(function () {
+  var DEFAULT_TZ = 'America/New_York';
+  var cache = {};
+  function formatter(tz) {
+    return cache[tz] || (cache[tz] = new Intl.DateTimeFormat([], {
+      timeZone: tz, timeZoneName: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+    }));
+  }
+  var els = [];
+  function update() {
+    if (document.hidden) return;
+    var now = new Date();
+    els.forEach(function (o) {
+      var m = formatter(o.tz).format(now).match(/(\d+):(\d+):(\d+)\s*([\w+]+)/);
+      if (!m) return;
+      if (o.h) o.h.textContent = m[1];
+      if (o.m) o.m.textContent = m[2];
+      if (o.s) o.s.textContent = m[3];
+      if (o.z) o.z.textContent = m[4];
+    });
+  }
+  function init() {
+    document.querySelectorAll('[data-current-time]').forEach(function (el) {
+      els.push({
+        tz: el.getAttribute('data-current-time') || DEFAULT_TZ,
+        h: el.querySelector('[data-current-time-hours]'),
+        m: el.querySelector('[data-current-time-minutes]'),
+        s: el.querySelector('[data-current-time-seconds]'),
+        z: el.querySelector('[data-current-time-timezone]')
+      });
+    });
+    if (!els.length) return;
+    update();
+    setInterval(update, 1000);
+    document.addEventListener('visibilitychange', update);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>

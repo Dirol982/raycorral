@@ -1,0 +1,42 @@
+<!--
+  RAY CORRAL · АНИМИРОВАННЫЙ ФОН ПЕРВОГО ЭКРАНА (Unicorn Studio)
+  Куда: Home → блок .hero → элемент Embed с классом "unicorn-bg_embed".
+  Действия:
+    1. Откройте Embed и замените весь его код на этот.
+    2. В настройках самого Embed (шестерёнка → Custom attributes) УДАЛИТЕ атрибуты
+       data-us-project, data-us-fps, data-us-scale, data-us-dpi.
+       Сейчас проект указан и на Embed, и на div внутри — сцена создаётся дважды.
+
+  Что изменилось:
+  - сцена создаётся один раз (раньше дважды);
+  - библиотека грузится одной версией (раньше 2.2.10 из Embed + 2.2.7 из кода страницы,
+    вторая перезаписывала первую);
+  - 30 кадров/с вместо 60 и плотность 1 вместо 1.5: фон размытый и медленный,
+    на глаз разницы нет, а нагрузка на видеокарту примерно в 3 раза меньше;
+  - запускается после загрузки страницы, а не во время;
+  - на телефонах, планшетах и при "уменьшить движение" не запускается:
+    остаётся фотография первого экрана (она и так лежит под сценой).
+-->
+<div data-us-project="yg12rwYM0060jnxDC3mv" data-us-fps="30" data-us-dpi="1" data-us-scale="1" style="width:100%;height:100%"></div>
+<script>
+(function () {
+  var desktop = window.matchMedia('(min-width: 992px) and (hover: hover) and (pointer: fine)').matches;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!desktop || reduced) return;
+
+  var started = false;
+  function start() {
+    if (started) return;
+    started = true;
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.2.10/dist/unicornStudio.umd.js';
+    s.async = true;
+    s.onload = function () { if (window.UnicornStudio) window.UnicornStudio.init(); };
+    document.head.appendChild(s);
+  }
+  // После загрузки страницы, но не позже чем через 2,5 с.
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start, { once: true });
+  setTimeout(start, 2500);
+})();
+</script>

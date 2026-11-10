@@ -1,0 +1,65 @@
+<!--
+  RAY CORRAL · SELECTED WORK (страницы проектов)
+  Куда: Pages → Selected Work Template (или каждая страница /selected-work/...) → Page settings → Custom code → Before </body> tag
+  ПОЛНОСТЬЮ заменяет прежний код этой страницы.
+
+  Библиотеки (GSAP, плагины, Lenis) и общие модули теперь в Site settings → Footer code.
+  Здесь оставлен только код, который есть лишь на этой странице, без изменений.
+-->
+<script>
+function initCSSMarquee() {
+  const pixelsPerSecond = 75; // Set the marquee speed (pixels per second)
+  const marquees = document.querySelectorAll('[data-css-marquee]');
+
+  // Duplicate each [data-css-marquee-list] element inside its container
+  marquees.forEach(marquee => {
+    marquee.querySelectorAll('[data-css-marquee-list]').forEach(list => {
+      const duplicate = list.cloneNode(true);
+      marquee.appendChild(duplicate);
+    });
+  });
+
+  // Create an IntersectionObserver to check if the marquee container is in view
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      entry.target.querySelectorAll('[data-css-marquee-list]').forEach(list =>
+        list.style.animationPlayState = entry.isIntersecting ? 'running' : 'paused'
+      );
+    });
+  }, { threshold: 0 });
+
+  // Calculate the width and set the animation duration accordingly,
+  // guarding against a 0px measurement (images not loaded yet on slower mobile connections)
+  function setDurations() {
+    marquees.forEach(marquee => {
+      marquee.querySelectorAll('[data-css-marquee-list]').forEach(list => {
+        const width = list.offsetWidth;
+        if (width > 0) {
+          list.style.animationDuration = (width / pixelsPerSecond) + 's';
+        }
+      });
+    });
+  }
+
+  setDurations();
+
+  marquees.forEach(marquee => {
+    marquee.querySelectorAll('[data-css-marquee-list]').forEach(list => {
+      list.style.animationPlayState = 'paused';
+    });
+    observer.observe(marquee);
+  });
+
+  // Re-measure once everything (including images) has actually finished loading —
+  // this is what fixes the "0 width on first paint" race condition on mobile
+  window.addEventListener('load', setDurations);
+
+  // Extra safety net for slow connections where 'load' still races
+  setTimeout(setDurations, 1000);
+}
+
+// Initialize CSS Marquee
+document.addEventListener('DOMContentLoaded', function() {
+  initCSSMarquee();
+});
+</script>

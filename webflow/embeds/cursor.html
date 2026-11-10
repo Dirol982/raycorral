@@ -1,0 +1,93 @@
+<!--
+  RAY CORRAL · КАСТОМНЫЙ КУРСОР
+  Куда: элемент Embed с классом "cursor-css" (в меню / общем символе,
+  рядом с блоками data-cursor-root / data-cursor-dot / data-cursor-ring / data-cursor-follow).
+  Замените весь код Embed на этот. Сами блоки курсора не трогайте.
+
+  Что изменилось:
+  - на телефонах и планшетах скрипт не запускается вообще
+    (раньше курсор был скрыт стилями, но анимационный цикл крутился постоянно);
+  - цикл анимации останавливается, когда курсор догнал мышь, и стартует снова при движении;
+  - определение светлого/тёмного фона под курсором раз в кадр, а не на каждое событие мыши;
+  - системный курсор прячется только на устройствах с мышью.
+-->
+<style>
+.cursor-dot, .cursor-ring, .cursor-follow {
+  position: fixed; top: 0; left: 0; pointer-events: none;
+  border-radius: 50%; z-index: 9999; will-change: transform;
+}
+.cursor-dot { width: 8px; height: 8px; background: #fff; }
+.cursor-ring { width: 34px; height: 34px; border: 1.5px solid #990000; opacity: 0; transition: opacity .25s ease; }
+.cursor-follow { width: 6px; height: 6px; background: #990000; }
+[data-cursor-root].theme-dark .cursor-dot { background: #fff; }
+[data-cursor-root].theme-light .cursor-dot { background: #000; }
+[data-cursor-root].is-hover .cursor-dot { opacity: 0; }
+[data-cursor-root].is-hover .cursor-ring { opacity: 1; }
+@media not all and (hover: hover) and (pointer: fine) {
+  .cursor-dot, .cursor-ring, .cursor-follow { display: none; }
+}
+@media (hover: hover) and (pointer: fine) {
+  body:has([data-cursor-root]) { cursor: none; }
+}
+</style>
+<script>
+(function () {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  var root = document.querySelector('[data-cursor-root]');
+  var dot = document.querySelector('[data-cursor-dot]');
+  var ring = document.querySelector('[data-cursor-ring]');
+  var follow = document.querySelector('[data-cursor-follow]');
+  if (!root || !dot || !ring || !follow) return;
+
+  var HOVER = 'a, button, [role="button"], [data-cursor-hover]';
+  var mouseX = 0, mouseY = 0, mainX = 0, mainY = 0, followX = 0, followY = 0;
+  var started = false, running = false, themeDirty = false, theme = null;
+
+  function lerp(a, b, n) { return a + (b - a) * n; }
+
+  function checkTheme() {
+    var el = document.elementFromPoint(mouseX, mouseY);
+    var t = el && el.closest('[data-cursor-theme]');
+    if (!t) return;
+    var v = t.getAttribute('data-cursor-theme');
+    if (v === theme) return;
+    theme = v;
+    root.classList.toggle('theme-dark', v === 'dark');
+    root.classList.toggle('theme-light', v === 'light');
+  }
+
+  function frame() {
+    mainX = lerp(mainX, mouseX, 0.22);
+    mainY = lerp(mainY, mouseY, 0.22);
+    followX = lerp(followX, mainX, 0.10);
+    followY = lerp(followY, mainY, 0.10);
+    var t = 'translate3d(' + mainX + 'px,' + mainY + 'px,0) translate(-50%,-50%)';
+    dot.style.transform = t;
+    ring.style.transform = t;
+    follow.style.transform = 'translate3d(' + followX + 'px,' + followY + 'px,0) translate(-50%,-50%)';
+    if (themeDirty) { themeDirty = false; checkTheme(); }
+
+    var settled = Math.abs(mouseX - followX) < 0.1 && Math.abs(mouseY - followY) < 0.1 &&
+                  Math.abs(mouseX - mainX) < 0.1 && Math.abs(mouseY - mainY) < 0.1;
+    if (settled) { running = false; return; }
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('mousemove', function (e) {
+    mouseX = e.clientX; mouseY = e.clientY;
+    if (!started) { mainX = followX = mouseX; mainY = followY = mouseY; started = true; }
+    themeDirty = true;
+    if (!running) { running = true; requestAnimationFrame(frame); }
+  }, { passive: true });
+
+  // При прокрутке колесом фон под неподвижной мышью меняется
+  window.addEventListener('scroll', function () {
+    if (!started) return;
+    themeDirty = true;
+    if (!running) { running = true; requestAnimationFrame(frame); }
+  }, { passive: true });
+
+  document.addEventListener('mouseover', function (e) { if (e.target.closest(HOVER)) root.classList.add('is-hover'); });
+  document.addEventListener('mouseout', function (e) { if (e.target.closest(HOVER)) root.classList.remove('is-hover'); });
+})();
+</script>

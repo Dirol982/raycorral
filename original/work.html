@@ -1,0 +1,581 @@
+<!-- Исходный пользовательский код страницы /work с raycorral.com (снят 10.11.2026). Для отката. -->
+<style>
+.cursor-dot, .cursor-ring, .cursor-follow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  z-index: 9999;
+  will-change: transform;
+}
+
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: #fff; /* дефолт — светлый курсор, перекрывается темой ниже */
+}
+
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid #990000;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.cursor-follow {
+  width: 6px;
+  height: 6px;
+  background: #990000;
+}
+
+/* Тема — цвет только основной точки, follow и ring всегда акцентные */
+[data-cursor-root].theme-dark .cursor-dot { background: #fff; }
+[data-cursor-root].theme-light .cursor-dot { background: #000; }
+
+[data-cursor-root].is-hover .cursor-dot { opacity: 0; }
+[data-cursor-root].is-hover .cursor-ring { opacity: 1; }
+
+@media (hover: none) and (pointer: coarse) {
+  .cursor-dot, .cursor-ring, .cursor-follow { display: none; }
+}
+
+body:has([data-cursor-root]) { cursor: none; }
+</style>
+
+<style>
+.infinite-grid[data-infinite-grid-status] {
+  cursor: grab;
+  transition: opacity 0.5s ease;
+  opacity: 1;
+}
+
+.infinite-grid[data-infinite-grid-status="loading"] {
+  opacity: 0;
+}
+
+.infinite-grid[data-infinite-grid-status="dragging"] {
+  cursor: grabbing;
+}
+
+:is(.wf-design-mode, .wf-editor) .infinite-grid[data-infinite-grid-status] {
+  opacity: 1;
+}
+
+/* Optional grid styling for the Webflow Designer */
+:is(.wf-design-mode, .wf-editor) .infinite-grid .infinite-grid__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+:is(.wf-design-mode, .wf-editor) .infinite-grid .infinite-grid__item {
+  position: relative;
+  top: unset;
+  left: unset;
+}
+</style>
+
+<script>
+(function () {
+  const root = document.querySelector('[data-cursor-root]');
+  const dot = document.querySelector('[data-cursor-dot]');
+  const ring = document.querySelector('[data-cursor-ring]');
+  const follow = document.querySelector('[data-cursor-follow]');
+  if (!root || !dot || !ring || !follow) return;
+
+  const HOVER_SELECTOR = 'a, button, [role="button"], [data-cursor-hover]';
+
+  let mouseX = 0, mouseY = 0;
+  let mainX = 0, mainY = 0;
+  let followX = 0, followY = 0;
+  let started = false;
+  let currentTheme = null;
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (!started) {
+      mainX = followX = mouseX;
+      mainY = followY = mouseY;
+      started = true;
+    }
+
+    const el = document.elementFromPoint(mouseX, mouseY);
+    const themedAncestor = el ? el.closest('[data-cursor-theme]') : null;
+    if (themedAncestor) {
+      const theme = themedAncestor.getAttribute('data-cursor-theme');
+      if (theme !== currentTheme) {
+        currentTheme = theme;
+        root.classList.toggle('theme-dark', theme === 'dark');
+        root.classList.toggle('theme-light', theme === 'light');
+      }
+    }
+  });
+
+  document.addEventListener('mouseover', (e) => {
+    if (e.target.closest(HOVER_SELECTOR)) root.classList.add('is-hover');
+  });
+  document.addEventListener('mouseout', (e) => {
+    if (e.target.closest(HOVER_SELECTOR)) root.classList.remove('is-hover');
+  });
+
+  function lerp(a, b, n) { return a + (b - a) * n; }
+
+  function raf() {
+    if (started) {
+      mainX = lerp(mainX, mouseX, 0.22);
+      mainY = lerp(mainY, mouseY, 0.22);
+      followX = lerp(followX, mainX, 0.10);
+      followY = lerp(followY, mainY, 0.10);
+
+      const mainT = 'translate3d(' + mainX + 'px,' + mainY + 'px,0) translate(-50%,-50%)';
+      dot.style.transform = mainT;
+      ring.style.transform = mainT;
+      follow.style.transform = 'translate3d(' + followX + 'px,' + followY + 'px,0) translate(-50%,-50%)';
+    }
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+})();
+</script>
+
+<script>
+function initDynamicCurrentTime() {
+  const defaultTimezone = "America/New_York";
+
+  // Helper function to format numbers with leading zero
+  const formatNumber = (number) => number.toString().padStart(2, '0');
+
+  // Function to create a time formatter with the correct timezone
+  const createFormatter = (timezone) => {
+    return new Intl.DateTimeFormat([], {
+      timeZone: timezone,
+      timeZoneName: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false, // Optional: Remove to match your simpler script
+    });
+  };
+
+  // Function to parse the formatted string into parts
+  const parseFormattedTime = (formattedDateTime) => {
+    const match = formattedDateTime.match(/(\d+):(\d+):(\d+)\s*([\w+]+)/);
+    if (match) {
+      return {
+        hours: match[1],
+        minutes: match[2],
+        seconds: match[3],
+        timezone: match[4], // Handles both GMT+X and CET cases
+      };
+    }
+    return null;
+  };
+
+  // Function to update the time for all elements
+  const updateTime = () => {
+    document.querySelectorAll('[data-current-time]').forEach((element) => {
+      const timezone = element.getAttribute('data-current-time') || defaultTimezone;
+      const formatter = createFormatter(timezone);
+      const now = new Date();
+      const formattedDateTime = formatter.format(now);
+
+      const timeParts = parseFormattedTime(formattedDateTime);
+      if (timeParts) {
+        const {
+          hours,
+          minutes,
+          seconds,
+          timezone
+        } = timeParts;
+
+        // Update child elements if they exist
+        const hoursElem = element.querySelector('[data-current-time-hours]');
+        const minutesElem = element.querySelector('[data-current-time-minutes]');
+        const secondsElem = element.querySelector('[data-current-time-seconds]');
+        const timezoneElem = element.querySelector('[data-current-time-timezone]');
+
+        if (hoursElem) hoursElem.textContent = hours;
+        if (minutesElem) minutesElem.textContent = minutes;
+        if (secondsElem) secondsElem.textContent = seconds;
+        if (timezoneElem) timezoneElem.textContent = timezone;
+      }
+    });
+  };
+
+  // Initial update and interval for subsequent updates
+  updateTime();
+  setInterval(updateTime, 1000);
+}
+
+// Initialize Dynamic Current Time
+document.addEventListener('DOMContentLoaded', () => {
+  initDynamicCurrentTime();
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/gsap.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/Observer.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/ScrollTrigger.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/DrawSVGPlugin.min.js"></script>
+
+<script>
+gsap.registerPlugin(Observer);
+
+function initInfiniteCardsGrid() {
+  const wrappers = document.querySelectorAll('[data-infinite-grid-init]');
+
+  const wheelSpeed = 0.6; // wheel/trackpad speed
+  const dragSpeed = 1.2; // drag speed
+  const gridOverscan = 1; // extra rows and columns generated outside the viewport
+  const startOffsetY = 0.33; // vertical offset between columns
+  const positionLerp = 0.05; // movement smoothing amount
+  const xToYInfluence = 0.2; // horizontal movement influence on vertical movement
+  const columnSpeedPattern = [1, 1, 0.9]; // column parallax speed pattern
+  const minCardScale = 0.5; // minimum card scale while moving
+  const scaleLerp = 0.02; // scale animation smoothing amount
+
+  wrappers.forEach((wrapper) => {
+    const collection = wrapper.querySelector('[data-infinite-grid-collection]');
+    const sourceList = wrapper.querySelector('[data-infinite-grid-list]');
+    const originalItems = Array.from(sourceList.querySelectorAll('[data-infinite-grid-item]')).map((item) => item.cloneNode(true));
+
+    if (!collection || !sourceList || !originalItems.length) return;
+
+    let observer;
+    let cards = [];
+    let cardElements = [];
+    const timers = {};
+    const size = {};
+    const pos = {};
+    const scale = {current: 1, target: 1};
+
+    function setStatus(status) {
+      wrapper.setAttribute('data-infinite-grid-status', status);
+    }
+
+    function wrapValue(value, size) {
+      return ((value % size) + size) % size;
+    }
+
+    function createColumnSpeeds(columns) {
+      return Array.from({length: columns}, (_, i) => columnSpeedPattern[i % columnSpeedPattern.length]);
+    }
+
+    function createItemIndexes(columns, rows) {
+      const total = originalItems.length;
+      const indexes = Array.from({length: rows}, () => []);
+      const used = Array(total).fill(0);
+      const centerColumn = Math.floor(columns / 2);
+      const centerRow = Math.floor(rows / 2);
+      const cells = [];
+
+      for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++) {
+          cells.push({
+            row,
+            column,
+            distance: Math.abs(row - centerRow) + Math.abs(column - centerColumn)
+          });
+        }
+      }
+
+      cells.sort((a, b) => a.distance - b.distance);
+
+      cells.forEach(({row, column}) => {
+        const blocked = [
+          indexes[row][column - 1],
+          indexes[row][column + 1],
+          row > 0 ? indexes[row - 1][column] : undefined,
+          row < rows - 1 ? indexes[row + 1][column] : undefined,
+          row > 0 ? indexes[row - 1][column - 1] : undefined,
+          row > 0 ? indexes[row - 1][column + 1] : undefined,
+          row < rows - 1 ? indexes[row + 1][column - 1] : undefined,
+          row < rows - 1 ? indexes[row + 1][column + 1] : undefined
+        ];
+
+        const seed = (row * 17 + column * 31) % total;
+        let bestIndex = 0;
+        let bestScore = Infinity;
+
+        for (let i = 0; i < total; i++) {
+          const itemIndex = (i + seed) % total;
+          let score = used[itemIndex] * 10 + Math.abs(itemIndex - seed) * 0.01;
+
+          if (total > 1 && blocked.includes(itemIndex)) score += 1000;
+
+          if (score < bestScore) {
+            bestScore = score;
+            bestIndex = itemIndex;
+          }
+        }
+
+        indexes[row][column] = bestIndex;
+        used[bestIndex]++;
+      });
+
+      return indexes;
+    }
+
+    function buildGrid() {
+      if (observer) observer.kill();
+      clearTimeout(timers.resize);
+      clearTimeout(timers.scroll);
+      clearTimeout(timers.scale);
+      gsap.ticker.remove(updateGrid);
+
+      setStatus('loading');
+      sourceList.innerHTML = '';
+
+      const measureItem = originalItems[0].cloneNode(true);
+      measureItem.style.position = 'absolute';
+      measureItem.style.visibility = 'hidden';
+      measureItem.style.pointerEvents = 'none';
+      wrapper.appendChild(measureItem);
+
+      const rect = measureItem.getBoundingClientRect();
+      size.itemW = rect.width;
+      size.itemH = rect.height;
+      measureItem.remove();
+
+      if (!size.itemW || !size.itemH) return;
+
+      const columns = Math.max(1, Math.ceil(wrapper.clientWidth / size.itemW) + gridOverscan * 2);
+      const rows = Math.max(Math.ceil(wrapper.clientHeight / size.itemH) + gridOverscan * 2, Math.ceil(originalItems.length / columns));
+      const itemIndexes = createItemIndexes(columns, rows);
+      const columnSpeeds = createColumnSpeeds(columns);
+      const fragment = document.createDocumentFragment();
+      const centerColumn = Math.floor(columns / 2);
+      const centerRow = Math.floor(rows / 2);
+
+      size.totalW = columns * size.itemW;
+      size.totalH = rows * size.itemH;
+      cards = [];
+      cardElements = [];
+
+      gsap.set(collection, {x: 0, y: 0, force3D: true});
+
+      collection.style.width = `${size.totalW}px`;
+      collection.style.height = `${size.totalH}px`;
+
+      for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++) {
+          const item = originalItems[itemIndexes[row][column]].cloneNode(true);
+          const card = item.querySelector('[data-infinite-grid-card]');
+
+          cards.push({
+            baseX: column * size.itemW,
+            baseY: row * size.itemH,
+            startY: (column - centerColumn) * size.itemH * startOffsetY,
+            ySpeed: columnSpeeds[column],
+            xSetter: gsap.quickSetter(item, 'x', 'px'),
+            ySetter: gsap.quickSetter(item, 'y', 'px')
+          });
+
+          if (card) cardElements.push(card);
+          if (cards.length > originalItems.length) item.setAttribute('aria-hidden', 'true');
+
+          fragment.appendChild(item);
+        }
+      }
+
+      sourceList.appendChild(fragment);
+
+      gsap.set(cardElements, {
+        force3D: true
+      });
+
+      pos.startX = wrapper.clientWidth * 0.5 - centerColumn * size.itemW - size.itemW * 0.5;
+      pos.startY = wrapper.clientHeight * 0.5 - centerRow * size.itemH - size.itemH * 0.5;
+      pos.x = pos.startX;
+      pos.y = pos.startY;
+      pos.targetX = pos.x;
+      pos.targetY = pos.y;
+      scale.current = 1;
+      scale.target = 1;
+
+      updateGrid();
+      gsap.ticker.add(updateGrid);
+
+      requestAnimationFrame(() => {
+        setStatus('idle');
+      });
+
+      observer = Observer.create({
+        target: wrapper,
+        type: 'wheel,touch,pointer',
+        preventDefault: true,
+        dragMinimum: 3,
+        onPress() { setStatus('dragging'); },
+        onRelease() { setStatus('idle'); },
+        onStop() { setStatus('idle'); },
+        onChange: handleMovement
+      });
+    }
+
+    function updateGrid() {
+      pos.x += (pos.targetX - pos.x) * positionLerp;
+      pos.y += (pos.targetY - pos.y) * positionLerp;
+      scale.current += (scale.target - scale.current) * scaleLerp;
+
+      const offsetX = size.itemW * gridOverscan;
+      const offsetY = size.itemH * gridOverscan;
+      const scrollY = pos.y - pos.startY;
+
+      cards.forEach(({baseX, baseY, startY, ySpeed, xSetter, ySetter}) => {
+        xSetter(wrapValue(baseX + pos.x + offsetX, size.totalW) - offsetX);
+        ySetter(wrapValue(baseY + pos.startY + startY + scrollY * ySpeed + offsetY, size.totalH) - offsetY);
+      });
+
+      gsap.set(cardElements, {scale: scale.current});
+    }
+
+    function handleMovement(self) {
+      const isWheel = self.event.type === 'wheel';
+      const speed = isWheel ? wheelSpeed : dragSpeed;
+      const deltaX = gsap.utils.clamp(-80, 80, self.deltaX * speed);
+      const deltaY = gsap.utils.clamp(-80, 80, self.deltaY * speed);
+      const moveX = isWheel ? -deltaX : deltaX;
+      const moveY = isWheel ? -deltaY : deltaY;
+      const strength = gsap.utils.clamp(0, 1, Math.max(Math.abs(deltaX), Math.abs(deltaY)) / 80);
+
+      if (isWheel) {
+        setStatus('scrolling');
+
+        clearTimeout(timers.scroll);
+        timers.scroll = setTimeout(() => {
+          setStatus('idle');
+        }, 200);
+      }
+
+      scale.target = gsap.utils.interpolate(1, minCardScale, strength);
+
+      clearTimeout(timers.scale);
+      timers.scale = setTimeout(() => {
+        scale.target = 1;
+      }, 120);
+
+      pos.targetX += moveX;
+      pos.targetY += moveY + moveX * xToYInfluence;
+    }
+
+    function handleMouseLeave() {
+      setStatus('idle');
+      scale.target = 1;
+
+      if (observer) {
+        observer.disable();
+        observer.enable();
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      clearTimeout(timers.resize);
+      timers.resize = setTimeout(buildGrid, 200);
+    });
+
+    document.documentElement.addEventListener('mouseleave', handleMouseLeave);
+
+    buildGrid();
+  });
+}
+
+// Initialize Infinite Cards Grid (Masonary)
+document.addEventListener('DOMContentLoaded', () => {
+  initInfiniteCardsGrid();
+});
+</script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+
+function initDrawPathOnScroll() {
+  const mm = gsap.matchMedia();
+  const wrappers = document.querySelectorAll("[data-draw-scroll-wrap]");
+
+  mm.add(
+    {
+      isDesktop: "(min-width: 768px)",
+      isMobile: "(max-width: 767px)"
+    },
+    (context) => {
+      const { isDesktop, isMobile } = context.conditions;
+
+      wrappers.forEach((wrap) => {
+        // Kill any previous timeline for this wrapper
+        if (wrap._drawTl) {
+          if (wrap._drawTl.scrollTrigger) {
+            wrap._drawTl.scrollTrigger.kill();
+          }
+          wrap._drawTl.kill();
+          wrap._drawTl = null;
+        }
+
+        const desktopSVG = wrap.querySelector("[data-draw-scroll-desktop]");
+        const mobileSVG  = wrap.querySelector("[data-draw-scroll-mobile]"); // optional
+
+        // default: desktop
+        let svgToUse = desktopSVG;
+
+        // on mobile, use mobileSVG if it exists
+        if (isMobile && mobileSVG) {
+          svgToUse = mobileSVG;
+        }
+
+        if (!svgToUse) return;
+
+        const path = svgToUse.querySelector("[data-draw-scroll-path]");
+        if (!path) return;
+
+        const tl = gsap.timeline({
+          defaults: {
+            ease: "linear" // scroll speed controls easing
+          },
+          scrollTrigger: {
+            trigger: wrap,
+            start: "clamp(top center)",  // When top of wrap reaches center of viewport
+            end: "clamp(top top)", // When bottom of wrap reaches center of viewport
+            scrub: true,
+            invalidateOnRefresh: true
+          }
+        });
+
+        tl.fromTo(path,
+          { drawSVG: 0 },
+          { drawSVG: "100%", duration: 1 }
+        );
+
+        // Keep a reference so we can kill it on breakpoint change
+        wrap._drawTl = tl;
+      });
+
+      // Make sure ScrollTrigger recalculates
+      ScrollTrigger.refresh();
+
+      // Cleanup when breakpoint changes
+      return () => {
+        wrappers.forEach((wrap) => {
+          if (wrap._drawTl) {
+            if (wrap._drawTl.scrollTrigger) {
+              wrap._drawTl.scrollTrigger.kill();
+            }
+            wrap._drawTl.kill();
+            wrap._drawTl = null;
+          }
+        });
+      };
+    }
+  );
+}
+
+// Initialize Draw Path on Scroll
+document.addEventListener("DOMContentLoaded", function () {
+  initDrawPathOnScroll();
+});
+</script>

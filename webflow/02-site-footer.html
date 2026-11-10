@@ -1,0 +1,348 @@
+<!--
+  RAY CORRAL · ОБЩИЙ КОД САЙТА (Footer code)
+  Куда: Webflow → Site settings → Custom code → Footer code
+  Заменяет: все <script src> библиотек и общие модули, которые раньше
+  дублировались в "Before </body>" каждой страницы.
+
+  Что изменилось относительно исходного кода:
+  - GSAP и плагины грузятся ОДИН раз и с ОДНОГО CDN (Webflow, уже preconnect),
+    версия зафиксирована 3.15.0. Убраны: второй gsap с jsDelivr (плавающая 3.15.x),
+    Flip (не используется), TweenMax 1.20.3, three.js r108, hover.js с tympanus.net.
+  - Lenis один (1.3.17) вместо двух, синхронизирован со ScrollTrigger
+    и отключается при prefers-reduced-motion.
+  - Эффект "волны" (.hover-distort) переписан на чистом WebGL (~3 КБ):
+    рисует кадры только во время анимации, стартует, когда блок виден,
+    не запускается на скрытых элементах и на сенсорных экранах.
+  - Общие модули (footer parallax, highlight text, draw path, arc scroll)
+    перенесены сюда без изменения поведения: каждый ищет свои data-атрибуты
+    и ничего не делает, если их нет на странице.
+-->
+<script src="https://cdn.prod.website-files.com/gsap/3.15.0/gsap.min.js"></script>
+<script src="https://cdn.prod.website-files.com/gsap/3.15.0/ScrollTrigger.min.js"></script>
+<script src="https://cdn.prod.website-files.com/gsap/3.15.0/SplitText.min.js"></script>
+<script src="https://cdn.prod.website-files.com/gsap/3.15.0/DrawSVGPlugin.min.js"></script>
+<script src="https://cdn.prod.website-files.com/gsap/3.15.0/CustomEase.min.js"></script>
+<script src="https://cdn.prod.website-files.com/gsap/3.15.0/Observer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.17/dist/lenis.min.js"></script>
+
+<script>
+(function () {
+  'use strict';
+  gsap.registerPlugin(ScrollTrigger, SplitText, DrawSVGPlugin, CustomEase, Observer);
+
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  window.RC = { reducedMotion: reducedMotion, finePointer: finePointer };
+
+  // ---------------------------------------------------------------
+  // Плавная прокрутка (Lenis), синхронно со ScrollTrigger.
+  // Не включается: при reduced motion и на странице Work
+  // (там бесконечная сетка сама обрабатывает колесо мыши).
+  // ---------------------------------------------------------------
+  function initSmoothScroll() {
+    if (reducedMotion || typeof Lenis === 'undefined') return;
+    if (document.querySelector('[data-infinite-grid-init]')) return;
+    var lenis = new Lenis({ autoRaf: false });
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
+    gsap.ticker.lagSmoothing(0);
+    window.lenis = lenis;
+  }
+
+  // ---------------------------------------------------------------
+  // Footer parallax (без изменений логики)
+  // ---------------------------------------------------------------
+  function initFooterParallax() {
+    // На странице Work параллакса подвала не было, оставляем как было.
+    if (document.querySelector('[data-infinite-grid-init]')) return;
+    document.querySelectorAll('[data-footer-parallax]').forEach(function (el) {
+      var tl = gsap.timeline({
+        scrollTrigger: { trigger: el, start: 'clamp(top bottom)', end: 'clamp(top top)', scrub: true }
+      });
+      var inner = el.querySelector('[data-footer-parallax-inner]');
+      var dark = el.querySelector('[data-footer-parallax-dark]');
+      if (inner) tl.from(inner, { yPercent: -25, ease: 'linear' });
+      if (dark) tl.from(dark, { opacity: 0.5, ease: 'linear' }, '<');
+    });
+  }
+
+  // ---------------------------------------------------------------
+  // Highlight text on scroll (без изменений логики)
+  // ---------------------------------------------------------------
+  function initHighlightText() {
+    document.querySelectorAll('[data-highlight-text]').forEach(function (heading) {
+      var scrollStart = heading.getAttribute('data-highlight-scroll-start') || 'top 90%';
+      var scrollEnd = heading.getAttribute('data-highlight-scroll-end') || 'center 40%';
+      var fadedValue = heading.getAttribute('data-highlight-fade') || 0.2;
+      var staggerValue = heading.getAttribute('data-highlight-stagger') || 0.1;
+      new SplitText(heading, {
+        type: 'words, chars',
+        autoSplit: true,
+        onSplit: function (self) {
+          return gsap.context(function () {
+            gsap.timeline({
+              scrollTrigger: { scrub: true, trigger: heading, start: scrollStart, end: scrollEnd }
+            }).from(self.chars, { autoAlpha: fadedValue, stagger: staggerValue, ease: 'linear' });
+          });
+        }
+      });
+    });
+  }
+
+  // ---------------------------------------------------------------
+  // Draw SVG path on scroll (без изменений логики)
+  // ---------------------------------------------------------------
+  function initDrawPathOnScroll() {
+    var wrappers = document.querySelectorAll('[data-draw-scroll-wrap]');
+    if (!wrappers.length) return;
+    var kill = function (wrap) {
+      if (!wrap._drawTl) return;
+      if (wrap._drawTl.scrollTrigger) wrap._drawTl.scrollTrigger.kill();
+      wrap._drawTl.kill();
+      wrap._drawTl = null;
+    };
+    gsap.matchMedia().add(
+      { isDesktop: '(min-width: 768px)', isMobile: '(max-width: 767px)' },
+      function (context) {
+        var isMobile = context.conditions.isMobile;
+        wrappers.forEach(function (wrap) {
+          kill(wrap);
+          var desktopSVG = wrap.querySelector('[data-draw-scroll-desktop]');
+          var mobileSVG = wrap.querySelector('[data-draw-scroll-mobile]');
+          var svg = isMobile && mobileSVG ? mobileSVG : desktopSVG;
+          if (!svg) return;
+          var path = svg.querySelector('[data-draw-scroll-path]');
+          if (!path) return;
+          var tl = gsap.timeline({
+            defaults: { ease: 'linear' },
+            scrollTrigger: {
+              trigger: wrap, start: 'clamp(top center)', end: 'clamp(top top)',
+              scrub: true, invalidateOnRefresh: true
+            }
+          });
+          tl.fromTo(path, { drawSVG: 0 }, { drawSVG: '100%', duration: 1 });
+          wrap._drawTl = tl;
+        });
+        ScrollTrigger.refresh();
+        return function () { wrappers.forEach(kill); };
+      }
+    );
+  }
+
+  // ---------------------------------------------------------------
+  // Arc scroll transition (без изменений логики)
+  // ---------------------------------------------------------------
+  function initArcScrollTransition() {
+    var wrappers = document.querySelectorAll('[data-arc-scroll-transition]');
+    if (!wrappers.length) return;
+
+    var defaultScrollStart = { cover: 'bottom bottom', reveal: 'top bottom' };
+    var defaultScrollEnd = { cover: 'bottom top', reveal: 'top top' };
+    var defaultScrub = 0.3, defaultCurve = 12, viewBox = 100;
+    var NS = 'http://www.w3.org/2000/svg';
+    var instances = [];
+
+    var round = function (v) { return Math.round(v * 100) / 100; };
+    var getMode = function (w) { return w.dataset.mode === 'reveal' ? 'reveal' : 'cover'; };
+    var getCurve = function (w) { var v = parseFloat(w.dataset.curve); return isFinite(v) ? v : defaultCurve; };
+
+    function measure(inst) {
+      var r = inst.section.getBoundingClientRect();
+      inst.depth = getCurve(inst.wrapper) * (r.height ? r.width / r.height : 1);
+    }
+    function draw(inst, p) {
+      var fill = inst.mode === 'cover' ? p : 1 - p;
+      var curve = inst.depth * Math.sin(fill * Math.PI);
+      var edge, control;
+      if (inst.mode === 'cover') {
+        edge = round(viewBox - viewBox * fill); control = round(edge - curve * 2);
+        inst.path.setAttribute('d', 'M0 ' + viewBox + ' L0 ' + edge + ' Q' + viewBox / 2 + ' ' + control + ' ' + viewBox + ' ' + edge + ' L' + viewBox + ' ' + viewBox + ' Z');
+      } else {
+        edge = round(viewBox * fill); control = round(edge + curve * 2);
+        inst.path.setAttribute('d', 'M0 0 L0 ' + edge + ' Q' + viewBox / 2 + ' ' + control + ' ' + viewBox + ' ' + edge + ' L' + viewBox + ' 0 Z');
+      }
+    }
+    function setup(wrapper) {
+      var shape = document.createElementNS(NS, 'svg');
+      shape.setAttribute('data-arc-scroll-shape', '');
+      shape.setAttribute('viewBox', '0 0 ' + viewBox + ' ' + viewBox);
+      shape.setAttribute('preserveAspectRatio', 'none');
+      shape.setAttribute('aria-hidden', 'true');
+      var path = document.createElementNS(NS, 'path');
+      path.setAttribute('data-arc-scroll-path', '');
+      shape.appendChild(path);
+      wrapper.appendChild(shape);
+      var inst = { wrapper: wrapper, shape: shape, path: path,
+        section: wrapper.closest('section') || wrapper.parentElement, mode: getMode(wrapper), depth: 0 };
+      measure(inst); draw(inst, 0);
+      var state = { progress: 0 };
+      inst.tween = gsap.to(state, {
+        progress: 1, ease: 'none',
+        onUpdate: function () { draw(inst, state.progress); },
+        scrollTrigger: {
+          trigger: inst.section,
+          start: wrapper.dataset.scrollStart || defaultScrollStart[inst.mode],
+          end: wrapper.dataset.scrollEnd || defaultScrollEnd[inst.mode],
+          scrub: defaultScrub, invalidateOnRefresh: true,
+          onRefresh: function () { measure(inst); }
+        }
+      });
+      return inst;
+    }
+    gsap.matchMedia().add('(prefers-reduced-motion: no-preference)', function () {
+      wrappers.forEach(function (w) { instances.push(setup(w)); });
+      ScrollTrigger.refresh();
+      return function () {
+        instances.forEach(function (i) {
+          if (i.tween.scrollTrigger) i.tween.scrollTrigger.kill();
+          i.tween.kill(); i.shape.remove();
+        });
+        instances.length = 0;
+      };
+    });
+  }
+
+  // ---------------------------------------------------------------
+  // Эффект "волны" при наведении (.hover-distort)
+  // Замена связки three.js r108 + TweenMax + hover.js с tympanus.net.
+  // Те же data-атрибуты и тот же шейдер, что в исходном эффекте:
+  // data-image1, data-image2, data-displacement, data-intensity.
+  // ---------------------------------------------------------------
+  function initHoverDistort() {
+    var items = document.querySelectorAll('.hover-distort');
+    if (!items.length || !finePointer || reducedMotion) return;
+
+    var VS = 'attribute vec2 p;varying vec2 vUv;void main(){vUv=p*0.5+0.5;vUv.y=1.0-vUv.y;gl_Position=vec4(p,0.0,1.0);}';
+    var FS = 'precision mediump float;varying vec2 vUv;uniform sampler2D t1;uniform sampler2D t2;uniform sampler2D disp;' +
+      'uniform float dispFactor;uniform float effectFactor;void main(){vec4 d=texture2D(disp,vUv);' +
+      'vec2 a=vec2(vUv.x+dispFactor*(d.r*effectFactor),vUv.y);vec2 b=vec2(vUv.x-(1.0-dispFactor)*(d.r*effectFactor),vUv.y);' +
+      'gl_FragColor=mix(texture2D(t1,a),texture2D(t2,b),dispFactor);}';
+
+    function loadImage(src) {
+      return new Promise(function (resolve, reject) {
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.decoding = 'async';
+        img.onload = function () { resolve(img); };
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    function create(el) {
+      var image1 = el.getAttribute('data-image1');
+      var image2 = el.getAttribute('data-image2');
+      var dispSrc = el.getAttribute('data-displacement');
+      var intensity = parseFloat(el.getAttribute('data-intensity') || '0.3');
+      if (!image1 || !image2 || !dispSrc) return;
+
+      var canvas = document.createElement('canvas');
+      canvas.style.display = 'block';
+      var gl = canvas.getContext('webgl', { premultipliedAlpha: false, antialias: false, alpha: true });
+      if (!gl) return;
+
+      function shader(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+      var prog = gl.createProgram();
+      gl.attachShader(prog, shader(gl.VERTEX_SHADER, VS));
+      gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, FS));
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+      gl.useProgram(prog);
+
+      var buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+      var loc = gl.getAttribLocation(prog, 'p');
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+      var uFactor = gl.getUniformLocation(prog, 'dispFactor');
+      gl.uniform1f(gl.getUniformLocation(prog, 'effectFactor'), intensity);
+      gl.clearColor(1, 1, 1, 0);
+
+      function texture(unit, img, name) {
+        var t = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE0 + unit);
+        gl.bindTexture(gl.TEXTURE_2D, t);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+        gl.uniform1i(gl.getUniformLocation(prog, name), unit);
+      }
+
+      var state = { value: 0 };
+      var ready = false;
+      function render() {
+        if (!ready) return;
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.uniform1f(uFactor, state.value);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+      function resize() {
+        var w = el.offsetWidth, h = el.offsetHeight;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.max(1, Math.round(w * dpr));
+        canvas.height = Math.max(1, Math.round(h * dpr));
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        render();
+      }
+
+      Promise.all([loadImage(image1), loadImage(image2), loadImage(dispSrc)]).then(function (imgs) {
+        texture(0, imgs[0], 't1');
+        texture(1, imgs[1], 't2');
+        texture(2, imgs[2], 'disp');
+        el.appendChild(canvas);
+        ready = true;
+        resize();
+      }).catch(function () { /* без эффекта, страница работает как обычно */ });
+
+      // Кадры рисуются только пока идёт анимация, а не постоянно.
+      el.addEventListener('mouseenter', function () {
+        gsap.to(state, { value: 1, duration: 1.6, ease: 'expo.out', overwrite: true, onUpdate: render });
+      });
+      el.addEventListener('mouseleave', function () {
+        gsap.to(state, { value: 0, duration: 1.2, ease: 'expo.out', overwrite: true, onUpdate: render });
+      });
+      if ('ResizeObserver' in window) new ResizeObserver(resize).observe(el);
+      else window.addEventListener('resize', resize);
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        create(e.target);
+      });
+    }, { rootMargin: '200px 0px' });
+
+    items.forEach(function (el) {
+      // Скрытые элементы (display:none, класс .hidden) не трогаем:
+      // раньше эффект на главной работал на невидимом блоке.
+      if (!el.getClientRects().length) return;
+      io.observe(el);
+    });
+  }
+
+  function run(fn) {
+    try { fn(); } catch (err) { if (window.console) console.error('[raycorral]', fn.name, err); }
+  }
+
+  function init() {
+    run(initSmoothScroll);
+    run(initFooterParallax);
+    run(initHighlightText);
+    run(initDrawPathOnScroll);
+    run(initArcScrollTransition);
+    run(initHoverDistort);
+    // Шрифты меняют высоту блоков: пересчитать точки срабатывания анимаций.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>

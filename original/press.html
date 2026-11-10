@@ -1,0 +1,505 @@
+<!-- Исходный пользовательский код страницы /press с raycorral.com (снят 10.11.2026). Для отката. -->
+<link rel="stylesheet" href="https://unpkg.com/lenis@1.3.17/dist/lenis.css">
+
+<style>
+.cursor-dot, .cursor-ring, .cursor-follow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  z-index: 9999;
+  will-change: transform;
+}
+
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: #fff; /* дефолт — светлый курсор, перекрывается темой ниже */
+}
+
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid #990000;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.cursor-follow {
+  width: 6px;
+  height: 6px;
+  background: #990000;
+}
+
+/* Тема — цвет только основной точки, follow и ring всегда акцентные */
+[data-cursor-root].theme-dark .cursor-dot { background: #fff; }
+[data-cursor-root].theme-light .cursor-dot { background: #000; }
+
+[data-cursor-root].is-hover .cursor-dot { opacity: 0; }
+[data-cursor-root].is-hover .cursor-ring { opacity: 1; }
+
+@media (hover: none) and (pointer: coarse) {
+  .cursor-dot, .cursor-ring, .cursor-follow { display: none; }
+}
+
+body:has([data-cursor-root]) { cursor: none; }
+</style>
+
+<style>
+/* Note: Both of the sets of CSS are not needed for the parallax effect */
+
+/* ------------------------- Scaling System by Osmo [https://osmo.supply/] -------------------------  */
+
+/* Desktop */
+:root {
+  --size-unit: 16; /* body font-size in design - no px */
+  --size-container-ideal: 1440; /* screen-size in design - no px */
+  --size-container-min: 992px;
+  --size-container-max: 1920px;
+  --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
+  --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+}
+
+/* Tablet */
+@media screen and (max-width: 991px) {
+  :root {
+    --size-container-ideal: 834; /* screen-size in design - no px */
+    --size-container-min: 768px;
+    --size-container-max: 991px;
+  }
+}
+
+/* Mobile Landscape */
+@media screen and (max-width: 767px) {
+  :root {
+    --size-container-ideal: 390; /* screen-size in design - no px */
+    --size-container-min: 480px;
+    --size-container-max: 767px;
+  }
+}
+
+/* Mobile Portrait */
+@media screen and (max-width: 479px) {
+  :root {
+    --size-container-ideal: 390; /* screen-size in design - no px */
+    --size-container-min: 320px;
+    --size-container-max: 479px;
+  }
+}
+
+/* ------------------------- Underline Link [https://osmo.supply/] -------------------------  */
+
+[data-underline-link] {
+  text-decoration: none;
+  position: relative;
+}
+
+[data-underline-link]::before {
+  content: "";
+  position: absolute;
+  bottom: -0.0625em;
+  left: 0;
+  width: 100%;
+  height: 0.1em;
+  background-color: currentColor;
+  transition: transform 0.735s cubic-bezier(0.625, 0.05, 0, 1);
+  transform-origin: right;
+  transform: scaleX(0) rotate(0.001deg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-hover]:hover [data-underline-link]::before,
+  [data-underline-link]:hover::before {
+    transform-origin: left;
+    transform: scaleX(1) rotate(0.001deg);
+  }  
+}
+</style>
+
+<style>
+.press-cms_list:has(.press-cms_item-link:hover) .press-cms_item-link:not(:hover) {
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+</style>
+
+<script>
+(function () {
+  const root = document.querySelector('[data-cursor-root]');
+  const dot = document.querySelector('[data-cursor-dot]');
+  const ring = document.querySelector('[data-cursor-ring]');
+  const follow = document.querySelector('[data-cursor-follow]');
+  if (!root || !dot || !ring || !follow) return;
+
+  const HOVER_SELECTOR = 'a, button, [role="button"], [data-cursor-hover]';
+
+  let mouseX = 0, mouseY = 0;
+  let mainX = 0, mainY = 0;
+  let followX = 0, followY = 0;
+  let started = false;
+  let currentTheme = null;
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (!started) {
+      mainX = followX = mouseX;
+      mainY = followY = mouseY;
+      started = true;
+    }
+
+    const el = document.elementFromPoint(mouseX, mouseY);
+    const themedAncestor = el ? el.closest('[data-cursor-theme]') : null;
+    if (themedAncestor) {
+      const theme = themedAncestor.getAttribute('data-cursor-theme');
+      if (theme !== currentTheme) {
+        currentTheme = theme;
+        root.classList.toggle('theme-dark', theme === 'dark');
+        root.classList.toggle('theme-light', theme === 'light');
+      }
+    }
+  });
+
+  document.addEventListener('mouseover', (e) => {
+    if (e.target.closest(HOVER_SELECTOR)) root.classList.add('is-hover');
+  });
+  document.addEventListener('mouseout', (e) => {
+    if (e.target.closest(HOVER_SELECTOR)) root.classList.remove('is-hover');
+  });
+
+  function lerp(a, b, n) { return a + (b - a) * n; }
+
+  function raf() {
+    if (started) {
+      mainX = lerp(mainX, mouseX, 0.22);
+      mainY = lerp(mainY, mouseY, 0.22);
+      followX = lerp(followX, mainX, 0.10);
+      followY = lerp(followY, mainY, 0.10);
+
+      const mainT = 'translate3d(' + mainX + 'px,' + mainY + 'px,0) translate(-50%,-50%)';
+      dot.style.transform = mainT;
+      ring.style.transform = mainT;
+      follow.style.transform = 'translate3d(' + followX + 'px,' + followY + 'px,0) translate(-50%,-50%)';
+    }
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+})();
+</script>
+
+<script>
+function initDynamicCurrentTime() {
+  const defaultTimezone = "America/New_York";
+
+  // Helper function to format numbers with leading zero
+  const formatNumber = (number) => number.toString().padStart(2, '0');
+
+  // Function to create a time formatter with the correct timezone
+  const createFormatter = (timezone) => {
+    return new Intl.DateTimeFormat([], {
+      timeZone: timezone,
+      timeZoneName: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false, // Optional: Remove to match your simpler script
+    });
+  };
+
+  // Function to parse the formatted string into parts
+  const parseFormattedTime = (formattedDateTime) => {
+    const match = formattedDateTime.match(/(\d+):(\d+):(\d+)\s*([\w+]+)/);
+    if (match) {
+      return {
+        hours: match[1],
+        minutes: match[2],
+        seconds: match[3],
+        timezone: match[4], // Handles both GMT+X and CET cases
+      };
+    }
+    return null;
+  };
+
+  // Function to update the time for all elements
+  const updateTime = () => {
+    document.querySelectorAll('[data-current-time]').forEach((element) => {
+      const timezone = element.getAttribute('data-current-time') || defaultTimezone;
+      const formatter = createFormatter(timezone);
+      const now = new Date();
+      const formattedDateTime = formatter.format(now);
+
+      const timeParts = parseFormattedTime(formattedDateTime);
+      if (timeParts) {
+        const {
+          hours,
+          minutes,
+          seconds,
+          timezone
+        } = timeParts;
+
+        // Update child elements if they exist
+        const hoursElem = element.querySelector('[data-current-time-hours]');
+        const minutesElem = element.querySelector('[data-current-time-minutes]');
+        const secondsElem = element.querySelector('[data-current-time-seconds]');
+        const timezoneElem = element.querySelector('[data-current-time-timezone]');
+
+        if (hoursElem) hoursElem.textContent = hours;
+        if (minutesElem) minutesElem.textContent = minutes;
+        if (secondsElem) secondsElem.textContent = seconds;
+        if (timezoneElem) timezoneElem.textContent = timezone;
+      }
+    });
+  };
+
+  // Initial update and interval for subsequent updates
+  updateTime();
+  setInterval(updateTime, 1000);
+}
+
+// Initialize Dynamic Current Time
+document.addEventListener('DOMContentLoaded', () => {
+  initDynamicCurrentTime();
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.2.3/dist/lenis.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@barba/core@2.10.3/dist/barba.umd.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.17/dist/lenis.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/gsap.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/CustomEase.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/ScrollTrigger.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/DrawSVGPlugin.min.js"></script>
+
+<script>
+// Lenis
+const lenis = new Lenis({
+  autoRaf: true,
+});
+</script>
+
+<script>
+// -----------------------------------------
+// PAGE TRANSITIONS
+// -----------------------------------------
+
+function runPageOnceAnimation(next) {
+  const tl = gsap.timeline();
+
+  tl.call(() => {
+    resetPage(next);
+  }, null, 0);
+
+  return tl;
+}
+
+function runPageLeaveAnimation(current, next) {
+  const transitionWrap = document.querySelector("[data-transition-wrap]");
+  const transitionDark = transitionWrap.querySelector("[data-transition-dark]");
+
+  const tl = gsap.timeline({
+    onComplete: () => {
+      current.remove(); 
+    }
+  })
+  
+  CustomEase.create("parallax", "0.7, 0.05, 0.13, 1");
+  
+  if (reducedMotion) {
+    // Immediate swap behavior if user prefers reduced motion
+    return tl.set(current, { autoAlpha: 0 });
+  }
+  
+  tl.set(transitionWrap, {
+    zIndex: 2
+  });
+  
+  tl.fromTo(transitionDark, {
+    autoAlpha: 0
+  },{
+    autoAlpha: 0.8,
+    duration: 1.2,
+    ease: "parallax"
+  }, 0);
+  
+  tl.fromTo(current,{
+    y: "0vh"
+  },{
+    y: "-25vh",
+    duration: 1.2,
+    ease: "parallax",
+  }, 0);
+  
+  tl.set(transitionDark, {
+    autoAlpha: 0,
+  });
+
+  return tl;
+}
+
+function runPageEnterAnimation(next){
+  const tl = gsap.timeline();
+  
+  if (reducedMotion) {
+    // Immediate swap behavior if user prefers reduced motion
+    tl.set(next, { autoAlpha: 1 });
+    tl.add("pageReady")
+    tl.call(resetPage, [next], "pageReady");
+    return new Promise(resolve => tl.call(resolve, null, "pageReady"));
+  }
+  
+  tl.add("startEnter", 0);
+  
+  tl.set(next, {
+    zIndex: 3
+  });
+  
+  tl.fromTo(next, {
+    y: "100vh"
+  }, {
+    y: "0vh",
+    duration: 1.2,
+    clearProps: "all",
+    ease: "parallax"
+  }, "startEnter");
+
+  tl.add("pageReady");
+  tl.call(resetPage, [next], "pageReady");
+
+  return new Promise(resolve => {
+    tl.call(resolve, null, "pageReady");
+  });
+}
+</script>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+function initFooterParallax(){
+  document.querySelectorAll('[data-footer-parallax]').forEach(el => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: el,
+        start: 'clamp(top bottom)',
+        end: 'clamp(top top)',
+        scrub: true
+      }
+    });
+  
+    const inner = el.querySelector('[data-footer-parallax-inner]');
+    const dark  = el.querySelector('[data-footer-parallax-dark]');
+  
+    if (inner) {
+      tl.from(inner, {
+        yPercent: -25,
+        ease: 'linear'
+      });
+    }
+  
+    if (dark) {
+      tl.from(dark, {
+        opacity: 0.5,
+        ease: 'linear'
+      }, '<');
+    }
+  });
+}
+// Initialize Footer with Parallax Effect
+document.addEventListener('DOMContentLoaded', () => {
+  initFooterParallax();
+});
+</script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+
+function initDrawPathOnScroll() {
+  const mm = gsap.matchMedia();
+  const wrappers = document.querySelectorAll("[data-draw-scroll-wrap]");
+
+  mm.add(
+    {
+      isDesktop: "(min-width: 768px)",
+      isMobile: "(max-width: 767px)"
+    },
+    (context) => {
+      const { isDesktop, isMobile } = context.conditions;
+
+      wrappers.forEach((wrap) => {
+        // Kill any previous timeline for this wrapper
+        if (wrap._drawTl) {
+          if (wrap._drawTl.scrollTrigger) {
+            wrap._drawTl.scrollTrigger.kill();
+          }
+          wrap._drawTl.kill();
+          wrap._drawTl = null;
+        }
+
+        const desktopSVG = wrap.querySelector("[data-draw-scroll-desktop]");
+        const mobileSVG  = wrap.querySelector("[data-draw-scroll-mobile]"); // optional
+
+        // default: desktop
+        let svgToUse = desktopSVG;
+
+        // on mobile, use mobileSVG if it exists
+        if (isMobile && mobileSVG) {
+          svgToUse = mobileSVG;
+        }
+
+        if (!svgToUse) return;
+
+        const path = svgToUse.querySelector("[data-draw-scroll-path]");
+        if (!path) return;
+
+        const tl = gsap.timeline({
+          defaults: {
+            ease: "linear" // scroll speed controls easing
+          },
+          scrollTrigger: {
+            trigger: wrap,
+            start: "clamp(top center)",  // When top of wrap reaches center of viewport
+            end: "clamp(top top)", // When bottom of wrap reaches center of viewport
+            scrub: true,
+            invalidateOnRefresh: true
+          }
+        });
+
+        tl.fromTo(path,
+          { drawSVG: 0 },
+          { drawSVG: "100%", duration: 1 }
+        );
+
+        // Keep a reference so we can kill it on breakpoint change
+        wrap._drawTl = tl;
+      });
+
+      // Make sure ScrollTrigger recalculates
+      ScrollTrigger.refresh();
+
+      // Cleanup when breakpoint changes
+      return () => {
+        wrappers.forEach((wrap) => {
+          if (wrap._drawTl) {
+            if (wrap._drawTl.scrollTrigger) {
+              wrap._drawTl.scrollTrigger.kill();
+            }
+            wrap._drawTl.kill();
+            wrap._drawTl = null;
+          }
+        });
+      };
+    }
+  );
+}
+
+// Initialize Draw Path on Scroll
+document.addEventListener("DOMContentLoaded", function () {
+  initDrawPathOnScroll();
+});
+</script>

@@ -1,0 +1,449 @@
+<!-- Исходный пользовательский код страницы /selected-work-template с raycorral.com (снят 10.11.2026). Для отката. -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.2.3/dist/lenis.css">
+
+<style>
+.cursor-dot, .cursor-ring, .cursor-follow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  z-index: 9999;
+  will-change: transform;
+}
+
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: #fff; /* дефолт — светлый курсор, перекрывается темой ниже */
+}
+
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid #990000;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.cursor-follow {
+  width: 6px;
+  height: 6px;
+  background: #990000;
+}
+
+/* Тема — цвет только основной точки, follow и ring всегда акцентные */
+[data-cursor-root].theme-dark .cursor-dot { background: #fff; }
+[data-cursor-root].theme-light .cursor-dot { background: #000; }
+
+[data-cursor-root].is-hover .cursor-dot { opacity: 0; }
+[data-cursor-root].is-hover .cursor-ring { opacity: 1; }
+
+@media (hover: none) and (pointer: coarse) {
+  .cursor-dot, .cursor-ring, .cursor-follow { display: none; }
+}
+
+body:has([data-cursor-root]) { cursor: none; }
+</style>
+
+<style>
+/* CSS Keyframe Animation */
+@keyframes translateX {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+[data-css-marquee-list] {
+  animation: translateX 30s linear;
+  animation-iteration-count: infinite;
+  animation-play-state: paused;
+}
+[data-css-marquee]:hover [data-css-marquee-list] {
+  animation-play-state: paused !important;
+}
+</style>
+
+<script>
+(function () {
+  const root = document.querySelector('[data-cursor-root]');
+  const dot = document.querySelector('[data-cursor-dot]');
+  const ring = document.querySelector('[data-cursor-ring]');
+  const follow = document.querySelector('[data-cursor-follow]');
+  if (!root || !dot || !ring || !follow) return;
+
+  const HOVER_SELECTOR = 'a, button, [role="button"], [data-cursor-hover]';
+
+  let mouseX = 0, mouseY = 0;
+  let mainX = 0, mainY = 0;
+  let followX = 0, followY = 0;
+  let started = false;
+  let currentTheme = null;
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (!started) {
+      mainX = followX = mouseX;
+      mainY = followY = mouseY;
+      started = true;
+    }
+
+    const el = document.elementFromPoint(mouseX, mouseY);
+    const themedAncestor = el ? el.closest('[data-cursor-theme]') : null;
+    if (themedAncestor) {
+      const theme = themedAncestor.getAttribute('data-cursor-theme');
+      if (theme !== currentTheme) {
+        currentTheme = theme;
+        root.classList.toggle('theme-dark', theme === 'dark');
+        root.classList.toggle('theme-light', theme === 'light');
+      }
+    }
+  });
+
+  document.addEventListener('mouseover', (e) => {
+    if (e.target.closest(HOVER_SELECTOR)) root.classList.add('is-hover');
+  });
+  document.addEventListener('mouseout', (e) => {
+    if (e.target.closest(HOVER_SELECTOR)) root.classList.remove('is-hover');
+  });
+
+  function lerp(a, b, n) { return a + (b - a) * n; }
+
+  function raf() {
+    if (started) {
+      mainX = lerp(mainX, mouseX, 0.22);
+      mainY = lerp(mainY, mouseY, 0.22);
+      followX = lerp(followX, mainX, 0.10);
+      followY = lerp(followY, mainY, 0.10);
+
+      const mainT = 'translate3d(' + mainX + 'px,' + mainY + 'px,0) translate(-50%,-50%)';
+      dot.style.transform = mainT;
+      ring.style.transform = mainT;
+      follow.style.transform = 'translate3d(' + followX + 'px,' + followY + 'px,0) translate(-50%,-50%)';
+    }
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+})();
+</script>
+
+<script>
+function initDynamicCurrentTime() {
+  const defaultTimezone = "America/New_York";
+
+  // Helper function to format numbers with leading zero
+  const formatNumber = (number) => number.toString().padStart(2, '0');
+
+  // Function to create a time formatter with the correct timezone
+  const createFormatter = (timezone) => {
+    return new Intl.DateTimeFormat([], {
+      timeZone: timezone,
+      timeZoneName: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false, // Optional: Remove to match your simpler script
+    });
+  };
+
+  // Function to parse the formatted string into parts
+  const parseFormattedTime = (formattedDateTime) => {
+    const match = formattedDateTime.match(/(\d+):(\d+):(\d+)\s*([\w+]+)/);
+    if (match) {
+      return {
+        hours: match[1],
+        minutes: match[2],
+        seconds: match[3],
+        timezone: match[4], // Handles both GMT+X and CET cases
+      };
+    }
+    return null;
+  };
+
+  // Function to update the time for all elements
+  const updateTime = () => {
+    document.querySelectorAll('[data-current-time]').forEach((element) => {
+      const timezone = element.getAttribute('data-current-time') || defaultTimezone;
+      const formatter = createFormatter(timezone);
+      const now = new Date();
+      const formattedDateTime = formatter.format(now);
+
+      const timeParts = parseFormattedTime(formattedDateTime);
+      if (timeParts) {
+        const {
+          hours,
+          minutes,
+          seconds,
+          timezone
+        } = timeParts;
+
+        // Update child elements if they exist
+        const hoursElem = element.querySelector('[data-current-time-hours]');
+        const minutesElem = element.querySelector('[data-current-time-minutes]');
+        const secondsElem = element.querySelector('[data-current-time-seconds]');
+        const timezoneElem = element.querySelector('[data-current-time-timezone]');
+
+        if (hoursElem) hoursElem.textContent = hours;
+        if (minutesElem) minutesElem.textContent = minutes;
+        if (secondsElem) secondsElem.textContent = seconds;
+        if (timezoneElem) timezoneElem.textContent = timezone;
+      }
+    });
+  };
+
+  // Initial update and interval for subsequent updates
+  updateTime();
+  setInterval(updateTime, 1000);
+}
+
+// Initialize Dynamic Current Time
+document.addEventListener('DOMContentLoaded', () => {
+  initDynamicCurrentTime();
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/gsap.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/ScrollTrigger.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/SplitText.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/DrawSVGPlugin.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.2.3/dist/lenis.min.js"></script>
+
+<script>
+// Lenis
+const lenis = new Lenis({
+  autoRaf: true,
+});
+</script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+function initFooterParallax(){
+  document.querySelectorAll('[data-footer-parallax]').forEach(el => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: el,
+        start: 'clamp(top bottom)',
+        end: 'clamp(top top)',
+        scrub: true
+      }
+    });
+  
+    const inner = el.querySelector('[data-footer-parallax-inner]');
+    const dark  = el.querySelector('[data-footer-parallax-dark]');
+  
+    if (inner) {
+      tl.from(inner, {
+        yPercent: -25,
+        ease: 'linear'
+      });
+    }
+  
+    if (dark) {
+      tl.from(dark, {
+        opacity: 0.5,
+        ease: 'linear'
+      }, '<');
+    }
+  });
+}
+// Initialize Footer with Parallax Effect
+document.addEventListener('DOMContentLoaded', () => {
+  initFooterParallax();
+});
+</script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger, SplitText)
+  
+function initHighlightText(){
+
+  let splitHeadingTargets = document.querySelectorAll("[data-highlight-text]")
+  splitHeadingTargets.forEach((heading) => {
+    
+    const scrollStart = heading.getAttribute("data-highlight-scroll-start") || "top 90%"
+    const scrollEnd = heading.getAttribute("data-highlight-scroll-end") || "center 40%"
+    const fadedValue = heading.getAttribute("data-highlight-fade") || 0.2 // Opacity of letter
+    const staggerValue =  heading.getAttribute("data-highlight-stagger") || 0.1 // Smoother reveal
+    
+    new SplitText(heading, {
+      type: "words, chars",
+      autoSplit: true,
+      onSplit(self) {
+        let ctx = gsap.context(() => {
+          let tl = gsap.timeline({
+            scrollTrigger: {
+              scrub: true,
+              trigger: heading, 
+              start: scrollStart,
+              end: scrollEnd,
+            }
+          })
+          tl.from(self.chars,{
+            autoAlpha: fadedValue,
+            stagger: staggerValue,
+            ease: "linear"
+          })
+        });
+        return ctx; // return our animations so GSAP can clean them up when onSplit fires
+      }
+    });    
+  });
+}
+
+// Initialize Highlight Text on Scroll
+document.addEventListener("DOMContentLoaded", () =>{
+  initHighlightText();
+});
+</script>
+
+<script>
+function initCSSMarquee() {
+  const pixelsPerSecond = 75; // Set the marquee speed (pixels per second)
+  const marquees = document.querySelectorAll('[data-css-marquee]');
+
+  // Duplicate each [data-css-marquee-list] element inside its container
+  marquees.forEach(marquee => {
+    marquee.querySelectorAll('[data-css-marquee-list]').forEach(list => {
+      const duplicate = list.cloneNode(true);
+      marquee.appendChild(duplicate);
+    });
+  });
+
+  // Create an IntersectionObserver to check if the marquee container is in view
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      entry.target.querySelectorAll('[data-css-marquee-list]').forEach(list =>
+        list.style.animationPlayState = entry.isIntersecting ? 'running' : 'paused'
+      );
+    });
+  }, { threshold: 0 });
+
+  // Calculate the width and set the animation duration accordingly,
+  // guarding against a 0px measurement (images not loaded yet on slower mobile connections)
+  function setDurations() {
+    marquees.forEach(marquee => {
+      marquee.querySelectorAll('[data-css-marquee-list]').forEach(list => {
+        const width = list.offsetWidth;
+        if (width > 0) {
+          list.style.animationDuration = (width / pixelsPerSecond) + 's';
+        }
+      });
+    });
+  }
+
+  setDurations();
+
+  marquees.forEach(marquee => {
+    marquee.querySelectorAll('[data-css-marquee-list]').forEach(list => {
+      list.style.animationPlayState = 'paused';
+    });
+    observer.observe(marquee);
+  });
+
+  // Re-measure once everything (including images) has actually finished loading —
+  // this is what fixes the "0 width on first paint" race condition on mobile
+  window.addEventListener('load', setDurations);
+
+  // Extra safety net for slow connections where 'load' still races
+  setTimeout(setDurations, 1000);
+}
+
+// Initialize CSS Marquee
+document.addEventListener('DOMContentLoaded', function() {
+  initCSSMarquee();
+});
+</script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+
+function initDrawPathOnScroll() {
+  const mm = gsap.matchMedia();
+  const wrappers = document.querySelectorAll("[data-draw-scroll-wrap]");
+
+  mm.add(
+    {
+      isDesktop: "(min-width: 768px)",
+      isMobile: "(max-width: 767px)"
+    },
+    (context) => {
+      const { isDesktop, isMobile } = context.conditions;
+
+      wrappers.forEach((wrap) => {
+        // Kill any previous timeline for this wrapper
+        if (wrap._drawTl) {
+          if (wrap._drawTl.scrollTrigger) {
+            wrap._drawTl.scrollTrigger.kill();
+          }
+          wrap._drawTl.kill();
+          wrap._drawTl = null;
+        }
+
+        const desktopSVG = wrap.querySelector("[data-draw-scroll-desktop]");
+        const mobileSVG  = wrap.querySelector("[data-draw-scroll-mobile]"); // optional
+
+        // default: desktop
+        let svgToUse = desktopSVG;
+
+        // on mobile, use mobileSVG if it exists
+        if (isMobile && mobileSVG) {
+          svgToUse = mobileSVG;
+        }
+
+        if (!svgToUse) return;
+
+        const path = svgToUse.querySelector("[data-draw-scroll-path]");
+        if (!path) return;
+
+        const tl = gsap.timeline({
+          defaults: {
+            ease: "linear" // scroll speed controls easing
+          },
+          scrollTrigger: {
+            trigger: wrap,
+            start: "clamp(top center)",  // When top of wrap reaches center of viewport
+            end: "clamp(top top)", // When bottom of wrap reaches center of viewport
+            scrub: true,
+            invalidateOnRefresh: true
+          }
+        });
+
+        tl.fromTo(path,
+          { drawSVG: 0 },
+          { drawSVG: "100%", duration: 1 }
+        );
+
+        // Keep a reference so we can kill it on breakpoint change
+        wrap._drawTl = tl;
+      });
+
+      // Make sure ScrollTrigger recalculates
+      ScrollTrigger.refresh();
+
+      // Cleanup when breakpoint changes
+      return () => {
+        wrappers.forEach((wrap) => {
+          if (wrap._drawTl) {
+            if (wrap._drawTl.scrollTrigger) {
+              wrap._drawTl.scrollTrigger.kill();
+            }
+            wrap._drawTl.kill();
+            wrap._drawTl = null;
+          }
+        });
+      };
+    }
+  );
+}
+
+// Initialize Draw Path on Scroll
+document.addEventListener("DOMContentLoaded", function () {
+  initDrawPathOnScroll();
+});
+</script>

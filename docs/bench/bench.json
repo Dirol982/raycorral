@@ -1,0 +1,62 @@
+{
+ "desktop|index.html|before": {
+  "lcp": 588,
+  "cls": 0.314,
+  "tbt": 11390,
+  "maxTask": 6372,
+  "canvases": 3,
+  "KB": 6031.469,
+  "jsKB": 486.596,
+  "reqs": 50
+ },
+ "desktop|index.html|after": {
+  "lcp": 896,
+  "cls": 0.173,
+  "tbt": 8609,
+  "maxTask": 1311,
+  "canvases": 1,
+  "KB": 5695.737,
+  "jsKB": 260.968,
+  "reqs": 39
+ },
+ "mobile|index.html|before": {
+  "lcp": 3640,
+  "cls": 0.067,
+  "tbt": 1370,
+  "maxTask": 894,
+  "canvases": 3,
+  "KB": 6021.879,
+  "jsKB": 486.461,
+  "reqs": 50
+ },
+ "mobile|index.html|after": {
+  "lcp": 3080,
+  "cls": 0.067,
+  "tbt": 319,
+  "maxTask": 255,
+  "canvases": 0,
+  "KB": 5398.22,
+  "jsKB": 210.646,
+  "reqs": 35
+ },
+ "mobile|about.html|before": {
+  "lcp": 20156,
+  "cls": 0.001,
+  "tbt": 592,
+  "maxTask": 369,
+  "canvases": 1,
+  "KB": 5140.475,
+  "jsKB": 284.571,
+  "reqs": 35
+ },
+ "mobile|about.html|after": {
+  "lcp": 18424,
+  "cls": 0.001,
+  "tbt": 307,
+  "maxTask": 275,
+  "canvases": 0,
+  "KB": 4522.352,
+  "jsKB": 148.571,
+  "reqs": 31
+ }
+}

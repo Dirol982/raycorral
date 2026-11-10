@@ -1,0 +1,1160 @@
+<!-- Исходный пользовательский код страницы /home с raycorral.com (снят 10.11.2026). Для отката. -->
+<link rel="stylesheet" href="https://unpkg.com/lenis@1.3.17/dist/lenis.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.2.3/dist/lenis.css">
+
+<style>
+.cursor-dot, .cursor-ring, .cursor-follow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  z-index: 9999;
+  will-change: transform;
+}
+
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: #fff; /* дефолт — светлый курсор, перекрывается темой ниже */
+}
+
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid #990000;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.cursor-follow {
+  width: 6px;
+  height: 6px;
+  background: #990000;
+}
+
+/* Тема — цвет только основной точки, follow и ring всегда акцентные */
+[data-cursor-root].theme-dark .cursor-dot { background: #fff; }
+[data-cursor-root].theme-light .cursor-dot { background: #000; }
+
+[data-cursor-root].is-hover .cursor-dot { opacity: 0; }
+[data-cursor-root].is-hover .cursor-ring { opacity: 1; }
+
+@media (hover: none) and (pointer: coarse) {
+  .cursor-dot, .cursor-ring, .cursor-follow { display: none; }
+}
+
+body:has([data-cursor-root]) { cursor: none; }
+</style>
+
+<style>
+[data-arc-scroll-transition] svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+[data-arc-scroll-transition] path {
+  fill: currentcolor;
+}
+</style>
+
+<style>
+.preview-follower__inner,
+.preview-follower__label{
+  transition: opacity 0.1s ease, transform 0.6s cubic-bezier(0.65, 0.1, 0, 1);
+}
+
+/* html:not(.wf-design-mode) */ .preview-follower__inner{
+  opacity: 0;
+  transform: scale(0);
+}
+
+/* html:not(.wf-design-mode) */ .preview-follower__label{
+  opacity: 0;
+  transform: translate(0px, 100%);
+}
+
+.preview-follower [data-follower-visual]{
+  display: block;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+@media screen and (min-width: 992px){
+  .preview-item:last-of-type{
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+  }
+}
+
+@media (hover: hover) and (min-width: 992px){
+  body:has( [data-follower-collection]:hover) .preview-follower__inner{
+    opacity: 1;
+    transform: scale(1);	
+  }
+
+  body:has( [data-follower-collection]:hover) .preview-follower__label{
+    opacity: 1;
+    transform: translate(0px, 0%);
+  }
+  body:has( .preview-item:hover) .preview-item:not(:hover){
+  	opacity: 0.5;
+  }
+}
+</style>
+
+<script>
+(function () {
+  const root = document.querySelector('[data-cursor-root]');
+  const dot = document.querySelector('[data-cursor-dot]');
+  const ring = document.querySelector('[data-cursor-ring]');
+  const follow = document.querySelector('[data-cursor-follow]');
+  if (!root || !dot || !ring || !follow) return;
+
+  const HOVER_SELECTOR = 'a, button, [role="button"], [data-cursor-hover]';
+
+  let mouseX = 0, mouseY = 0;
+  let mainX = 0, mainY = 0;
+  let followX = 0, followY = 0;
+  let started = false;
+  let currentTheme = null;
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (!started) {
+      mainX = followX = mouseX;
+      mainY = followY = mouseY;
+      started = true;
+    }
+
+    const el = document.elementFromPoint(mouseX, mouseY);
+    const themedAncestor = el ? el.closest('[data-cursor-theme]') : null;
+    if (themedAncestor) {
+      const theme = themedAncestor.getAttribute('data-cursor-theme');
+      if (theme !== currentTheme) {
+        currentTheme = theme;
+        root.classList.toggle('theme-dark', theme === 'dark');
+        root.classList.toggle('theme-light', theme === 'light');
+      }
+    }
+  });
+
+  document.addEventListener('mouseover', (e) => {
+    if (e.target.closest(HOVER_SELECTOR)) root.classList.add('is-hover');
+  });
+  document.addEventListener('mouseout', (e) => {
+    if (e.target.closest(HOVER_SELECTOR)) root.classList.remove('is-hover');
+  });
+
+  function lerp(a, b, n) { return a + (b - a) * n; }
+
+  function raf() {
+    if (started) {
+      mainX = lerp(mainX, mouseX, 0.22);
+      mainY = lerp(mainY, mouseY, 0.22);
+      followX = lerp(followX, mainX, 0.10);
+      followY = lerp(followY, mainY, 0.10);
+
+      const mainT = 'translate3d(' + mainX + 'px,' + mainY + 'px,0) translate(-50%,-50%)';
+      dot.style.transform = mainT;
+      ring.style.transform = mainT;
+      follow.style.transform = 'translate3d(' + followX + 'px,' + followY + 'px,0) translate(-50%,-50%)';
+    }
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+})();
+</script>
+
+<script type="text/javascript">!function(){var u=window.UnicornStudio;if(u&&u.init){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){u.init()})}else{u.init()}}else{window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.2.10/dist/unicornStudio.umd.js",i.onload=function(){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){UnicornStudio.init()})}else{UnicornStudio.init()}},(document.head||document.body).appendChild(i)}}();</script>
+
+<script>
+function initDynamicCurrentTime() {
+  const defaultTimezone = "America/New_York";
+
+  // Helper function to format numbers with leading zero
+  const formatNumber = (number) => number.toString().padStart(2, '0');
+
+  // Function to create a time formatter with the correct timezone
+  const createFormatter = (timezone) => {
+    return new Intl.DateTimeFormat([], {
+      timeZone: timezone,
+      timeZoneName: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false, // Optional: Remove to match your simpler script
+    });
+  };
+
+  // Function to parse the formatted string into parts
+  const parseFormattedTime = (formattedDateTime) => {
+    const match = formattedDateTime.match(/(\d+):(\d+):(\d+)\s*([\w+]+)/);
+    if (match) {
+      return {
+        hours: match[1],
+        minutes: match[2],
+        seconds: match[3],
+        timezone: match[4], // Handles both GMT+X and CET cases
+      };
+    }
+    return null;
+  };
+
+  // Function to update the time for all elements
+  const updateTime = () => {
+    document.querySelectorAll('[data-current-time]').forEach((element) => {
+      const timezone = element.getAttribute('data-current-time') || defaultTimezone;
+      const formatter = createFormatter(timezone);
+      const now = new Date();
+      const formattedDateTime = formatter.format(now);
+
+      const timeParts = parseFormattedTime(formattedDateTime);
+      if (timeParts) {
+        const {
+          hours,
+          minutes,
+          seconds,
+          timezone
+        } = timeParts;
+
+        // Update child elements if they exist
+        const hoursElem = element.querySelector('[data-current-time-hours]');
+        const minutesElem = element.querySelector('[data-current-time-minutes]');
+        const secondsElem = element.querySelector('[data-current-time-seconds]');
+        const timezoneElem = element.querySelector('[data-current-time-timezone]');
+
+        if (hoursElem) hoursElem.textContent = hours;
+        if (minutesElem) minutesElem.textContent = minutes;
+        if (secondsElem) secondsElem.textContent = seconds;
+        if (timezoneElem) timezoneElem.textContent = timezone;
+      }
+    });
+  };
+
+  // Initial update and interval for subsequent updates
+  updateTime();
+  setInterval(updateTime, 1000);
+}
+
+// Initialize Dynamic Current Time
+document.addEventListener('DOMContentLoaded', () => {
+  initDynamicCurrentTime();
+});
+</script>
+
+<script src="https://cdn.prod.website-files.com/gsap/3.15.0/gsap.min.js" type="text/javascript"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/gsap.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/ScrollTrigger.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/Flip.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/SplitText.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/DrawSVGPlugin.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/Observer.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/CustomEase.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.2.3/dist/lenis.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.2.7/dist/unicornStudio.umd.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/108/three.min.js" integrity="sha256-3mBEX8I0uMLF7+AUjJeTCelosuorzYpqwBMBPDTyQqY=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenMax.min.js"></script>
+
+<script src="https://tympanus.net/Development/DistortionHoverEffect/js/hover.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.17/dist/lenis.min.js"></script>
+
+<script>
+// Lenis
+const lenis = new Lenis({
+  autoRaf: true,
+});
+</script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+
+function initDrawPathOnScroll() {
+  const mm = gsap.matchMedia();
+  const wrappers = document.querySelectorAll("[data-draw-scroll-wrap]");
+
+  mm.add(
+    {
+      isDesktop: "(min-width: 768px)",
+      isMobile: "(max-width: 767px)"
+    },
+    (context) => {
+      const { isDesktop, isMobile } = context.conditions;
+
+      wrappers.forEach((wrap) => {
+        // Kill any previous timeline for this wrapper
+        if (wrap._drawTl) {
+          if (wrap._drawTl.scrollTrigger) {
+            wrap._drawTl.scrollTrigger.kill();
+          }
+          wrap._drawTl.kill();
+          wrap._drawTl = null;
+        }
+
+        const desktopSVG = wrap.querySelector("[data-draw-scroll-desktop]");
+        const mobileSVG  = wrap.querySelector("[data-draw-scroll-mobile]"); // optional
+
+        // default: desktop
+        let svgToUse = desktopSVG;
+
+        // on mobile, use mobileSVG if it exists
+        if (isMobile && mobileSVG) {
+          svgToUse = mobileSVG;
+        }
+
+        if (!svgToUse) return;
+
+        const path = svgToUse.querySelector("[data-draw-scroll-path]");
+        if (!path) return;
+
+        const tl = gsap.timeline({
+          defaults: {
+            ease: "linear" // scroll speed controls easing
+          },
+          scrollTrigger: {
+            trigger: wrap,
+            start: "clamp(top center)",  // When top of wrap reaches center of viewport
+            end: "clamp(top top)", // When bottom of wrap reaches center of viewport
+            scrub: true,
+            invalidateOnRefresh: true
+          }
+        });
+
+        tl.fromTo(path,
+          { drawSVG: 0 },
+          { drawSVG: "100%", duration: 1 }
+        );
+
+        // Keep a reference so we can kill it on breakpoint change
+        wrap._drawTl = tl;
+      });
+
+      // Make sure ScrollTrigger recalculates
+      ScrollTrigger.refresh();
+
+      // Cleanup when breakpoint changes
+      return () => {
+        wrappers.forEach((wrap) => {
+          if (wrap._drawTl) {
+            if (wrap._drawTl.scrollTrigger) {
+              wrap._drawTl.scrollTrigger.kill();
+            }
+            wrap._drawTl.kill();
+            wrap._drawTl = null;
+          }
+        });
+      };
+    }
+  );
+}
+
+// Initialize Draw Path on Scroll
+document.addEventListener("DOMContentLoaded", function () {
+  initDrawPathOnScroll();
+});
+</script>
+
+<script>
+  gsap.registerPlugin(CustomEase, SplitText);
+CustomEase.create('loader', '0.65, 0.01, 0.05, 0.99');
+
+function initLogoRevealLoader() {
+  const wrap = document.querySelector('[data-load-wrap]');
+  if (!wrap) return;
+
+  const container = wrap.querySelector('[data-load-container]');
+  const bg = wrap.querySelector('[data-load-bg]');
+  const progressBar = wrap.querySelector('[data-load-progress]');
+  const logo = wrap.querySelector('[data-load-logo]');
+  const textElements = Array.from(wrap.querySelectorAll('[data-load-text]'));
+
+  // Reset targets that are * not * split text targets
+  const resetTargets = Array.from(wrap.querySelectorAll('[data-load-reset]:not([data-load-text])'));
+
+  // Main loader timeline
+  const loadTimeline = gsap
+    .timeline({
+      defaults: {
+        ease: 'loader',
+        duration: 3,
+      },
+    })
+    .set(wrap, { display: 'block' })
+    .to(progressBar, { scaleX: 1 })
+    .to(logo, { clipPath: 'inset(0% 0% 0% 0%)' }, '<')
+    .to(container, { autoAlpha: 0, duration: 0.5 })
+    .to(progressBar, { scaleX: 0, transformOrigin: 'right center', duration: 0.5 }, '<')
+    .add('hideContent', '<')
+    .to(bg, { yPercent: -101, duration: 1 }, 'hideContent')
+    .set(wrap, { display: 'none' });
+
+  // If there are items to hide FOUC for, reset them at the start
+  if (resetTargets.length) {
+    loadTimeline.set(resetTargets, { autoAlpha: 1 }, 0);
+  }
+
+  // If there's text items, split them, and add to load timeline
+  if (textElements.length >= 2) {
+    const firstWord = new SplitText(textElements[0], { type: 'lines,chars', mask: 'lines' });
+    const secondWord = new SplitText(textElements[1], { type: 'lines,chars', mask: 'lines' });
+
+    // Set initial states of the text elements and letters
+    gsap.set([firstWord.chars, secondWord.chars], { autoAlpha: 0, yPercent: 125 });
+    gsap.set(textElements, { autoAlpha: 1 });
+
+    // first text in
+    loadTimeline.to(
+      firstWord.chars,
+      {
+        autoAlpha: 1,
+        yPercent: 0,
+        duration: 0.6,
+        stagger: { each: 0.02 },
+      },
+      0,
+    );
+
+    // first text out while second text in
+    loadTimeline.to(
+      firstWord.chars,
+      {
+        autoAlpha: 0,
+        yPercent: -125,
+        duration: 0.4,
+        stagger: { each: 0.02 },
+      },
+      '>+=0.4',
+    );
+
+    loadTimeline.to(
+      secondWord.chars,
+      {
+        autoAlpha: 1,
+        yPercent: 0,
+        duration: 0.6,
+        stagger: { each: 0.02 },
+      },
+      '<',
+    );
+
+    // second text out
+    loadTimeline.to(
+      secondWord.chars,
+      {
+        autoAlpha: 0,
+        yPercent: -125,
+        duration: 0.4,
+        stagger: { each: 0.02 },
+      },
+      'hideContent-=0.5',
+    );
+  }
+}
+
+// Initialize Logo Reveal Loader
+document.addEventListener('DOMContentLoaded', () => {
+  initLogoRevealLoader();
+});
+  </script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger, SplitText)
+  
+function initHighlightText(){
+
+  let splitHeadingTargets = document.querySelectorAll("[data-highlight-text]")
+  splitHeadingTargets.forEach((heading) => {
+    
+    const scrollStart = heading.getAttribute("data-highlight-scroll-start") || "top 90%"
+    const scrollEnd = heading.getAttribute("data-highlight-scroll-end") || "center 40%"
+    const fadedValue = heading.getAttribute("data-highlight-fade") || 0.2 // Opacity of letter
+    const staggerValue =  heading.getAttribute("data-highlight-stagger") || 0.1 // Smoother reveal
+    
+    new SplitText(heading, {
+      type: "words, chars",
+      autoSplit: true,
+      onSplit(self) {
+        let ctx = gsap.context(() => {
+          let tl = gsap.timeline({
+            scrollTrigger: {
+              scrub: true,
+              trigger: heading, 
+              start: scrollStart,
+              end: scrollEnd,
+            }
+          })
+          tl.from(self.chars,{
+            autoAlpha: fadedValue,
+            stagger: staggerValue,
+            ease: "linear"
+          })
+        });
+        return ctx; // return our animations so GSAP can clean them up when onSplit fires
+      }
+    });    
+  });
+}
+
+// Initialize Highlight Text on Scroll
+document.addEventListener("DOMContentLoaded", () =>{
+  initHighlightText();
+});
+</script>
+
+<script>
+gsap.registerPlugin(Observer, CustomEase);
+CustomEase.create('osmo', 'M0,0 C0.625,0.05 0,1 1,1');
+
+function initLayeredImageSlider() {
+  document.querySelectorAll('[data-layered-slider-init]').forEach((root) => {
+    if (root._layeredSlider) root._layeredSlider.destroy();
+
+    const titles = [...root.querySelectorAll('[data-layered-slider-title]')];
+    if (!titles.length) return;
+    const count = titles.length;
+
+    const backgrounds = [...root.querySelectorAll('[data-layered-slider-bg]')];
+    const maskItems = [...root.querySelectorAll('[data-layered-slider-mask-item]')];
+    const maskFrame = root.querySelector('[data-layered-slider-mask]');
+    const fill = root.querySelector('[data-layered-slider-fill]');
+    const currentEl = root.querySelector('[data-layered-slider-current]');
+    const totalEl = root.querySelector('[data-layered-slider-total]');
+    const prevBtn = root.querySelector('[data-layered-slider-prev]');
+    const nextBtn = root.querySelector('[data-layered-slider-next]');
+
+    // All elements that 'pause' the autoplay on hover
+    const controls = [...new Set([...titles, ...root.querySelectorAll('a, button')])];
+
+    // Autoplay, value is seconds between slides, 0 disables autoplay
+    const autoplayAttr = root.getAttribute('data-layered-slider-autoplay');
+    const autoplay = autoplayAttr !== null ? parseFloat(autoplayAttr) : 5;
+
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const clamp = gsap.utils.clamp;
+    const wrap = (distance) => distance - count * Math.round(distance / count);
+
+    const transitionDuration = 1;
+    const backgroundZoom = 0;
+    const titleGap = 0.5;
+    const titleSpacing = 40;
+
+    if (totalEl) totalEl.textContent = String(count).padStart(2, '0');
+
+    let titleStep = 0;
+    let maskStep = 0;
+    const measure = () => {
+      const widestTitle = Math.max(...titles.map((title) => title.offsetWidth));
+      titleStep = Math.max(root.clientWidth * titleGap, widestTitle + titleSpacing);
+      maskStep = maskFrame ? maskFrame.clientWidth : root.clientWidth;
+    };
+    measure();
+
+    const state = { progress: 0 };
+    let activeIndex = -1;
+
+    // The active slide has [data-active] on its background, title, and mask
+    const setActive = (previousIndex, index) => {
+      [backgrounds, titles, maskItems].forEach((list) => {
+        if (previousIndex >= 0 && list[previousIndex])
+          list[previousIndex].removeAttribute('data-active');
+        if (list[index]) list[index].setAttribute('data-active', '');
+      });
+    };
+
+    const render = (progress) => {
+      const centeredIndex = ((Math.round(progress) % count) + count) % count;
+
+      for (let i = 0; i < count; i++) {
+        // How far this slide sits from the centre: signed (left / right) and absolute.
+        const offset = wrap(i - progress);
+        const distance = Math.abs(offset);
+
+        const background = backgrounds[i];
+        if (background) {
+          const backgroundOpacity = clamp(0, 1, 1 - distance);
+          gsap.set(background, {
+            opacity: backgroundOpacity,
+            scale: 1 + backgroundZoom - backgroundZoom * backgroundOpacity,
+            zIndex: Math.round(backgroundOpacity * 100),
+          });
+        }
+
+        gsap.set(titles[i], {
+          x: offset * titleStep,
+          opacity: i === centeredIndex ? 1 : 0.4,
+          pointerEvents: 'auto',
+        });
+
+        const maskItem = maskItems[i];
+        if (maskItem) {
+          gsap.set(maskItem, { x: offset * maskStep });
+        }
+      }
+
+      // Sync the counter and [data-active] to whichever slide is now centred.
+      if (centeredIndex !== activeIndex) {
+        const previousIndex = activeIndex;
+        activeIndex = centeredIndex;
+        setActive(previousIndex, centeredIndex);
+        if (currentEl) currentEl.textContent = String(centeredIndex + 1).padStart(2, '0');
+      }
+    };
+
+    let hovering = 0;
+    let autoTween = null;
+    const startAutoplay = () => {
+      if (!autoTween) return;
+      autoTween.restart();
+      if (hovering > 0) autoTween.pause();
+    };
+
+    let slideTween = null;
+    let current = 0;
+    function goTo(delta) {
+      current += delta;
+      if (slideTween) slideTween.kill();
+      slideTween = gsap.to(state, {
+        progress: current,
+        duration: reduced ? 0 : transitionDuration,
+        ease: 'osmo',
+        onUpdate: () => render(state.progress),
+      });
+      startAutoplay();
+    }
+
+    // Step to a specific slide by index
+    function goToIndex(i) {
+      const delta = wrap(i - current);
+      if (delta !== 0) goTo(delta);
+    }
+
+    // Autoplay fills the bar
+    if (autoplay > 0 && !reduced && fill) {
+      gsap.set(fill, { scaleX: 0, transformOrigin: 'left center' });
+      autoTween = gsap.to(fill, {
+        scaleX: 1,
+        duration: autoplay,
+        ease: 'none',
+        paused: true,
+        onComplete: () => goTo(1),
+      });
+    }
+
+    // Support a horizontal swipe gesture to navigate
+    let gestureUsed = false;
+    const observer = Observer.create({
+      target: root,
+      type: 'touch,pointer',
+      dragMinimum: 10,
+      tolerance: 25,
+      lockAxis: true,
+      onDragStart() {
+        gestureUsed = false;
+      },
+      onLeft() {
+        if (!gestureUsed) {
+          gestureUsed = true;
+          goTo(1);
+        }
+      },
+      onRight() {
+        if (!gestureUsed) {
+          gestureUsed = true;
+          goTo(-1);
+        }
+      },
+    });
+
+    const onPrev = () => goTo(-1);
+    const onNext = () => goTo(1);
+    if (prevBtn) prevBtn.addEventListener('click', onPrev);
+    if (nextBtn) nextBtn.addEventListener('click', onNext);
+
+    // Click a title: the active one lets its link through, any other jumps to it.
+    const onTitleClick = (e) => {
+      const i = titles.indexOf(e.currentTarget);
+      if (i === activeIndex) return;
+      e.preventDefault();
+      goToIndex(i);
+    };
+    titles.forEach((title) => title.addEventListener('click', onTitleClick));
+
+    // Autoplay pauses only while an interactive control is hovered
+    const onEnter = () => {
+      hovering++;
+      if (autoTween) autoTween.pause();
+    };
+    const onLeave = () => {
+      hovering = Math.max(0, hovering - 1);
+      if (autoTween && hovering === 0) autoTween.resume();
+    };
+    controls.forEach((el) => {
+      el.addEventListener('pointerenter', onEnter);
+      el.addEventListener('pointerleave', onLeave);
+    });
+
+    const onResize = () => {
+      measure();
+      render(state.progress);
+    };
+    window.addEventListener('resize', onResize);
+
+    // Title widths change when the web font swaps in, so re-measure then too.
+    if (document.fonts) document.fonts.ready.then(onResize);
+
+    render(0);
+    startAutoplay();
+
+    root._layeredSlider = {
+      goTo,
+      destroy() {
+        observer.kill();
+        if (slideTween) slideTween.kill();
+        if (autoTween) autoTween.kill();
+        window.removeEventListener('resize', onResize);
+        if (prevBtn) prevBtn.removeEventListener('click', onPrev);
+        if (nextBtn) nextBtn.removeEventListener('click', onNext);
+        titles.forEach((title) => title.removeEventListener('click', onTitleClick));
+        controls.forEach((el) => {
+          el.removeEventListener('pointerenter', onEnter);
+          el.removeEventListener('pointerleave', onLeave);
+        });
+        root._layeredSlider = null;
+      },
+    };
+  });
+}
+
+// Initialize Layered Image Slider
+document.addEventListener('DOMContentLoaded', () => {
+  initLayeredImageSlider();
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const items = document.querySelectorAll(".hover-distort");
+  if (!items.length) return;
+
+  items.forEach((el) => {
+    const image1 = el.getAttribute("data-image1");
+    const image2 = el.getAttribute("data-image2");
+    const displacementImage = el.getAttribute("data-displacement");
+    const intensity = parseFloat(el.getAttribute("data-intensity") || "0.3");
+
+    // защита от пустых атрибутов
+    if (!image1 || !image2 || !displacementImage) {
+      console.warn("hoverEffect: missing data attributes on element", el);
+      return;
+    }
+
+    new hoverEffect({
+      parent: el,
+      intensity,
+      image1,
+      image2,
+      displacementImage
+    });
+  });
+});
+</script>
+
+<script>
+  // follow
+function initPreviewFollower() {
+  // Find every follower wrap
+  const wrappers = document.querySelectorAll('[data-follower-wrap]');
+
+  wrappers.forEach(wrap => {
+    const collection = wrap.querySelector('[data-follower-collection]');
+    const items = wrap.querySelectorAll('[data-follower-item]');
+    const follower = wrap.querySelector('[data-follower-cursor]');
+    const followerInner = wrap.querySelector('[data-follower-cursor-inner]');
+
+    // ФИКС: выносим курсор в body, чтобы position:fixed не ломался
+    // из-за transform на horizontal-scroll родителях выше по дереву
+    document.body.appendChild(follower);
+
+    let prevIndex = null;
+    let firstEntry = true;
+
+    const offset = 100; // The animation distance in %
+    const duration = 0.5; // The animation duration of all visual transforms
+    const ease = 'power2.inOut';
+
+    // Initialize follower position
+    gsap.set(follower, { xPercent: -50, yPercent: -50 });
+
+    // Quick setters for x/y
+    const xTo = gsap.quickTo(follower, 'x', { duration: 0.6, ease: 'power3' });
+    const yTo = gsap.quickTo(follower, 'y', { duration: 0.6, ease: 'power3' });
+
+    // Move all followers on mousemove
+    window.addEventListener('mousemove', e => {
+      xTo(e.clientX);
+      yTo(e.clientY);
+    });
+
+    // Enter/leave per item within this wrap
+    items.forEach((item, index) => {
+      item.addEventListener('mouseenter', () => {
+        const forward = prevIndex === null || index > prevIndex;
+        prevIndex = index;
+
+        // animate out existing visuals
+        follower.querySelectorAll('[data-follower-visual]').forEach(el => {
+          gsap.killTweensOf(el);
+          gsap.to(el, {
+            yPercent: forward ? -offset : offset,
+            duration,
+            ease,
+            overwrite: 'auto',
+            onComplete: () => el.remove()
+          });
+        });
+
+        // clone & insert new visual
+        const visual = item.querySelector('[data-follower-visual]');
+        if (!visual) return;
+        const clone = visual.cloneNode(true);
+        followerInner.appendChild(clone);
+
+        // animate it in (unless it's the very first entry)
+        if (!firstEntry) {
+          gsap.fromTo(clone,
+            { yPercent: forward ? offset : -offset },
+            { yPercent: 0, duration, ease, overwrite: 'auto' }
+          );
+        } else {
+          firstEntry = false;
+        }
+      });
+
+      item.addEventListener('mouseleave', () => {
+        const el = follower.querySelector('[data-follower-visual]');
+        if (!el) return;
+        gsap.killTweensOf(el);
+        gsap.to(el, {
+          yPercent: -offset,
+          duration,
+          ease,
+          overwrite: 'auto',
+          onComplete: () => el.remove()
+        });
+      });
+    });
+
+    // If pointer leaves the collection, clear any visuals
+    collection.addEventListener('mouseleave', () => {
+      follower.querySelectorAll('[data-follower-visual]').forEach(el => {
+        gsap.killTweensOf(el);
+        gsap.delayedCall(duration, () => el.remove());
+      });
+      firstEntry = true;
+      prevIndex = null;
+    });
+  });
+}
+// Initialize Image Preview Cursor Follower
+document.addEventListener("DOMContentLoaded", () =>{
+  initPreviewFollower();
+})
+</script>
+
+<script>
+// -----------------------------------------
+// PAGE TRANSITIONS
+// -----------------------------------------
+
+function runPageOnceAnimation(next) {
+  const tl = gsap.timeline();
+
+  tl.call(() => {
+    resetPage(next);
+  }, null, 0);
+
+  return tl;
+}
+
+function runPageLeaveAnimation(current, next) {
+  const transitionWrap = document.querySelector("[data-transition-wrap]");
+  const transitionDark = transitionWrap.querySelector("[data-transition-dark]");
+
+  const tl = gsap.timeline({
+    onComplete: () => {
+      current.remove(); 
+    }
+  })
+  
+  CustomEase.create("parallax", "0.7, 0.05, 0.13, 1");
+  
+  if (reducedMotion) {
+    // Immediate swap behavior if user prefers reduced motion
+    return tl.set(current, { autoAlpha: 0 });
+  }
+  
+  tl.set(transitionWrap, {
+    zIndex: 2
+  });
+  
+  tl.fromTo(transitionDark, {
+    autoAlpha: 0
+  },{
+    autoAlpha: 0.8,
+    duration: 1.2,
+    ease: "parallax"
+  }, 0);
+  
+  tl.fromTo(current,{
+    y: "0vh"
+  },{
+    y: "-25vh",
+    duration: 1.2,
+    ease: "parallax",
+  }, 0);
+  
+  tl.set(transitionDark, {
+    autoAlpha: 0,
+  });
+
+  return tl;
+}
+
+function runPageEnterAnimation(next){
+  const tl = gsap.timeline();
+  
+  if (reducedMotion) {
+    // Immediate swap behavior if user prefers reduced motion
+    tl.set(next, { autoAlpha: 1 });
+    tl.add("pageReady")
+    tl.call(resetPage, [next], "pageReady");
+    return new Promise(resolve => tl.call(resolve, null, "pageReady"));
+  }
+  
+  tl.add("startEnter", 0);
+  
+  tl.set(next, {
+    zIndex: 3
+  });
+  
+  tl.fromTo(next, {
+    y: "100vh"
+  }, {
+    y: "0vh",
+    duration: 1.2,
+    clearProps: "all",
+    ease: "parallax"
+  }, "startEnter");
+
+  tl.add("pageReady");
+  tl.call(resetPage, [next], "pageReady");
+
+  return new Promise(resolve => {
+    tl.call(resolve, null, "pageReady");
+  });
+}
+</script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+function initFooterParallax(){
+  document.querySelectorAll('[data-footer-parallax]').forEach(el => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: el,
+        start: 'clamp(top bottom)',
+        end: 'clamp(top top)',
+        scrub: true
+      }
+    });
+  
+    const inner = el.querySelector('[data-footer-parallax-inner]');
+    const dark  = el.querySelector('[data-footer-parallax-dark]');
+  
+    if (inner) {
+      tl.from(inner, {
+        yPercent: -25,
+        ease: 'linear'
+      });
+    }
+  
+    if (dark) {
+      tl.from(dark, {
+        opacity: 0.5,
+        ease: 'linear'
+      }, '<');
+    }
+  });
+}
+// Initialize Footer with Parallax Effect
+document.addEventListener('DOMContentLoaded', () => {
+  initFooterParallax();
+});
+</script>
+
+<script>
+function initArcScrollTransition() {
+  gsap.registerPlugin(ScrollTrigger);
+
+  const defaultMode = "cover";
+  const defaultScrollStart = { cover: "bottom bottom", reveal: "top bottom" };
+  const defaultScrollEnd = { cover: "bottom top", reveal: "top top" };
+  const defaultScrub = 0.3;
+  const defaultCurve = 12;
+
+  const viewBox = 100;
+  const svgNamespace = "http://www.w3.org/2000/svg";
+
+  const instances = [];
+  let mm = null;
+
+  function getMode(wrapper) {
+    return wrapper.dataset.mode === "reveal" ? "reveal" : defaultMode;
+  }
+
+  function getCurve(wrapper) {
+    const value = parseFloat(wrapper.dataset.curve);
+    return Number.isFinite(value) ? value : defaultCurve;
+  }
+
+  function getScrollStart(wrapper, mode) {
+    return wrapper.dataset.scrollStart || defaultScrollStart[mode];
+  }
+
+  function getScrollEnd(wrapper, mode) {
+    return wrapper.dataset.scrollEnd || defaultScrollEnd[mode];
+  }
+
+  function round(value) {
+    return Math.round(value * 100) / 100;
+  }
+
+  function buildShape(wrapper) {
+    const shape = document.createElementNS(svgNamespace, "svg");
+    shape.setAttribute("data-arc-scroll-shape", "");
+    shape.setAttribute("viewBox", `0 0 ${viewBox} ${viewBox}`);
+    shape.setAttribute("preserveAspectRatio", "none");
+    shape.setAttribute("aria-hidden", "true");
+
+    const path = document.createElementNS(svgNamespace, "path");
+    path.setAttribute("data-arc-scroll-path", "");
+
+    shape.appendChild(path);
+    wrapper.appendChild(shape);
+
+    return { shape, path };
+  }
+
+  function measureSection(instance) {
+    const rect = instance.section.getBoundingClientRect();
+    const aspect = rect.height ? rect.width / rect.height : 1;
+    instance.depth = getCurve(instance.wrapper) * aspect;
+  }
+
+  function drawArc(instance, progress) {
+    const fill = instance.mode === "cover" ? progress : 1 - progress;
+    const curve = instance.depth * Math.sin(fill * Math.PI);
+
+    if (instance.mode === "cover") {
+      const edge = round(viewBox - viewBox * fill);
+      const control = round(edge - curve * 2);
+      instance.path.setAttribute("d", `M0 ${viewBox} L0 ${edge} Q${viewBox / 2} ${control} ${viewBox} ${edge} L${viewBox} ${viewBox} Z`);
+      return;
+    }
+
+    const edge = round(viewBox * fill);
+    const control = round(edge + curve * 2);
+    instance.path.setAttribute("d", `M0 0 L0 ${edge} Q${viewBox / 2} ${control} ${viewBox} ${edge} L${viewBox} 0 Z`);
+  }
+
+  function createAnimation(instance) {
+    const state = { progress: 0 };
+
+    return gsap.to(state, {
+      progress: 1,
+      ease: "none",
+      onUpdate: () => drawArc(instance, state.progress),
+      scrollTrigger: {
+        trigger: instance.section,
+        start: getScrollStart(instance.wrapper, instance.mode),
+        end: getScrollEnd(instance.wrapper, instance.mode),
+        scrub: defaultScrub,
+        invalidateOnRefresh: true,
+        onRefresh: () => measureSection(instance),
+      },
+    });
+  }
+
+  function setupInstance(wrapper) {
+    const { shape, path } = buildShape(wrapper);
+
+    const instance = {
+      wrapper,
+      shape,
+      path,
+      section: wrapper.closest("section") || wrapper.parentElement,
+      mode: getMode(wrapper),
+      depth: 0,
+    };
+
+    measureSection(instance);
+    drawArc(instance, 0);
+    instance.tween = createAnimation(instance);
+
+    return instance;
+  }
+
+  function destroyInstance(instance) {
+    instance.tween.scrollTrigger?.kill();
+    instance.tween.kill();
+    instance.shape.remove();
+  }
+
+  function buildAll() {
+    const wrappers = document.querySelectorAll("[data-arc-scroll-transition]");
+    wrappers.forEach((wrapper) => {
+      instances.push(setupInstance(wrapper));
+    });
+    ScrollTrigger.refresh();
+  }
+
+  function destroyAll() {
+    instances.forEach(destroyInstance);
+    instances.length = 0;
+  }
+
+  const wrappers = document.querySelectorAll("[data-arc-scroll-transition]");
+  if (!wrappers.length) return;
+
+  mm = gsap.matchMedia();
+
+  mm.add("(prefers-reduced-motion: no-preference)", () => {
+    buildAll();
+
+    return () => {
+      destroyAll();
+    };
+  });
+}
+
+// Initialize Arc Scroll Transition
+document.addEventListener("DOMContentLoaded", () => {
+  initArcScrollTransition();
+});
+</script>
