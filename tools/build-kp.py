@@ -118,22 +118,11 @@ metrics = f'''<section class="pad"><div class="wrap">
 </div></section>
 '''
 
-opt_rows = [
- ('Аудит и замеры', 'Audit and measurements', 'Замеры скорости и плавности всех 15 страниц на компьютере и телефоне до и после работ; разбор каждого скрипта', 'Speed and smoothness measured on all 15 pages, desktop and phone, before and after; every script reviewed', '15 страниц × 2 устройства', '15 pages × 2 devices'),
- ('3D-фон первого экрана', 'First-screen 3D background', 'Сцена Unicorn Studio (2 экземпляра, 5 слоёв) заменяется собственной реализацией с тем же видом и откликом на мышь', 'The Unicorn Studio scene (2 instances, 5 layers) is replaced by our own implementation with the same look and mouse response', '1 сцена, калибровка по оригиналу', '1 scene, calibrated to the original'),
- ('Скрипты', 'Scripts', 'Убираются дубли и лишнее: three.js, TweenMax, hover.js с чужого сайта, Unicorn ×2, Barba, Flip, второй GSAP, второй Lenis; остальное — по одной копии', 'Duplicates and extras removed: three.js, TweenMax, hover.js from a third-party site, Unicorn ×2, Barba, Flip, a second GSAP, a second Lenis; the rest — one copy each', '9 библиотек убрано, 8 оставлено', '9 libraries removed, 8 kept'),
- ('Код страниц', 'Page code', 'Переписывается код главной, About, Work и шаблона проектов; общий код переносится в настройки сайта', 'Code rewritten for Home, About, Work and the project template; shared code moved to site settings', '4 шаблона + общий код', '4 templates + shared code'),
- ('Встроенные блоки', 'Embeds', 'Заменяются блоки 3D-фона, курсора и часов; эффект «волны» — на собственном коде в 3 КБ', '3D background, cursor and clock embeds replaced; the ripple effect rebuilt in 3 KB', '4 блока', '4 embeds'),
- ('Фотографии', 'Photos', 'Каждое фото пережимается в AVIF в трёх размерах и отдаётся под реальную ширину на экране; главное фото грузится первым', 'Every photo re-encoded to AVIF in three sizes and served at its real on-screen width; the main photo loads first', '64 фото × 3 размера', '64 photos × 3 sizes'),
- ('Шрифты', 'Fonts', 'Используемые начертания переводятся из TTF в WOFF2 (примерно втрое легче) и загружаются первыми', 'The weights in use are converted from TTF to WOFF2 (about 3× lighter) and load first', '4 файла', '4 files'),
- ('Ошибки', 'Bugs', 'Заставка, закрывавшая уже открытую страницу на телефоне; курсор, слайдер и часы, работавшие в фоне; двойная 3D-сцена', 'The intro covering a visible page on phones; cursor, slider and clock running in the background; the double 3D scene', '5 исправлений', '5 fixes'),
- ('Google', 'Google', 'Карта сайта, robots.txt, один основной адрес, исправление опечаток в адресах с переадресацией, названия и описания страниц, один H1 на страницу, разметка для поиска', 'Sitemap, robots.txt, one primary address, URL typo fixes with redirects, page titles and descriptions, one H1 per page, structured data', '15 страниц, 2 переадресации', '15 pages, 2 redirects'),
- ('Подписи к фото', 'Image text', 'Описание каждого фото работ для Google Картинок и доступности', 'A description for every artwork photo for Google Images and accessibility', '≈ 60 фото', '≈ 60 photos'),
- ('Проверка', 'QA', 'Попиксельное сравнение с оригиналом, проверка всех анимаций, форм и переходов на компьютере и телефоне', 'Pixel comparison with the original, check of every animation, form and transition on desktop and phone', '15 страниц', '15 pages'),
- ('Запуск', 'Launch', 'Резервная копия, публикация на raycorral.com, контрольные замеры, поддержка после запуска', 'Backup, publishing on raycorral.com, control measurements, post-launch support', '1 запуск', '1 launch')]
+from kp_opt import OPT as opt_rows
+
 def tbl3(rows, h):
     head = ''.join(f'<th>{L(a,b)}</th>' for a, b in h)
-    body = ''.join(f'<tr><td>{L(r[0],r[1])}</td><td>{L(r[2],r[3])}</td><td style="white-space:nowrap">{L(r[4],r[5])}</td></tr>' for r in rows)
+    body = ''.join((f'<tr><td class="grp" colspan="3">{L(r[0][1:],r[1][1:])}</td></tr>' if r[0].startswith('§') else f'<tr><td>{L(r[0],r[1])}</td><td>{L(r[2],r[3])}</td><td style="white-space:nowrap">{L(r[4],r[5])}</td></tr>') for r in rows)
     return f'<div class="tbl wide"><table><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
 scope_html = f"""<section class="pad"><div class="wrap">
   <span class="eyebrow">{L('Объём работ', 'Scope of work')}</span>
@@ -167,18 +156,26 @@ landings = [
 ld_rows = ''.join(f'<tr><td>{n}</td><td>{L(a,b)}</td><td style="text-align:right">{c}</td></tr>' for n, a, b, c in landings)
 ld_total = sum(x[3] for x in landings)
 
-start = [
- ('Семантическое ядро', 'Keyword research', 'сбор и кластеризация англоязычных запросов', 'collecting and clustering English-language queries', '600–800 запросов', '600–800 queries'),
- ('Структура и ТЗ', 'Structure and briefs', 'структура раздела услуг, стилей, городов и журнала; ТЗ на каждую страницу', 'structure for services, styles, cities and journal; a brief for every page', f'{ld_total} ТЗ', f'{ld_total} briefs'),
- ('Посадочные страницы', 'Landing pages', 'тексты 800–1 500 слов, подбор фото из архива, подписи, блок вопросов, разметка, перелинковка с проектами', 'copy of 800–1,500 words, photos from the archive, captions, FAQ block, structured data, links to projects', f'{ld_total} страниц', f'{ld_total} pages'),
- ('Раздел Journal', 'Journal section', 'коллекция статей в CMS Webflow, шаблон статьи, связь с проектами', 'an article collection in the Webflow CMS, an article template, links to projects', '1 раздел', '1 section'),
- ('Доработка 8 проектов', 'Upgrading 8 projects', 'расширение описаний до 500–800 слов: задача, стиль, материалы, техника', 'project write-ups extended to 500–800 words: brief, style, materials, technique', '8 страниц', '8 pages')]
-monthly = [
- ('Истории проектов', 'Project stories', 'задача, стиль, материалы, фото процесса; ведут в страницу проекта', 'brief, style, materials, process photos; each leads to the project page', '2 статьи, 1 200–1 800 слов', '2 articles, 1,200–1,800 words'),
- ('Экспертные статьи от имени Рэя', 'Expert articles by Ray', 'выбор мозаики для бассейна, ручная резка стекла и фабричная плитка, история стилей, уход', 'choosing a pool mosaic, hand-cut glass versus factory tile, the history of styles, care', '2 статьи, 1 500–2 500 слов', '2 articles, 1,500–2,500 words'),
+start = [('Анализ конкурентов', 'Competitor analysis', 'мастерские и художники-мозаичисты в США: какие страницы и запросы приводят им заказчиков', 'US mosaic studios and artists: which pages and queries bring them clients', '10–15 сайтов', '10–15 sites'),
+ ('Семантическое ядро', 'Keyword research', 'сбор и кластеризация англоязычных запросов: услуги, стили, города, вопросы заказчиков', 'collecting and clustering English queries: services, styles, cities, client questions', '600–800 запросов', '600–800 queries'),
+ ('Структура и ТЗ', 'Structure and briefs', 'структура разделов услуг, стилей, городов и журнала; ТЗ на каждую страницу', 'structure for services, styles, cities and journal; a brief for every page', '19 ТЗ', '19 briefs'),
+ ('Контент-план', 'Content plan', 'темы статей с привязкой к запросам и посадочным страницам', 'article topics tied to queries and landing pages', 'на 6 месяцев', '6 months'),
+ ('Посадочные страницы', 'Landing pages', 'тексты 800–1 500 слов, фото из архива с подписями, блок вопросов, разметка, ссылки на проекты', 'copy of 800–1,500 words, archive photos with captions, FAQ block, structured data, links to projects', '19 страниц', '19 pages'),
+ ('Раздел Journal', 'Journal section', 'коллекция статей в CMS Webflow, шаблон статьи, авторская подпись Рэя, связь с проектами', 'an article collection in the Webflow CMS, an article template, Ray’s byline, links to projects', '1 раздел', '1 section'),
+ ('Доработка проектов', 'Upgrading projects', 'описания до 500–800 слов: задача, стиль, материалы, техника; подписи к фото', 'write-ups extended to 500–800 words: brief, style, materials, technique; captions', '8 страниц', '8 pages'),
+ ('Страница автора', 'Author page', 'расширенная биография Рэя: обучение в Италии, 650+ работ, награды, публикации — доверие для Google и заказчиков', 'an extended bio: training in Italy, 650+ works, awards, press — trust for Google and clients', '1 страница', '1 page'),
+ ('Возврат упоминаний', 'Link reclamation', 'издания, которые уже писали о Рэе без ссылки на сайт: просьба добавить ссылку', 'outlets that wrote about Ray without linking: request a link', 'все найденные', 'all found'),
+ ('Search Console для контента', 'Search Console for content', 'настройка отслеживания позиций и показов по направлениям запросов', 'tracking positions and impressions by search direction', '1 настройка', '1 setup')]
+monthly = [('Истории проектов', 'Project stories', 'задача, стиль, материалы, фото процесса; ведут в страницу проекта', 'brief, style, materials, process photos; each leads to the project page', '2 статьи, 1 200–1 800 слов', '2 articles, 1,200–1,800 words'),
+ ('Экспертные статьи от имени Рэя', 'Expert articles by Ray', 'выбор мозаики для бассейна, ручная резка стекла и фабричная плитка, история стилей, уход', 'choosing a pool mosaic, hand-cut glass vs factory tile, history of styles, care', '2 статьи, 1 500–2 500 слов', '2 articles, 1,500–2,500 words'),
  ('Внешние публикации', 'External placements', 'гостевые статьи и интервью в профильных и lifestyle-изданиях со ссылкой на сайт', 'guest articles and interviews in trade and lifestyle media linking to the site', '2 публикации', '2 placements'),
- ('Новые проекты', 'New projects', 'оформление новых работ в CMS: описание, фото, подписи', 'publishing new work in the CMS: write-up, photos, captions', 'до 2 проектов', 'up to 2 projects'),
- ('Поддержка материалов', 'Content upkeep', 'обновление посадочных страниц, перелинковка новых статей и проектов, описания для Google', 'refreshing landing pages, linking new articles and projects, Google descriptions', 'постоянно', 'ongoing')]
+ ('PR вокруг Mosaic Art Fund', 'Mosaic Art Fund PR', 'материалы о грантах и их получателях для местных и культурных изданий', 'stories about grants and recipients for local and cultural outlets', '1 материал', '1 piece'),
+ ('Новые проекты', 'New projects', 'оформление новых работ в CMS: описание, фото, подписи, разметка', 'publishing new work in the CMS: write-up, photos, captions, markup', 'до 2 проектов', 'up to 2 projects'),
+ ('Оптимизация по Search Console', 'Search Console optimization', 'разбор запросов, по которым сайт показывается, но не получает кликов; доработка заголовков, описаний и текстов', 'queries with impressions but no clicks; refine titles, descriptions and copy', '5–10 страниц', '5–10 pages'),
+ ('Обновление материалов', 'Content refresh', 'обновление посадочных страниц и старых статей, новые фото и факты', 'refreshing landing pages and older articles with new photos and facts', '2–4 страницы', '2–4 pages'),
+ ('Перелинковка', 'Internal linking', 'связь новых статей и проектов с посадочными страницами', 'linking new articles and projects to landing pages', 'все новые материалы', 'all new content'),
+ ('Google Картинки', 'Google Images', 'подписи, имена файлов и разметка для новых фото, чтобы работы находились в поиске по картинкам', 'captions, file names and markup for new photos so works are found in image search', 'все новые фото', 'all new photos'),
+ ('Технический контроль', 'Technical upkeep', 'проверка индексации, ошибок и Core Web Vitals в Search Console, исправление', 'indexing, errors and Core Web Vitals checks in Search Console, fixes', 'весь сайт', 'whole site')]
 promo_html = f"""<section class="pad"><div class="wrap">
   <span class="eyebrow">{L('Продвижение', 'Promotion')}</span>
   <h2>{L('Продвижение статьями и посадочными страницами', 'Promotion through articles and landing pages')}</h2>
