@@ -140,6 +140,19 @@ td.grp{font-weight:600;background:var(--cobalt-soft);color:var(--cobalt)}
 .sum td:first-child{white-space:normal;min-width:240px}
 .sum tr.total td{font-weight:600;background:var(--good-soft);color:var(--good)}
 .sum s{color:var(--muted);font-weight:400;margin-right:8px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:700px){.opts{grid-template-columns:1fr}}
+.opt{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:22px;display:grid;gap:12px;align-content:start}
+.opt.rec{border:2px solid var(--cobalt)}
+.opt .badge{justify-self:start;font-size:.78rem;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--cobalt);color:#fff}
+.opt .pr{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.opt ul{margin:0;padding-left:1.1em;display:grid;gap:5px;font-size:.95rem}
+.shots{display:grid;grid-template-columns:2fr 2fr 1fr;gap:12px;align-items:start}
+.shots figure img{border:1px solid var(--line);border-radius:4px}
+.shots figcaption{color:var(--muted);font-size:.84rem}
+@media (max-width:700px){.shots{grid-template-columns:1fr 1fr}.shots figure:last-child{grid-column:1/-1;max-width:220px}}
+.divider{display:flex;align-items:center;gap:14px}
+.divider::after{content:"";flex:1;height:1px;background:var(--line)}
 .st ul{margin:0;padding-left:1.1em;display:grid;gap:5px}
 .st .res{border-top:1px dashed var(--line);padding-top:9px;font-size:.94rem}
 .st .res b{color:var(--good)}
@@ -165,10 +178,10 @@ code{font-size:.9em}
 <header class="hero pad"><div class="wrap">
   <div class="tiles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <span class="eyebrow"><span class="ru">Коммерческое предложение · ноябрь 2026</span><span class="en">Proposal · November 2026</span></span>
-  <h1><span class="ru">Тот же сайт, только быстрее</span><span class="en">The same website, only faster</span></h1>
+  <h1><span class="ru">Два пути к быстрому сайту</span><span class="en">Two ways to a fast website</span></h1>
   <p class="lead">
-    <span class="ru">Сайт Рэя Коррала выглядит как дорогое портфолио, и менять в нём дизайн не нужно. Но на компьютере посетитель несколько секунд смотрит на чёрный экран, на телефоне страница подтормаживает, а Google почти не видит работы художника. Мы уже подготовили и проверили код, который убирает эти проблемы. Дизайн и все анимации остаются прежними.</span>
-    <span class="en">Ray Corral’s website looks like a premium portfolio, and its design should stay as it is. But on a computer visitors stare at a black screen for several seconds, on phones the page stutters, and Google barely sees the artist’s work. We have already prepared and tested code that fixes this. The design and every animation stay as they are.</span>
+    <span class="ru">Сайт Рэя Коррала выглядит как дорогое портфолио, но он перегружен: на компьютере посетитель несколько секунд смотрит на чёрный экран, прокрутка на главной почти не двигается, на телефоне страница весит 6,7 МБ, а Google почти не видит работы художника. Мы подготовили два решения, и оба уже можно открыть и потрогать: ускорить текущий сайт, не меняя дизайн, или перейти на облегчённый редизайн в том же стиле.</span>
+    <span class="en">Ray Corral’s website looks like a premium portfolio, but it is overloaded: desktop visitors stare at a black screen for seconds, scrolling on the home page barely moves, on phones the page weighs 6.7 MB, and Google barely sees the artist’s work. We prepared two solutions, and you can open and try both right now: speed up the current site without changing the design, or move to a lighter redesign in the same style.</span>
   </p>
   <div class="meta">
     <span><span class="ru">Измерено:</span><span class="en">Measured:</span> <b>10.11.2026</b></span>
@@ -176,19 +189,83 @@ code{font-size:.9em}
     <span><span class="ru">Код:</span><span class="en">Code:</span> <b><a href="https://github.com/Dirol982/raycorral">github.com/Dirol982/raycorral</a></b></span>
   </div>
   <div class="btns">
-    <a class="btn primary" href="https://dirol982.github.io/raycorral/site/"><span class="ru">Открыть ускоренный сайт</span><span class="en">Open the faster site</span></a>
-    <a class="btn" href="https://dirol982.github.io/raycorral/site-before/"><span class="ru">Текущая версия для сравнения</span><span class="en">Current version to compare</span></a>
+    <a class="btn primary" href="https://dirol982.github.io/raycorral/redesign/"><span class="ru">Открыть редизайн</span><span class="en">Open the redesign</span></a>
+    <a class="btn" href="https://dirol982.github.io/raycorral/site/"><span class="ru">Ускоренный текущий сайт</span><span class="en">Current site, sped up</span></a>
+    <a class="btn" href="https://raycorral.com/"><span class="ru">Сайт сейчас</span><span class="en">The site today</span></a>
   </div>
 </div></header>
 
 <section class="pad" style="padding-top:0;border-top:0"><div class="wrap">
   <div class="kpis">
-    <div class="kpi"><span class="v">0,3 <span class="ru">с</span><span class="en">s</span><small>−77%</small></span><span class="from"><span class="ru">было 1,4 с</span><span class="en">was 1.4 s</span></span><span class="l"><span class="ru">телефон «зависает» при загрузке главной</span><span class="en">phone freezes while loading the home page</span></span></div>
-    <div class="kpi"><span class="v">1,6 <span class="ru">с</span><span class="en">s</span><small>−64%</small></span><span class="from"><span class="ru">было 4,5 с</span><span class="en">was 4.5 s</span></span><span class="l"><span class="ru">заставка с подписью на компьютере</span><span class="en">signature intro on desktop</span></span></div>
-    <div class="kpi"><span class="v">211 <span class="ru">КБ</span><span class="en">KB</span><small>−57%</small></span><span class="from"><span class="ru">было 486 КБ</span><span class="en">was 486 KB</span></span><span class="l"><span class="ru">скриптов на главной (телефон)</span><span class="en">of scripts on the home page (phone)</span></span></div>
-    <div class="kpi"><span class="v">0</span><span class="from"><span class="ru">было 3</span><span class="en">was 3</span></span><span class="l"><span class="ru">тяжёлых 3D-сцен на телефоне</span><span class="en">heavy 3D scenes running on phones</span></span></div>
+    <div class="kpi"><span class="v">0,46 <span class="ru">МБ</span><span class="en">MB</span><small>−93%</small></span><span class="from"><span class="ru">было 6,7 МБ</span><span class="en">was 6.7 MB</span></span><span class="l"><span class="ru">вес главной на телефоне (редизайн)</span><span class="en">home page weight on a phone (redesign)</span></span></div>
+    <div class="kpi"><span class="v">60 <span class="ru">кадр/с</span><span class="en">fps</span></span><span class="from"><span class="ru">было ~1 кадр/с</span><span class="en">was ~1 fps</span></span><span class="l"><span class="ru">плавность прокрутки главной (редизайн)</span><span class="en">home page scrolling smoothness (redesign)</span></span></div>
+    <div class="kpi"><span class="v">0,8 <span class="ru">с</span><span class="en">s</span><small>−96%</small></span><span class="from"><span class="ru">было 20,4 с</span><span class="en">was 20.4 s</span></span><span class="l"><span class="ru">About: главный кадр на телефоне (редизайн)</span><span class="en">About: main image on a phone (redesign)</span></span></div>
+    <div class="kpi"><span class="v">2 <span class="ru">КБ</span><span class="en">KB</span></span><span class="from"><span class="ru">было 487 КБ</span><span class="en">was 487 KB</span></span><span class="l"><span class="ru">скриптов на странице (редизайн)</span><span class="en">of scripts per page (redesign)</span></span></div>
   </div>
 </div></section>
+
+<section class="pad"><div class="wrap">
+  <span class="eyebrow"><span class="ru">Выбор</span><span class="en">Choice</span></span>
+  <h2><span class="ru">Два варианта</span><span class="en">Two options</span></h2>
+  <div class="opts">
+    <div class="opt">
+      <span class="eyebrow"><span class="ru">Вариант A</span><span class="en">Option A</span></span>
+      <h3><span class="ru">Ускорить текущий сайт</span><span class="en">Speed up the current site</span></h3>
+      <p class="muted"><span class="ru">Дизайн, анимации и Webflow остаются как есть. Убираем дубли, лишние библиотеки и ошибки, облегчаем фото, настраиваем Google.</span><span class="en">Design, animations and Webflow stay as they are. We remove duplicates, extra libraries and bugs, make photos lighter and set up Google.</span></p>
+      <ul><li><span class="ru">Телефон «зависает» в 4 раза меньше</span><span class="en">Phone freezes 4× less</span></li><li><span class="ru">Заставка 1,6 с вместо 4,5 с</span><span class="en">Intro 1.6 s instead of 4.5 s</span></li><li><span class="ru">3D-фон и тяжёлые CSS-эффекты остаются, поэтому прокрутка главной на слабых устройствах всё ещё неровная</span><span class="en">The 3D background and heavy CSS effects remain, so home page scrolling is still uneven on weaker devices</span></li></ul>
+      <div class="pr"><span class="price">$1 050</span><span class="chip"><span class="ru">3 рабочих дня</span><span class="en">3 working days</span></span></div>
+      <p><a class="btn" href="https://dirol982.github.io/raycorral/site/"><span class="ru">Открыть вариант A</span><span class="en">Open option A</span></a></p>
+    </div>
+    <div class="opt rec">
+      <span class="badge"><span class="ru">Рекомендуем</span><span class="en">Recommended</span></span>
+      <span class="eyebrow"><span class="ru">Вариант B</span><span class="en">Option B</span></span>
+      <h3><span class="ru">Облегчённый редизайн</span><span class="en">Lightweight redesign</span></h3>
+      <p class="muted"><span class="ru">Тот же характер: крупный гротеск, чёрно-белая подача, фирменный красный, подпись Рэя. Но без перегруза: вместо 3D-фона и заставки подпись прорисовывается прямо на главной, блоки мягко появляются при прокрутке, галерея листается пальцем.</span><span class="en">The same character: bold grotesque type, black-and-white imagery, the signature red, Ray’s signature. But without the overload: instead of a 3D background and an intro screen, the signature draws itself on the home page, blocks fade in as you scroll, and the gallery swipes natively.</span></p>
+      <ul><li><span class="ru">Главная в 14 раз легче: 0,46 МБ вместо 6,7 МБ</span><span class="en">Home page 14× lighter: 0.46 MB instead of 6.7 MB</span></li><li><span class="ru">Прокрутка 60 кадров/с на телефоне и компьютере</span><span class="en">60 fps scrolling on phones and computers</span></li><li><span class="ru">Внутри уже: исправленные адреса, описания страниц, подписи к фото</span><span class="en">Already included: fixed URLs, page descriptions, image text</span></li></ul>
+      <div class="pr"><span class="price">$4 200</span><span class="chip"><span class="ru">3 недели</span><span class="en">3 weeks</span></span></div>
+      <p><a class="btn primary" href="https://dirol982.github.io/raycorral/redesign/"><span class="ru">Открыть вариант B</span><span class="en">Open option B</span></a></p>
+    </div>
+  </div>
+</div></section>
+
+<section class="pad"><div class="wrap">
+  <span class="eyebrow"><span class="ru">Вариант B · редизайн</span><span class="en">Option B · redesign</span></span>
+  <h2><span class="ru">Тот же характер, в 14 раз легче</span><span class="en">Same character, 14× lighter</span></h2>
+  <p class="lead"><span class="ru">Все 15 страниц уже собраны и опубликованы: главная, About, Work, восемь проектов, Press, Philanthropy, Contact и Media Kit. Откройте на телефоне: так сайт увидит большинство заказчиков.</span><span class="en">All 15 pages are already built and live: Home, About, Work, eight projects, Press, Philanthropy, Contact and Media Kit. Open it on a phone: that is how most clients will see it.</span></p>
+  <div class="shots">
+    <figure><img src="img/rd-home.jpg" alt="Redesign: home page" loading="lazy" width="960" height="600"><figcaption><span class="ru">Главная: подпись прорисовывается вместо экрана-заставки</span><span class="en">Home: the signature draws itself instead of an intro screen</span></figcaption></figure>
+    <figure><img src="img/rd-works.jpg" alt="Redesign: selected works gallery" loading="lazy" width="960" height="600"><figcaption><span class="ru">Галерея проектов листается пальцем, без скриптов-слайдеров</span><span class="en">Project gallery swipes natively, no slider scripts</span></figcaption></figure>
+    <figure><img src="img/rd-mobile.jpg" alt="Redesign on a phone" loading="lazy" width="360" height="733"><figcaption><span class="ru">Телефон</span><span class="en">Phone</span></figcaption></figure>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th><span class="ru">Телефон, 4G</span><span class="en">Phone, 4G</span></th><th><span class="ru">Сейчас</span><span class="en">Now</span></th><th><span class="ru">Редизайн</span><span class="en">Redesign</span></th><th><span class="ru">Изменение</span><span class="en">Change</span></th></tr></thead>
+    <tbody>
+      <tr><td class="grp" colspan="4"><span class="ru">Главная</span><span class="en">Home page</span></td></tr>
+      <tr><td><span class="ru">Главный контент на экране (LCP)</span><span class="en">Main content on screen (LCP)</span></td><td>3,70 s</td><td>1,89 s</td><td class="g">−49%</td></tr>
+      <tr><td><span class="ru">Блокировка экрана (TBT)</span><span class="en">Total blocking time (TBT)</span></td><td>1 442 ms</td><td>75 ms</td><td class="g">−95%</td></tr>
+      <tr><td><span class="ru">Вес страницы</span><span class="en">Page weight</span></td><td>6,66 MB</td><td>0,46 MB</td><td class="g">−93%</td></tr>
+      <tr><td><span class="ru">Скрипты</span><span class="en">Scripts</span></td><td>487 KB</td><td>2 KB</td><td class="g">−99%</td></tr>
+      <tr><td><span class="ru">Запросы</span><span class="en">Requests</span></td><td>58</td><td>15</td><td class="g">−74%</td></tr>
+      <tr><td><span class="ru">Плавность прокрутки</span><span class="en">Scrolling smoothness</span></td><td>1 fps</td><td>60 fps</td><td class="g">×40</td></tr>
+      <tr><td class="grp" colspan="4">About</td></tr>
+      <tr><td><span class="ru">Главный контент на экране (LCP)</span><span class="en">Main content on screen (LCP)</span></td><td>20,4 s</td><td>0,76 s</td><td class="g">−96%</td></tr>
+      <tr><td><span class="ru">Вес страницы</span><span class="en">Page weight</span></td><td>5,43 MB</td><td>0,79 MB</td><td class="g">−86%</td></tr>
+      <tr><td><span class="ru">Плавность прокрутки</span><span class="en">Scrolling smoothness</span></td><td>12 fps</td><td>60 fps</td><td class="g">×5</td></tr>
+      <tr><td class="grp" colspan="4"><span class="ru">Главная, компьютер</span><span class="en">Home page, desktop</span></td></tr>
+      <tr><td><span class="ru">Первый кадр с контентом</span><span class="en">First content on screen</span></td><td>1,32 s</td><td>0,31 s</td><td class="g">−76%</td></tr>
+      <tr><td><span class="ru">Блокировка экрана (TBT)</span><span class="en">Total blocking time (TBT)</span></td><td>10 610 ms</td><td>0 ms</td><td class="g">−100%</td></tr>
+      <tr><td><span class="ru">Плавность прокрутки</span><span class="en">Scrolling smoothness</span></td><td>0,5 fps</td><td>60 fps</td><td class="g">×120</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note"><span class="ru">Живой raycorral.com против редизайна на GitHub Pages, оба через интернет, кэш отключён, медиана из трёх прогонов. Телефон: эмуляция Pixel 7, 4G 1,6 Мбит/с, процессор замедлен в 4 раза. Тестовый браузер работает без видеокарты, поэтому у текущего сайта с 3D-фоном цифры на компьютере хуже, чем у реального посетителя; у редизайна 3D нет, его цифры от этого не зависят.</span><span class="en">Live raycorral.com versus the redesign on GitHub Pages, both over the internet, cache disabled, median of three runs. Phone: Pixel 7 emulation, 4G at 1.6 Mbps, 4× CPU slowdown. The test browser has no GPU, so the current site with its 3D background scores worse on desktop than a real visitor would see; the redesign has no 3D, so its numbers do not depend on this.</span></p>
+  <div class="guar">
+    <div><strong><span class="ru">Почему так быстро</span><span class="en">Why it is fast</span></strong><p><span class="ru">Нет 3D-фона, перехвата прокрутки, кастомного курсора, размытий и наложений. Все анимации идут на видеокарте через transform и opacity.</span><span class="en">No 3D background, scroll hijacking, custom cursor, blurs or blend modes. Every animation runs on the GPU via transform and opacity.</span></p></div>
+    <div><strong><span class="ru">Фото без потери качества</span><span class="en">Photos without quality loss</span></strong><p><span class="ru">Формат AVIF в трёх размерах: телефон получает 480–960 px, большой экран 1600 px. Главное фото загружается первым.</span><span class="en">AVIF in three sizes: phones get 480–960 px, large screens 1,600 px. The main photo loads first.</span></p></div>
+    <div><strong><span class="ru">Работает и без скриптов</span><span class="en">Works even without scripts</span></strong><p><span class="ru">Весь текст и фото видны сразу; если скрипт не загрузился, сайт всё равно читается и листается.</span><span class="en">All text and photos show immediately; if the script fails to load, the site still reads and scrolls.</span></p></div>
+  </div>
+</div></section>
+
+<section class="pad" style="padding-block:28px 0;border-top:0"><div class="wrap"><span class="eyebrow divider"><span class="ru">Вариант A · ускорение текущего сайта: подробности</span><span class="en">Option A · speeding up the current site: details</span></span></div></section>
 
 <section class="pad"><div class="wrap">
   <span class="eyebrow"><span class="ru">Посмотрите сами</span><span class="en">See for yourself</span></span>
@@ -356,13 +433,15 @@ code{font-size:.9em}
 <section class="pad"><div class="wrap">
   <span class="eyebrow"><span class="ru">Стоимость</span><span class="en">Pricing</span></span>
   <h2><span class="ru">Итого</span><span class="en">Summary</span></h2>
+  <p class="muted"><span class="ru">Вариант A или B на выбор; продвижение подключается к любому из них. В варианте B облегчение фото и настройка Google уже входят в стоимость.</span><span class="en">Choose option A or B; promotion works with either. Option B already includes lighter photos and Google setup.</span></p>
   <div class="tbl sum"><table>
     <thead><tr><th><span class="ru">Работа</span><span class="en">Work</span></th><th><span class="ru">Срок</span><span class="en">Time</span></th><th><span class="ru">Цена</span><span class="en">Price</span></th></tr></thead>
     <tbody>
       <tr><td><span class="ru">1. Ускорение: установка готового кода в Webflow, проверка всех страниц, замеры после публикации</span><span class="en">1. Speed: install the prepared code in Webflow, check every page, measure after publishing</span></td><td><span class="ru">1 день</span><span class="en">1 day</span></td><td>$450</td></tr>
       <tr><td><span class="ru">2. Облегчение фотографий</span><span class="en">2. Lighter photos</span></td><td><span class="ru">1 день</span><span class="en">1 day</span></td><td>$350</td></tr>
       <tr><td><span class="ru">3. Видимость в Google: карта сайта, адреса, описания, подписи к фото</span><span class="en">3. Google visibility: sitemap, URLs, descriptions, image text</span></td><td><span class="ru">1 день</span><span class="en">1 day</span></td><td>$450</td></tr>
-      <tr class="total"><td><span class="ru">Пакет «этапы 1–3»</span><span class="en">Package “stages 1–3”</span></td><td><span class="ru">3 рабочих дня</span><span class="en">3 working days</span></td><td><s>$1 250</s>$1 050</td></tr>
+      <tr class="total"><td><span class="ru">Вариант A: пакет «этапы 1–3»</span><span class="en">Option A: package “stages 1–3”</span></td><td><span class="ru">3 рабочих дня</span><span class="en">3 working days</span></td><td><s>$1 250</s>$1 050</td></tr>
+      <tr class="total"><td><span class="ru">Вариант B: редизайн в Webflow — 15 страниц по готовому макету, проекты в CMS, анимации, адаптив, фото в AVIF, SEO, перенос контента, неделя поддержки</span><span class="en">Option B: redesign in Webflow — 15 pages from the ready design, projects in the CMS, animations, responsive layout, AVIF photos, SEO, content migration, one week of support</span></td><td><span class="ru">3 недели</span><span class="en">3 weeks</span></td><td>$4 200</td></tr>
       <tr><td><span class="ru">4. Продвижение: 2 истории проектов в месяц, Pinterest, ссылки с изданий и каталогов, отчёт</span><span class="en">4. Promotion: 2 project stories a month, Pinterest, links from publications and directories, report</span></td><td><span class="ru">от 3 месяцев</span><span class="en">3 months minimum</span></td><td>$900 <span class="ru">/ мес</span><span class="en">/ mo</span></td></tr>
     </tbody>
   </table></div>
@@ -373,7 +452,7 @@ code{font-size:.9em}
   <span class="eyebrow"><span class="ru">Гарантии</span><span class="en">Safeguards</span></span>
   <h2><span class="ru">Без риска для сайта</span><span class="en">No risk to the site</span></h2>
   <div class="guar">
-    <div><strong><span class="ru">Дизайн прежний</span><span class="en">Same design</span></strong><p><span class="ru">Меняется только код «под капотом». Все анимации, заставка, курсор и эффекты на месте.</span><span class="en">Only the code under the hood changes. All animations, the intro, the cursor and the effects stay.</span></p></div>
+    <div><strong><span class="ru">Видно до оплаты</span><span class="en">See it before you pay</span></strong><p><span class="ru">В варианте A меняется только код «под капотом». Вариант B уже собран целиком: вы оцениваете готовый сайт, а не макет.</span><span class="en">Option A changes only the code under the hood. Option B is already fully built: you judge a working site, not a mockup.</span></p></div>
     <div><strong><span class="ru">Откат за минуты</span><span class="en">Rollback in minutes</span></strong><p><span class="ru">Перед работой делается резервная копия в Webflow, исходный код каждой страницы сохранён в репозитории.</span><span class="en">A Webflow backup is made first, and the original code of every page is saved in the repository.</span></p></div>
     <div><strong><span class="ru">Проверено до внедрения</span><span class="en">Tested before install</span></strong><p><span class="ru">Новый код прогнан на всех 15 страницах в браузере: ошибок нет, анимации работают. Убедиться можно в ускоренной копии сайта.</span><span class="en">The new code was run on all 15 pages in a browser: no errors, all animations working. You can check it yourself in the faster copy of the site.</span></p></div>
   </div>

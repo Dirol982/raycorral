@@ -20,6 +20,7 @@
 | `original/` | исходный код каждой страницы, снятый с сайта 10.11.2026, **для отката** |
 | `tools/` | скрипты проверки: сборка локальных копий «до/после» и замеры в Chromium |
 | `index.html`, `img/` | коммерческое предложение (RU/EN), опубликовано на GitHub Pages: https://dirol982.github.io/raycorral/ |
+| `redesign/` | облегчённый редизайн (15 страниц, статичный сайт): https://dirol982.github.io/raycorral/redesign/ · сборка: `python3 tools/build-redesign.py` |
 | `site/` | ускоренная копия сайта (все 15 страниц): https://dirol982.github.io/raycorral/site/ |
 | `site-before/` | текущая версия для сравнения: https://dirol982.github.io/raycorral/site-before/ |
 | `docs/bench/` | сырые замеры (`bench.json`) и раскадровки загрузки «до/после» |

@@ -1,0 +1,98 @@
+{
+ "mobile|home-now": {
+  "fcp": 900,
+  "lcp": 3696,
+  "cls": 0.07,
+  "tbt": 1442,
+  "maxTask": 884,
+  "KB": 6662.65,
+  "jsKB": 486.7,
+  "reqs": 58,
+  "fps": 1.44,
+  "longPct": 100
+ },
+ "mobile|home-new": {
+  "fcp": 788,
+  "lcp": 1888,
+  "cls": 0,
+  "tbt": 75,
+  "maxTask": 113,
+  "KB": 464.07,
+  "jsKB": 1.97,
+  "reqs": 15,
+  "fps": 60,
+  "longPct": 0
+ },
+ "mobile|about-now": {
+  "fcp": 780,
+  "lcp": 20384,
+  "cls": 0,
+  "tbt": 720,
+  "maxTask": 407,
+  "KB": 5427.8,
+  "jsKB": 284.63,
+  "reqs": 36,
+  "fps": 11.52,
+  "longPct": 100
+ },
+ "mobile|about-new": {
+  "fcp": 700,
+  "lcp": 760,
+  "cls": 0,
+  "tbt": 49,
+  "maxTask": 85,
+  "KB": 786.95,
+  "jsKB": 1.97,
+  "reqs": 12,
+  "fps": 60,
+  "longPct": 0
+ },
+ "desktop|home-now": {
+  "fcp": 1316,
+  "lcp": 1548,
+  "cls": 0,
+  "tbt": 10610,
+  "maxTask": 4133,
+  "KB": 6522.59,
+  "jsKB": 493.68,
+  "reqs": 57,
+  "fps": 0.49,
+  "longPct": 100
+ },
+ "desktop|home-new": {
+  "fcp": 312,
+  "lcp": 312,
+  "cls": 0,
+  "tbt": 0,
+  "maxTask": 0,
+  "KB": 777.2,
+  "jsKB": 1.97,
+  "reqs": 23,
+  "fps": 60,
+  "longPct": 0
+ },
+ "desktop|about-now": {
+  "fcp": 680,
+  "lcp": 1240,
+  "cls": 0.01,
+  "tbt": 186,
+  "maxTask": 188,
+  "KB": 5405.74,
+  "jsKB": 284.64,
+  "reqs": 35,
+  "fps": 24.71,
+  "longPct": 85.56
+ },
+ "desktop|about-new": {
+  "fcp": 384,
+  "lcp": 500,
+  "cls": 0,
+  "tbt": 0,
+  "maxTask": 0,
+  "KB": 926.37,
+  "jsKB": 1.97,
+  "reqs": 12,
+  "fps": 60,
+  "longPct": 0
+ }
+}
