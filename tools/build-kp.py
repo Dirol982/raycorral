@@ -221,5 +221,11 @@ head = HEAD.replace('<title>Ray Corral: редизайн</title>', '<title>Ray C
 find = FIND
 html = head + hero + kpis + find + same + done + metrics + scope_html + promo_html + guar + footer + foot
 assert 'github.com' not in html and 'редизайн' not in html.lower().replace('редизайн', 'редизайн') or True
+import hashlib, re as _re
+def _ver(m):
+    f = ROOT / m.group(1)
+    v = hashlib.md5(f.read_bytes()).hexdigest()[:8] if f.exists() else '0'
+    return f'src="{m.group(1)}?v={v}"'
+html = _re.sub(r'src="(img/[^"?]+)"', _ver, html)   # метка версии: заменённая картинка не берётся из кеша
 (ROOT / 'index.html').write_text(html, encoding='utf8')
 print('ok', len(html), 'redesign mentions:', html.lower().count('редизайн'), html.lower().count('redesign'), 'github:', html.count('github'))
