@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="ru" data-l="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Коммерческое предложение по ускорению и продвижению raycorral.com / Proposal to speed up and promote raycorral.com">
+<meta name="robots" content="noindex">
+<title>Ray Corral: скорость сайта</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Golos+Text:wght@400;500;600&display=swap">
+<style>
+/* Layout: proposal document, one 880px column; full-width bands for evidence (filmstrips); tessera squares mark status and stages. */
+:root{
+  --bg:#EEF0F2; --surface:#FFFFFF; --fg:#1B2230; --muted:#5A6476; --line:#D5DAE1;
+  --cobalt:#1F4BB0; --cobalt-soft:#E1E8F7;
+  --good:#2F7D5B; --good-soft:#E2F1E9; --bad:#B23A3A; --bad-soft:#F6E2E2; --warn:#A8661A;
+  --ink-band:#151A23; --ink-band-fg:#E7EAF0;
+  --display:"Cormorant Garamond","Times New Roman",Georgia,serif;
+  --body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161D; --surface:#1A2029; --fg:#E7EAF0; --muted:#9AA4B5; --line:#2C3441;
+  --cobalt:#7EA2F2; --cobalt-soft:#1E2A44; --good:#6CC59C; --good-soft:#18302A; --bad:#EE8080; --bad-soft:#3A1E22; --warn:#E0A55C;
+  --ink-band:#0B0E13; --ink-band-fg:#E7EAF0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161D; --surface:#1A2029; --fg:#E7EAF0; --muted:#9AA4B5; --line:#2C3441;
+  --cobalt:#7EA2F2; --cobalt-soft:#1E2A44; --good:#6CC59C; --good-soft:#18302A; --bad:#EE8080; --bad-soft:#3A1E22; --warn:#E0A55C;
+  --ink-band:#0B0E13; --ink-band-fg:#E7EAF0; color-scheme:dark}
+
+*{box-sizing:border-box}
+html[data-l="ru"] .en, html[data-l="en"] .ru{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6}
+.pad{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:880px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.08;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.5rem,7vw,4.2rem)}
+h2{font-size:clamp(1.9rem,4.5vw,2.6rem)}
+h3{font-size:1.4rem}
+p{margin:0}
+.eyebrow{font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lead{font-size:1.12rem;max-width:64ch}
+.muted{color:var(--muted)}
+.note{font-size:.86rem;color:var(--muted)}
+a{color:var(--cobalt)}
+section{padding-block:60px;border-top:1px solid var(--line)}
+section > .wrap{display:grid;gap:20px}
+
+/* top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px}
+.brand{font-family:var(--display);font-size:1.25rem;font-weight:600}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:99px;padding:3px;background:var(--surface)}
+.lang button{all:unset;cursor:pointer;font-size:.82rem;font-weight:600;padding:5px 14px;border-radius:99px;color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--cobalt);color:#fff}
+.lang button:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+
+/* hero */
+header.hero{padding-block:56px 48px}
+header.hero .wrap{display:grid;gap:22px}
+.tiles{display:grid;grid-template-columns:repeat(14,12px);gap:4px}
+.tiles i{width:12px;height:12px;border-radius:2px;background:var(--cobalt);opacity:.15}
+.tiles i:nth-child(3n){opacity:.45}.tiles i:nth-child(5n){opacity:.85}.tiles i:nth-child(7n){opacity:.3}
+.meta{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.88rem;color:var(--muted)}
+.meta b{color:var(--fg);font-weight:600}
+
+/* key numbers */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;display:grid;gap:6px;align-content:start}
+.kpi .v{font-family:var(--display);font-size:2.1rem;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .v small{font-family:var(--body);font-size:.8rem;font-weight:600;color:var(--good);margin-left:6px;vertical-align:middle}
+.kpi .from{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.kpi .l{font-size:.92rem}
+
+/* film strips (dark band) */
+.band{background:var(--ink-band);color:var(--ink-band-fg);border-top:0}
+.band .eyebrow,.band .muted,.band .note{color:#9AA4B5}
+.film{display:grid;gap:10px}
+.film .row{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center}
+.film .tag{font-size:.8rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.tag.b{color:#EE8080}.tag.a{color:#6CC59C}
+.frames{display:grid;gap:8px;min-width:0}
+.frames.d{grid-template-columns:repeat(4,minmax(0,1fr))}
+.frames.m{grid-template-columns:repeat(4,minmax(0,1fr));max-width:560px}
+figure{margin:0;display:grid;gap:4px}
+figure img{width:100%;height:auto;display:block;border-radius:4px;border:1px solid #2C3441}
+figcaption{font-size:.76rem;color:#9AA4B5;font-variant-numeric:tabular-nums}
+.timeax{display:grid;grid-template-columns:96px 1fr;gap:12px}
+@media (max-width:600px){
+  .film .row{grid-template-columns:1fr}
+  .timeax{display:none}
+  .frames.d{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+.callout{border-left:3px solid #6CC59C;padding:2px 0 2px 14px;font-size:.95rem;max-width:68ch}
+
+/* findings */
+.find{display:grid;gap:16px}
+.f{display:grid;grid-template-columns:12px 1fr;gap:14px}
+.f::before{content:"";width:12px;height:12px;border-radius:2px;margin-top:.5em;background:var(--bad)}
+.f.w::before{background:var(--warn)}
+.f > div{min-width:0;display:grid;gap:4px}
+.f p{color:var(--muted);font-size:.95rem}
+
+/* hover proof */
+.proof{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.proof figure img{border-color:var(--line)}
+.proof figcaption{color:var(--muted)}
+
+/* table */
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:.92rem;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+th{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.g{color:var(--good);font-weight:600}
+td.grp{font-weight:600;background:var(--cobalt-soft);color:var(--cobalt)}
+
+/* stages */
+.stages{display:grid;gap:14px}
+.st{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px 22px;display:grid;gap:10px}
+.st .hd{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.st .n{font-family:var(--display);font-size:2rem;color:var(--cobalt);line-height:1}
+.chip{margin-left:auto;font-size:.8rem;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--cobalt-soft);color:var(--cobalt)}
+.chip.done{background:var(--good-soft);color:var(--good)}
+.st ul{margin:0;padding-left:1.1em;display:grid;gap:5px}
+.st .res{border-top:1px dashed var(--line);padding-top:9px;font-size:.94rem}
+.st .res b{color:var(--good)}
+
+.guar{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.guar div{border-left:3px solid var(--cobalt);padding:2px 0 2px 14px;display:grid;gap:4px}
+.guar p{font-size:.92rem;color:var(--muted)}
+footer{padding-block:36px 60px;border-top:1px solid var(--line);font-size:.86rem;color:var(--muted)}
+code{font-size:.9em}
+</style>
+<style>body{margin:0}img{max-width:100%}</style>
+</head>
+<body>
+
+<div class="bar pad"><div class="wrap">
+  <span class="brand">Ray Corral · raycorral.com</span>
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" id="btn-ru" data-set="ru" aria-pressed="true">RU</button>
+    <button type="button" id="btn-en" data-set="en" aria-pressed="false">EN</button>
+  </div>
+</div></div>
+
+<header class="hero pad"><div class="wrap">
+  <div class="tiles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <span class="eyebrow"><span class="ru">Коммерческое предложение · ноябрь 2026</span><span class="en">Proposal · November 2026</span></span>
+  <h1><span class="ru">Тот же сайт, только быстрее</span><span class="en">The same website, only faster</span></h1>
+  <p class="lead">
+    <span class="ru">Сайт Рэя Коррала выглядит как дорогое портфолио, и менять в нём дизайн не нужно. Но на компьютере посетитель несколько секунд смотрит на чёрный экран, на телефоне страница подтормаживает, а Google почти не видит работы художника. Мы уже подготовили и проверили код, который убирает эти проблемы. Дизайн и все анимации остаются прежними.</span>
+    <span class="en">Ray Corral’s website looks like a premium portfolio, and its design should stay as it is. But on a computer visitors stare at a black screen for several seconds, on phones the page stutters, and Google barely sees the artist’s work. We have already prepared and tested code that fixes this. The design and every animation stay as they are.</span>
+  </p>
+  <div class="meta">
+    <span><span class="ru">Измерено:</span><span class="en">Measured:</span> <b>10.11.2026</b></span>
+    <span><span class="ru">Страницы:</span><span class="en">Pages:</span> <b>Home, About, Work, Press, Contact, Philanthropy, Selected Work</b></span>
+    <span><span class="ru">Код:</span><span class="en">Code:</span> <b><a href="https://github.com/Dirol982/raycorral">github.com/Dirol982/raycorral</a></b></span>
+  </div>
+</div></header>
+
+<section class="pad" style="padding-top:0;border-top:0"><div class="wrap">
+  <div class="kpis">
+    <div class="kpi"><span class="v">0,3 <span class="ru">с</span><span class="en">s</span><small>−77%</small></span><span class="from"><span class="ru">было 1,4 с</span><span class="en">was 1.4 s</span></span><span class="l"><span class="ru">телефон «зависает» при загрузке главной</span><span class="en">phone freezes while loading the home page</span></span></div>
+    <div class="kpi"><span class="v">1,6 <span class="ru">с</span><span class="en">s</span><small>−64%</small></span><span class="from"><span class="ru">было 4,5 с</span><span class="en">was 4.5 s</span></span><span class="l"><span class="ru">заставка с подписью на компьютере</span><span class="en">signature intro on desktop</span></span></div>
+    <div class="kpi"><span class="v">211 <span class="ru">КБ</span><span class="en">KB</span><small>−57%</small></span><span class="from"><span class="ru">было 486 КБ</span><span class="en">was 486 KB</span></span><span class="l"><span class="ru">скриптов на главной (телефон)</span><span class="en">of scripts on the home page (phone)</span></span></div>
+    <div class="kpi"><span class="v">0</span><span class="from"><span class="ru">было 3</span><span class="en">was 3</span></span><span class="l"><span class="ru">тяжёлых 3D-сцен на телефоне</span><span class="en">heavy 3D scenes running on phones</span></span></div>
+  </div>
+</div></section>
+
+<section class="band pad"><div class="wrap">
+  <span class="eyebrow"><span class="ru">Что видит посетитель на компьютере</span><span class="en">What a desktop visitor sees</span></span>
+  <h2><span class="ru">Первые четыре секунды на главной</span><span class="en">The first four seconds on the home page</span></h2>
+  <p class="muted"><span class="ru">Кадры сняты в браузере Chrome через 0,5, 1, 2 и 4 секунды после открытия страницы.</span><span class="en">Frames captured in Chrome 0.5, 1, 2 and 4 seconds after opening the page.</span></p>
+  <div class="film">
+    <div class="row"><span class="tag b"><span class="ru">Сейчас</span><span class="en">Now</span></span>
+      <div class="frames d">
+        <figure><img src="img/d-before-500.jpg" alt="Сейчас, 0,5 с: чёрный экран" loading="lazy" width="640" height="400"><figcaption>0,5 s</figcaption></figure>
+        <figure><img src="img/d-before-1000.jpg" alt="Сейчас, 1 с: чёрный экран" loading="lazy" width="640" height="400"><figcaption>1 s</figcaption></figure>
+        <figure><img src="img/d-before-2000.jpg" alt="Сейчас, 2 с: чёрный экран" loading="lazy" width="640" height="400"><figcaption>2 s</figcaption></figure>
+        <figure><img src="img/d-before-4000.jpg" alt="Сейчас, 4 с: всё ещё чёрный экран" loading="lazy" width="640" height="400"><figcaption>4 s</figcaption></figure>
+      </div></div>
+    <div class="row"><span class="tag a"><span class="ru">После</span><span class="en">After</span></span>
+      <div class="frames d">
+        <figure><img src="img/d-after-500.jpg" alt="После, 0,5 с: заставка" loading="lazy" width="640" height="400"><figcaption>0,5 s</figcaption></figure>
+        <figure><img src="img/d-after-1000.jpg" alt="После, 1 с: сайт открыт" loading="lazy" width="640" height="400"><figcaption>1 s</figcaption></figure>
+        <figure><img src="img/d-after-2000.jpg" alt="После, 2 с: сайт открыт" loading="lazy" width="640" height="400"><figcaption>2 s</figcaption></figure>
+        <figure><img src="img/d-after-4000.jpg" alt="После, 4 с: сайт открыт" loading="lazy" width="640" height="400"><figcaption>4 s</figcaption></figure>
+      </div></div>
+  </div>
+  <p class="callout"><span class="ru">Сейчас через 4 секунды посетитель всё ещё смотрит на подпись на чёрном фоне. После оптимизации та же заставка проигрывается за 1,6 секунды, и человек сразу видит главную.</span><span class="en">Today the visitor is still looking at a signature on a black screen after 4 seconds. After the optimization the same intro plays in 1.6 seconds and the home page appears right away.</span></p>
+</div></section>
+
+<section class="band pad" style="border-top:1px solid #2C3441"><div class="wrap">
+  <span class="eyebrow"><span class="ru">Что видит посетитель на телефоне</span><span class="en">What a mobile visitor sees</span></span>
+  <h2><span class="ru">Заставка, которая закрывает уже открытый сайт</span><span class="en">An intro that covers a page already on screen</span></h2>
+  <p class="muted"><span class="ru">Телефон среднего класса, мобильный интернет 4G. Кадры через 1, 4, 8 и 12 секунд.</span><span class="en">Mid-range phone on 4G. Frames at 1, 4, 8 and 12 seconds.</span></p>
+  <div class="film">
+    <div class="row"><span class="tag b"><span class="ru">Сейчас</span><span class="en">Now</span></span>
+      <div class="frames m">
+        <figure><img src="img/m-before-1000.jpg" alt="Сейчас, 1 с: главная видна" loading="lazy" width="280" height="569"><figcaption>1 s</figcaption></figure>
+        <figure><img src="img/m-before-4000.jpg" alt="Сейчас, 4 с: главная видна" loading="lazy" width="280" height="569"><figcaption>4 s</figcaption></figure>
+        <figure><img src="img/m-before-8000.jpg" alt="Сейчас, 8 с: заставка закрыла страницу" loading="lazy" width="280" height="569"><figcaption>8 s</figcaption></figure>
+        <figure><img src="img/m-before-12000.jpg" alt="Сейчас, 12 с: заставка всё ещё на экране" loading="lazy" width="280" height="569"><figcaption>12 s</figcaption></figure>
+      </div></div>
+    <div class="row"><span class="tag a"><span class="ru">После</span><span class="en">After</span></span>
+      <div class="frames m">
+        <figure><img src="img/m-after-1000.jpg" alt="После, 1 с: главная видна" loading="lazy" width="280" height="569"><figcaption>1 s</figcaption></figure>
+        <figure><img src="img/m-after-4000.jpg" alt="После, 4 с: главная видна" loading="lazy" width="280" height="569"><figcaption>4 s</figcaption></figure>
+        <figure><img src="img/m-after-8000.jpg" alt="После, 8 с: главная видна" loading="lazy" width="280" height="569"><figcaption>8 s</figcaption></figure>
+        <figure><img src="img/m-after-12000.jpg" alt="После, 12 с: главная видна" loading="lazy" width="280" height="569"><figcaption>12 s</figcaption></figure>
+      </div></div>
+  </div>
+  <p class="callout"><span class="ru">Сейчас на телефоне человек видит главную, начинает читать, а через 8 секунд экран снова чернеет: заставка ждёт загрузки скриптов и включается с опозданием. Мы это исправили: если страница уже показана, заставка не появляется.</span><span class="en">Today a phone visitor sees the home page, starts reading, and after 8 seconds the screen goes black again: the intro waits for the scripts and starts late. We fixed this: once the page is visible, the intro no longer appears.</span></p>
+</div></section>
+
+<section class="pad"><div class="wrap">
+  <span class="eyebrow"><span class="ru">Что мы нашли</span><span class="en">What we found</span></span>
+  <h2><span class="ru">Почему сайт медленный</span><span class="en">Why the site is slow</span></h2>
+  <div class="find">
+    <div class="f"><div><strong><span class="ru">Одни и те же библиотеки грузятся по два-три раза</span><span class="en">The same libraries load two or three times</span></strong>
+      <p><span class="ru">Анимационная библиотека подключена дважды, рядом её версия 2017 года, плавная прокрутка тоже в двух копиях. Телефон делает лишнюю работу на каждом заходе.</span><span class="en">The animation library is included twice, plus its 2017 version, and smooth scrolling also comes in two copies. The phone does extra work on every visit.</span></p></div></div>
+    <div class="f"><div><strong><span class="ru">Анимированный фон создавался трижды</span><span class="en">The animated background was created three times</span></strong>
+      <p><span class="ru">Две версии библиотеки Unicorn Studio и проект, указанный дважды, давали три 3D-сцены на 60 кадрах в секунду, в том числе на телефонах.</span><span class="en">Two versions of the Unicorn Studio library and a project referenced twice produced three 3D scenes at 60 fps, phones included.</span></p></div></div>
+    <div class="f"><div><strong><span class="ru">Скрипт с чужого учебного сайта</span><span class="en">A script loaded from a third-party demo site</span></strong>
+      <p><span class="ru">Эффект «волны» на фото подгружался с демонстрационной страницы постороннего ресурса вместе с 3D-движком 2019 года. На главной этот эффект работал на скрытом блоке, который никто не видит.</span><span class="en">The photo “ripple” effect was loaded from an unrelated demo page together with a 3D engine from 2019. On the home page it ran on a hidden block nobody can see.</span></p></div></div>
+    <div class="f w"><div><strong><span class="ru">Фото тяжелее, чем нужно</span><span class="en">Photos are heavier than needed</span></strong>
+      <p><span class="ru">Телефону отправляются снимки под большой монитор, а главная фотография грузится последней. Из 6 МБ главной страницы около 5,4 МБ приходится на фото.</span><span class="en">Phones receive images sized for large monitors, and the main photo loads last. About 5.4 MB of the 6 MB home page is photography.</span></p></div></div>
+    <div class="f w"><div><strong><span class="ru">Google почти не видит работы</span><span class="en">Google barely sees the work</span></strong>
+      <p><span class="ru">Нет карты сайта, у фото нет подписей, у внутренних страниц нет описаний, два адреса с опечатками (philantropy, miditerranean), сайт открывается и с www, и без.</span><span class="en">No sitemap, no image descriptions, no page descriptions, two URLs with typos (philantropy, miditerranean), and the site answers on both www and non-www.</span></p></div></div>
+  </div>
+</div></section>
+
+<section class="pad"><div class="wrap">
+  <span class="eyebrow"><span class="ru">Дизайн не меняется</span><span class="en">The design stays the same</span></span>
+  <h2><span class="ru">Эффект «волны»: было и стало</span><span class="en">The ripple effect: before and after</span></h2>
+  <p class="lead"><span class="ru">Мы переписали эффект с нуля: вместо трёх внешних библиотек на 150 КБ теперь 3 КБ собственного кода. Кадр при наведении на фото на странице About:</span><span class="en">We rewrote the effect from scratch: 3 KB of our own code instead of three external libraries weighing 150 KB. Hover frame on the About page:</span></p>
+  <div class="proof">
+    <figure><img src="img/hover-before.jpg" alt="Эффект волны, старый код" loading="lazy" width="480" height="466"><figcaption><span class="ru">Сейчас: three.js + TweenMax + hover.js, ~150 КБ</span><span class="en">Now: three.js + TweenMax + hover.js, ~150 KB</span></figcaption></figure>
+    <figure><img src="img/hover-after.jpg" alt="Эффект волны, новый код" loading="lazy" width="480" height="466"><figcaption><span class="ru">После: собственный WebGL, ~3 КБ</span><span class="en">After: our own WebGL, ~3 KB</span></figcaption></figure>
+  </div>
+</div></section>
+
+<section class="pad"><div class="wrap">
+  <span class="eyebrow"><span class="ru">Замеры</span><span class="en">Measurements</span></span>
+  <h2><span class="ru">Цифры до и после</span><span class="en">Numbers before and after</span></h2>
+  <div class="tbl"><table>
+    <thead><tr><th><span class="ru">Показатель</span><span class="en">Metric</span></th><th><span class="ru">Сейчас</span><span class="en">Now</span></th><th><span class="ru">После</span><span class="en">After</span></th><th><span class="ru">Изменение</span><span class="en">Change</span></th></tr></thead>
+    <tbody>
+      <tr><td class="grp" colspan="4"><span class="ru">Главная, телефон (4G)</span><span class="en">Home page, phone (4G)</span></td></tr>
+      <tr><td><span class="ru">Блокировка экрана (TBT)</span><span class="en">Total blocking time (TBT)</span></td><td>1 370 ms</td><td>319 ms</td><td class="g">−77%</td></tr>
+      <tr><td><span class="ru">Самое долгое «зависание»</span><span class="en">Longest freeze</span></td><td>894 ms</td><td>255 ms</td><td class="g">−71%</td></tr>
+      <tr><td><span class="ru">Главный контент на экране (LCP)</span><span class="en">Main content on screen (LCP)</span></td><td>3,64 s</td><td>3,08 s</td><td class="g">−15%</td></tr>
+      <tr><td><span class="ru">Скрипты</span><span class="en">Scripts</span></td><td>486 KB</td><td>211 KB</td><td class="g">−57%</td></tr>
+      <tr><td><span class="ru">Запросы к серверам</span><span class="en">Network requests</span></td><td>50</td><td>35</td><td class="g">−30%</td></tr>
+      <tr><td><span class="ru">3D-сцены</span><span class="en">3D scenes</span></td><td>3</td><td>0</td><td class="g">−3</td></tr>
+      <tr><td><span class="ru">Заставка закрывает открытую страницу</span><span class="en">Intro covers a visible page</span></td><td><span class="ru">с 8-й секунды</span><span class="en">from second 8</span></td><td><span class="ru">нет</span><span class="en">never</span></td><td class="g">✓</td></tr>
+      <tr><td class="grp" colspan="4"><span class="ru">Главная, компьютер</span><span class="en">Home page, desktop</span></td></tr>
+      <tr><td><span class="ru">Заставка с подписью</span><span class="en">Signature intro</span></td><td>4,5 s</td><td>1,6 s</td><td class="g">−64%</td></tr>
+      <tr><td><span class="ru">Самое долгое «зависание»</span><span class="en">Longest freeze</span></td><td>6 372 ms</td><td>1 311 ms</td><td class="g">−79%</td></tr>
+      <tr><td><span class="ru">Сдвиги макета (CLS)</span><span class="en">Layout shift (CLS)</span></td><td>0,31</td><td>0,17</td><td class="g">−45%</td></tr>
+      <tr><td><span class="ru">Скрипты</span><span class="en">Scripts</span></td><td>487 KB</td><td>261 KB</td><td class="g">−46%</td></tr>
+      <tr><td><span class="ru">3D-сцены</span><span class="en">3D scenes</span></td><td>3</td><td>1</td><td class="g">−2</td></tr>
+      <tr><td class="grp" colspan="4"><span class="ru">About, телефон (4G)</span><span class="en">About page, phone (4G)</span></td></tr>
+      <tr><td><span class="ru">Блокировка экрана (TBT)</span><span class="en">Total blocking time (TBT)</span></td><td>592 ms</td><td>307 ms</td><td class="g">−48%</td></tr>
+      <tr><td><span class="ru">Скрипты</span><span class="en">Scripts</span></td><td>285 KB</td><td>149 KB</td><td class="g">−48%</td></tr>
+      <tr><td><span class="ru">Объём страницы</span><span class="en">Page weight</span></td><td>5,14 MB</td><td>4,52 MB</td><td class="g">−12%</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note"><span class="ru">Методика: Chromium 1440×900 и эмуляция Pixel 7 (мобильный 4G 1,6 Мбит/с, задержка 150 мс, процессор замедлен в 4 раза). Медиана из трёх прогонов. «Сейчас» — живой код сайта, «после» — та же страница с новым кодом. Фотографии в обоих случаях одинаковые: их облегчение — этап 2, он даст основной выигрыш в объёме страницы и времени LCP. Тестовый браузер работает без видеокарты, поэтому на компьютере абсолютные цифры для 3D-фона выше, чем у реального посетителя; соотношение «до/после» сохраняется.</span><span class="en">Method: Chromium at 1440×900 and Pixel 7 emulation (4G 1.6 Mbps, 150 ms latency, 4× CPU slowdown). Median of three runs. “Now” is the live site code, “after” is the same page with the new code. Photos are identical in both; making them lighter is stage 2 and brings the main gain in page weight and LCP. The test browser has no GPU, so desktop numbers for the 3D background are higher than a real visitor would see; the before/after ratio holds.</span></p>
+</div></section>
+
+<section class="pad"><div class="wrap">
+  <span class="eyebrow"><span class="ru">Предложение</span><span class="en">Proposal</span></span>
+  <h2><span class="ru">Четыре этапа, по порядку отдачи</span><span class="en">Four stages, ordered by impact</span></h2>
+  <div class="stages">
+    <article class="st">
+      <div class="hd"><span class="n">1</span><h3><span class="ru">Ускорение: внедрение готового кода</span><span class="en">Speed: install the prepared code</span></h3><span class="chip done"><span class="ru">код готов · 1 день</span><span class="en">code ready · 1 day</span></span></div>
+      <ul>
+        <li><span class="ru">Каждая библиотека загружается один раз, устаревшие и сторонние скрипты убраны.</span><span class="en">Each library loads once; outdated and third-party scripts are removed.</span></li>
+        <li><span class="ru">Одна 3D-сцена на компьютере вместо трёх; на телефонах вместо неё фотография.</span><span class="en">One 3D scene on desktop instead of three; phones get the photo instead.</span></li>
+        <li><span class="ru">Заставка в 2 раза быстрее, один раз за визит, не перекрывает уже показанную страницу.</span><span class="en">The intro is twice as fast, plays once per visit and never covers a page already on screen.</span></li>
+        <li><span class="ru">Курсор, слайдер и часы не работают впустую в фоне.</span><span class="en">Cursor, slider and clock no longer run idle in the background.</span></li>
+      </ul>
+      <p class="res"><b><span class="ru">Результат:</span><span class="en">Result:</span></b> <span class="ru">цифры из таблицы выше, дизайн без изменений.</span><span class="en">the numbers in the table above, with no design changes.</span></p>
+    </article>
+    <article class="st">
+      <div class="hd"><span class="n">2</span><h3><span class="ru">Облегчение фотографий</span><span class="en">Lighter photos</span></h3><span class="chip"><span class="ru">1 день</span><span class="en">1 day</span></span></div>
+      <ul>
+        <li><span class="ru">Телефон получает снимки под размер своего экрана.</span><span class="en">Phones receive images sized for their screen.</span></li>
+        <li><span class="ru">Самые тяжёлые фото пережимаются без видимой потери качества.</span><span class="en">The heaviest photos are recompressed with no visible loss.</span></li>
+        <li><span class="ru">Главная фотография грузится первой, а не последней.</span><span class="en">The main photo loads first instead of last.</span></li>
+      </ul>
+      <p class="res"><b><span class="ru">Ожидаем:</span><span class="en">Expected:</span></b> <span class="ru">главная легче в 2,5–3 раза, LCP на телефоне ниже 2,5 с («зелёная зона» Google).</span><span class="en">home page 2.5–3× lighter, mobile LCP under 2.5 s (Google’s “good” range).</span></p>
+    </article>
+    <article class="st">
+      <div class="hd"><span class="n">3</span><h3><span class="ru">Видимость в Google</span><span class="en">Visibility in Google</span></h3><span class="chip"><span class="ru">1 день</span><span class="en">1 day</span></span></div>
+      <ul>
+        <li><span class="ru">Карта сайта, один основной адрес без www, исправление опечаток в адресах с переадресацией.</span><span class="en">Sitemap, one primary non-www address, URL typos fixed with redirects.</span></li>
+        <li><span class="ru">Названия и описания для каждой страницы, подписи ко всем фото работ.</span><span class="en">Titles and descriptions for every page, descriptions for every artwork photo.</span></li>
+        <li><span class="ru">Разметка, которая связывает сайт с Wikipedia, Forbes и Instagram (уже входит в код этапа 1).</span><span class="en">Structured data linking the site to Wikipedia, Forbes and Instagram (already in the stage 1 code).</span></li>
+      </ul>
+      <p class="res"><b><span class="ru">Ожидаем:</span><span class="en">Expected:</span></b> <span class="ru">работы находятся в поиске и в Google Картинках через 1–3 месяца.</span><span class="en">artworks appear in Google Search and Images within 1–3 months.</span></p>
+    </article>
+    <article class="st">
+      <div class="hd"><span class="n">4</span><h3><span class="ru">Продвижение</span><span class="en">Promotion</span></h3><span class="chip"><span class="ru">ежемесячно</span><span class="en">monthly</span></span></div>
+      <ul>
+        <li><span class="ru">Истории проектов: задача, стиль, материалы, фото процесса.</span><span class="en">Project stories: brief, style, materials, process photos.</span></li>
+        <li><span class="ru">Блок «О нас писали» с цитатами Forbes, Elle Decor, Haute Living.</span><span class="en">An “As featured in” block with quotes from Forbes, Elle Decor, Haute Living.</span></li>
+        <li><span class="ru">Ссылки с изданий и каталогов архитекторов: Houzz, Architizer, 1stDibs.</span><span class="en">Links from publications and architecture directories: Houzz, Architizer, 1stDibs.</span></li>
+        <li><span class="ru">Pinterest и Instagram с переходом на конкретные проекты; кнопка «Обсудить проект».</span><span class="en">Pinterest and Instagram pointing to specific projects; a “Commission a piece” button.</span></li>
+        <li><span class="ru">Аналитика и ежемесячный отчёт: откуда приходят заказчики.</span><span class="en">Analytics and a monthly report on where clients come from.</span></li>
+      </ul>
+      <p class="res"><b><span class="ru">Ожидаем:</span><span class="en">Expected:</span></b> <span class="ru">стабильный поток посетителей из поиска и соцсетей, больше заявок с сайта.</span><span class="en">a steady flow of visitors from search and social media, and more enquiries from the site.</span></p>
+    </article>
+  </div>
+</div></section>
+
+<section class="pad"><div class="wrap">
+  <span class="eyebrow"><span class="ru">Гарантии</span><span class="en">Safeguards</span></span>
+  <h2><span class="ru">Без риска для сайта</span><span class="en">No risk to the site</span></h2>
+  <div class="guar">
+    <div><strong><span class="ru">Дизайн прежний</span><span class="en">Same design</span></strong><p><span class="ru">Меняется только код «под капотом». Все анимации, заставка, курсор и эффекты на месте.</span><span class="en">Only the code under the hood changes. All animations, the intro, the cursor and the effects stay.</span></p></div>
+    <div><strong><span class="ru">Откат за минуты</span><span class="en">Rollback in minutes</span></strong><p><span class="ru">Перед работой делается резервная копия в Webflow, исходный код каждой страницы сохранён в репозитории.</span><span class="en">A Webflow backup is made first, and the original code of every page is saved in the repository.</span></p></div>
+    <div><strong><span class="ru">Проверено до внедрения</span><span class="en">Tested before install</span></strong><p><span class="ru">Новый код прогнан на всех семи страницах в браузере: ошибок нет, анимации работают.</span><span class="en">The new code was run on all seven pages in a browser: no errors, all animations working.</span></p></div>
+  </div>
+</div></section>
+
+<footer class="pad"><div class="wrap">
+  <span class="ru">Подготовлено по публичной версии raycorral.com 10 ноября 2026 года. Код, инструкция по установке и сырые замеры: </span><span class="en">Based on the public version of raycorral.com, 10 November 2026. Code, installation guide and raw measurements: </span><a href="https://github.com/Dirol982/raycorral">github.com/Dirol982/raycorral</a>
+</div></footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var titles = { ru: 'Ray Corral: скорость сайта', en: 'Ray Corral: site speed' };
+  function set(l) {
+    root.setAttribute('data-l', l);
+    root.setAttribute('lang', l);
+    document.title = titles[l];
+    document.querySelectorAll('[data-set]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-set') === l)); });
+    try { localStorage.setItem('kp-lang', l); } catch (e) {}
+  }
+  var initial = location.hash === '#en' ? 'en' : location.hash === '#ru' ? 'ru' : null;
+  if (!initial) { try { initial = localStorage.getItem('kp-lang'); } catch (e) {} }
+  set(initial === 'en' ? 'en' : 'ru');
+  document.querySelectorAll('[data-set]').forEach(function (b) {
+    b.addEventListener('click', function () { set(b.getAttribute('data-set')); });
+  });
+  window.addEventListener('hashchange', function () { if (location.hash === '#en' || location.hash === '#ru') set(location.hash.slice(1)); });
+})();
+</script>
+
+</body>
+</html>
