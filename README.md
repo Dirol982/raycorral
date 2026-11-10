@@ -20,6 +20,8 @@
 | `original/` | исходный код каждой страницы, снятый с сайта 10.11.2026, **для отката** |
 | `tools/` | скрипты проверки: сборка локальных копий «до/после» и замеры в Chromium |
 | `index.html`, `img/` | коммерческое предложение (RU/EN), опубликовано на GitHub Pages: https://dirol982.github.io/raycorral/ |
+| `site/` | ускоренная копия сайта (все 15 страниц): https://dirol982.github.io/raycorral/site/ |
+| `site-before/` | текущая версия для сравнения: https://dirol982.github.io/raycorral/site-before/ |
 | `docs/bench/` | сырые замеры (`bench.json`) и раскадровки загрузки «до/после» |
 
 ## Что именно исправлено
@@ -57,7 +59,7 @@
 | About | удалить весь код, вставить `webflow/pages/about.html` |
 | Work | удалить весь код, вставить `webflow/pages/work.html` |
 | Selected Work (шаблон или каждая страница проекта) | удалить весь код, вставить `webflow/pages/selected-work-template.html` |
-| Press, Contact, Philanthropy | удалить весь код (своего кода у этих страниц нет, всё общее теперь в Footer code) |
+| Press, Contact, Philanthropy, Media Kit | удалить весь код (своего кода у этих страниц нет, всё общее теперь в Footer code) |
 
 Блоки `<style>` в **Head code** страниц (preview-follower, arc-scroll и т.п.) **не трогайте**.
 
@@ -132,4 +134,6 @@ python3 tools/build-preview.py /tmp/rc
 python3 -m http.server 8787 --directory preview &
 node tools/check.js desktop index.html about.html work.html
 node tools/bench.js docs/bench 3
+# демо-копии для GitHub Pages (site/ и site-before/)
+python3 tools/build-site.py /tmp/rc /raycorral
 ```

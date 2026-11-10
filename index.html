@@ -123,6 +123,23 @@ td.grp{font-weight:600;background:var(--cobalt-soft);color:var(--cobalt)}
 .st .n{font-family:var(--display);font-size:2rem;color:var(--cobalt);line-height:1}
 .chip{margin-left:auto;font-size:.8rem;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--cobalt-soft);color:var(--cobalt)}
 .chip.done{background:var(--good-soft);color:var(--good)}
+.price{font-family:var(--display);font-size:1.6rem;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.price small{font-family:var(--body);font-size:.8rem;color:var(--muted);font-weight:500}
+.st .hd .chip{margin-left:0}
+.st .hd .price{margin-left:auto}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:6px;font-weight:600;font-size:.95rem;text-decoration:none;border:1px solid var(--line);color:var(--fg);background:var(--surface)}
+.btn.primary{background:var(--cobalt);border-color:var(--cobalt);color:#fff}
+.btn:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+.btn::after{content:"↗";font-weight:400}
+.side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.side figure img{border-color:var(--line)}
+.side figcaption{color:var(--muted);font-size:.86rem}
+@media (max-width:600px){.side{grid-template-columns:1fr}}
+.sum td:last-child,.sum th:last-child{text-align:right}
+.sum td:first-child{white-space:normal;min-width:240px}
+.sum tr.total td{font-weight:600;background:var(--good-soft);color:var(--good)}
+.sum s{color:var(--muted);font-weight:400;margin-right:8px}
 .st ul{margin:0;padding-left:1.1em;display:grid;gap:5px}
 .st .res{border-top:1px dashed var(--line);padding-top:9px;font-size:.94rem}
 .st .res b{color:var(--good)}
@@ -158,6 +175,10 @@ code{font-size:.9em}
     <span><span class="ru">Страницы:</span><span class="en">Pages:</span> <b>Home, About, Work, Press, Contact, Philanthropy, Selected Work</b></span>
     <span><span class="ru">Код:</span><span class="en">Code:</span> <b><a href="https://github.com/Dirol982/raycorral">github.com/Dirol982/raycorral</a></b></span>
   </div>
+  <div class="btns">
+    <a class="btn primary" href="https://dirol982.github.io/raycorral/site/"><span class="ru">Открыть ускоренный сайт</span><span class="en">Open the faster site</span></a>
+    <a class="btn" href="https://dirol982.github.io/raycorral/site-before/"><span class="ru">Текущая версия для сравнения</span><span class="en">Current version to compare</span></a>
+  </div>
 </div></header>
 
 <section class="pad" style="padding-top:0;border-top:0"><div class="wrap">
@@ -167,6 +188,21 @@ code{font-size:.9em}
     <div class="kpi"><span class="v">211 <span class="ru">КБ</span><span class="en">KB</span><small>−57%</small></span><span class="from"><span class="ru">было 486 КБ</span><span class="en">was 486 KB</span></span><span class="l"><span class="ru">скриптов на главной (телефон)</span><span class="en">of scripts on the home page (phone)</span></span></div>
     <div class="kpi"><span class="v">0</span><span class="from"><span class="ru">было 3</span><span class="en">was 3</span></span><span class="l"><span class="ru">тяжёлых 3D-сцен на телефоне</span><span class="en">heavy 3D scenes running on phones</span></span></div>
   </div>
+</div></section>
+
+<section class="pad"><div class="wrap">
+  <span class="eyebrow"><span class="ru">Посмотрите сами</span><span class="en">See for yourself</span></span>
+  <h2><span class="ru">Ускоренный сайт уже работает</span><span class="en">The faster site is already live</span></h2>
+  <p class="lead"><span class="ru">Мы собрали полную копию raycorral.com с новым кодом: все 15 страниц, все анимации и переходы. Откройте обе версии на компьютере и на телефоне. Ниже главная через 7 секунд после открытия.</span><span class="en">We built a full copy of raycorral.com running the new code: all 15 pages, every animation and transition. Open both versions on a computer and on a phone. Below is the home page 7 seconds after opening.</span></p>
+  <div class="side">
+    <figure><img src="img/home7s-now.jpg" alt="Текущая версия через 7 секунд: всё ещё заставка" loading="lazy" width="800" height="500"><figcaption><span class="ru">Сейчас, 7 секунд: всё ещё заставка</span><span class="en">Now, 7 seconds: still the intro</span></figcaption></figure>
+    <figure><img src="img/home7s-after.jpg" alt="Ускоренная версия через 7 секунд: сайт открыт" loading="lazy" width="800" height="500"><figcaption><span class="ru">Ускоренная версия, 7 секунд: сайт давно открыт</span><span class="en">Faster version, 7 seconds: the site has long been open</span></figcaption></figure>
+  </div>
+  <div class="btns">
+    <a class="btn primary" href="https://dirol982.github.io/raycorral/site/"><span class="ru">Ускоренный сайт</span><span class="en">Faster site</span></a>
+    <a class="btn" href="https://dirol982.github.io/raycorral/site-before/"><span class="ru">Текущая версия</span><span class="en">Current version</span></a>
+  </div>
+  <p class="note"><span class="ru">Обе копии закрыты от поисковиков, формы в них отключены. Настоящий сайт не затронут, пока код не установлен в Webflow.</span><span class="en">Both copies are hidden from search engines and their forms are disabled. The live site is untouched until the code is installed in Webflow.</span></p>
 </div></section>
 
 <section class="band pad"><div class="wrap">
@@ -276,7 +312,7 @@ code{font-size:.9em}
   <h2><span class="ru">Четыре этапа, по порядку отдачи</span><span class="en">Four stages, ordered by impact</span></h2>
   <div class="stages">
     <article class="st">
-      <div class="hd"><span class="n">1</span><h3><span class="ru">Ускорение: внедрение готового кода</span><span class="en">Speed: install the prepared code</span></h3><span class="chip done"><span class="ru">код готов · 1 день</span><span class="en">code ready · 1 day</span></span></div>
+      <div class="hd"><span class="n">1</span><h3><span class="ru">Ускорение: внедрение готового кода</span><span class="en">Speed: install the prepared code</span></h3><span class="chip done"><span class="ru">код готов · 1 день</span><span class="en">code ready · 1 day</span></span><span class="price">$450</span></div>
       <ul>
         <li><span class="ru">Каждая библиотека загружается один раз, устаревшие и сторонние скрипты убраны.</span><span class="en">Each library loads once; outdated and third-party scripts are removed.</span></li>
         <li><span class="ru">Одна 3D-сцена на компьютере вместо трёх; на телефонах вместо неё фотография.</span><span class="en">One 3D scene on desktop instead of three; phones get the photo instead.</span></li>
@@ -286,7 +322,7 @@ code{font-size:.9em}
       <p class="res"><b><span class="ru">Результат:</span><span class="en">Result:</span></b> <span class="ru">цифры из таблицы выше, дизайн без изменений.</span><span class="en">the numbers in the table above, with no design changes.</span></p>
     </article>
     <article class="st">
-      <div class="hd"><span class="n">2</span><h3><span class="ru">Облегчение фотографий</span><span class="en">Lighter photos</span></h3><span class="chip"><span class="ru">1 день</span><span class="en">1 day</span></span></div>
+      <div class="hd"><span class="n">2</span><h3><span class="ru">Облегчение фотографий</span><span class="en">Lighter photos</span></h3><span class="chip"><span class="ru">1 день</span><span class="en">1 day</span></span><span class="price">$350</span></div>
       <ul>
         <li><span class="ru">Телефон получает снимки под размер своего экрана.</span><span class="en">Phones receive images sized for their screen.</span></li>
         <li><span class="ru">Самые тяжёлые фото пережимаются без видимой потери качества.</span><span class="en">The heaviest photos are recompressed with no visible loss.</span></li>
@@ -295,7 +331,7 @@ code{font-size:.9em}
       <p class="res"><b><span class="ru">Ожидаем:</span><span class="en">Expected:</span></b> <span class="ru">главная легче в 2,5–3 раза, LCP на телефоне ниже 2,5 с («зелёная зона» Google).</span><span class="en">home page 2.5–3× lighter, mobile LCP under 2.5 s (Google’s “good” range).</span></p>
     </article>
     <article class="st">
-      <div class="hd"><span class="n">3</span><h3><span class="ru">Видимость в Google</span><span class="en">Visibility in Google</span></h3><span class="chip"><span class="ru">1 день</span><span class="en">1 day</span></span></div>
+      <div class="hd"><span class="n">3</span><h3><span class="ru">Видимость в Google</span><span class="en">Visibility in Google</span></h3><span class="chip"><span class="ru">1 день</span><span class="en">1 day</span></span><span class="price">$450</span></div>
       <ul>
         <li><span class="ru">Карта сайта, один основной адрес без www, исправление опечаток в адресах с переадресацией.</span><span class="en">Sitemap, one primary non-www address, URL typos fixed with redirects.</span></li>
         <li><span class="ru">Названия и описания для каждой страницы, подписи ко всем фото работ.</span><span class="en">Titles and descriptions for every page, descriptions for every artwork photo.</span></li>
@@ -304,7 +340,7 @@ code{font-size:.9em}
       <p class="res"><b><span class="ru">Ожидаем:</span><span class="en">Expected:</span></b> <span class="ru">работы находятся в поиске и в Google Картинках через 1–3 месяца.</span><span class="en">artworks appear in Google Search and Images within 1–3 months.</span></p>
     </article>
     <article class="st">
-      <div class="hd"><span class="n">4</span><h3><span class="ru">Продвижение</span><span class="en">Promotion</span></h3><span class="chip"><span class="ru">ежемесячно</span><span class="en">monthly</span></span></div>
+      <div class="hd"><span class="n">4</span><h3><span class="ru">Продвижение</span><span class="en">Promotion</span></h3><span class="chip"><span class="ru">ежемесячно</span><span class="en">monthly</span></span><span class="price">$900<small><span class="ru"> / мес</span><span class="en"> / mo</span></small></span></div>
       <ul>
         <li><span class="ru">Истории проектов: задача, стиль, материалы, фото процесса.</span><span class="en">Project stories: brief, style, materials, process photos.</span></li>
         <li><span class="ru">Блок «О нас писали» с цитатами Forbes, Elle Decor, Haute Living.</span><span class="en">An “As featured in” block with quotes from Forbes, Elle Decor, Haute Living.</span></li>
@@ -318,12 +354,28 @@ code{font-size:.9em}
 </div></section>
 
 <section class="pad"><div class="wrap">
+  <span class="eyebrow"><span class="ru">Стоимость</span><span class="en">Pricing</span></span>
+  <h2><span class="ru">Итого</span><span class="en">Summary</span></h2>
+  <div class="tbl sum"><table>
+    <thead><tr><th><span class="ru">Работа</span><span class="en">Work</span></th><th><span class="ru">Срок</span><span class="en">Time</span></th><th><span class="ru">Цена</span><span class="en">Price</span></th></tr></thead>
+    <tbody>
+      <tr><td><span class="ru">1. Ускорение: установка готового кода в Webflow, проверка всех страниц, замеры после публикации</span><span class="en">1. Speed: install the prepared code in Webflow, check every page, measure after publishing</span></td><td><span class="ru">1 день</span><span class="en">1 day</span></td><td>$450</td></tr>
+      <tr><td><span class="ru">2. Облегчение фотографий</span><span class="en">2. Lighter photos</span></td><td><span class="ru">1 день</span><span class="en">1 day</span></td><td>$350</td></tr>
+      <tr><td><span class="ru">3. Видимость в Google: карта сайта, адреса, описания, подписи к фото</span><span class="en">3. Google visibility: sitemap, URLs, descriptions, image text</span></td><td><span class="ru">1 день</span><span class="en">1 day</span></td><td>$450</td></tr>
+      <tr class="total"><td><span class="ru">Пакет «этапы 1–3»</span><span class="en">Package “stages 1–3”</span></td><td><span class="ru">3 рабочих дня</span><span class="en">3 working days</span></td><td><s>$1 250</s>$1 050</td></tr>
+      <tr><td><span class="ru">4. Продвижение: 2 истории проектов в месяц, Pinterest, ссылки с изданий и каталогов, отчёт</span><span class="en">4. Promotion: 2 project stories a month, Pinterest, links from publications and directories, report</span></td><td><span class="ru">от 3 месяцев</span><span class="en">3 months minimum</span></td><td>$900 <span class="ru">/ мес</span><span class="en">/ mo</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="note"><span class="ru">Цены в долларах США. Оплата: 50% перед стартом, 50% после сдачи этапа. В этап 1 входит неделя поддержки после публикации: если что-то в анимациях поведёт себя иначе, исправляем бесплатно.</span><span class="en">Prices in US dollars. Payment: 50% upfront, 50% on delivery of each stage. Stage 1 includes one week of support after publishing: if any animation behaves differently, we fix it at no cost.</span></p>
+</div></section>
+
+<section class="pad"><div class="wrap">
   <span class="eyebrow"><span class="ru">Гарантии</span><span class="en">Safeguards</span></span>
   <h2><span class="ru">Без риска для сайта</span><span class="en">No risk to the site</span></h2>
   <div class="guar">
     <div><strong><span class="ru">Дизайн прежний</span><span class="en">Same design</span></strong><p><span class="ru">Меняется только код «под капотом». Все анимации, заставка, курсор и эффекты на месте.</span><span class="en">Only the code under the hood changes. All animations, the intro, the cursor and the effects stay.</span></p></div>
     <div><strong><span class="ru">Откат за минуты</span><span class="en">Rollback in minutes</span></strong><p><span class="ru">Перед работой делается резервная копия в Webflow, исходный код каждой страницы сохранён в репозитории.</span><span class="en">A Webflow backup is made first, and the original code of every page is saved in the repository.</span></p></div>
-    <div><strong><span class="ru">Проверено до внедрения</span><span class="en">Tested before install</span></strong><p><span class="ru">Новый код прогнан на всех семи страницах в браузере: ошибок нет, анимации работают.</span><span class="en">The new code was run on all seven pages in a browser: no errors, all animations working.</span></p></div>
+    <div><strong><span class="ru">Проверено до внедрения</span><span class="en">Tested before install</span></strong><p><span class="ru">Новый код прогнан на всех 15 страницах в браузере: ошибок нет, анимации работают. Убедиться можно в ускоренной копии сайта.</span><span class="en">The new code was run on all 15 pages in a browser: no errors, all animations working. You can check it yourself in the faster copy of the site.</span></p></div>
   </div>
 </div></section>
 
