@@ -1,0 +1,119 @@
+<!--
+  RAY CORRAL · ФОН ПЕРВОГО ЭКРАНА «ЧЕРНИЛЬНАЯ КЛЯКСА» (замена Unicorn Studio)
+  Куда: Home → .hero → Embed «unicorn-bg_embed». Замените весь код Embed этим,
+  в Custom attributes Embed удалите data-us-*.
+
+  Визуально повторяет сцену Unicorn «NoiseMask Hero»: светло-серый фон #EEEEEE
+  с дизеринг-зерном, тёмное пятно ~27% ширины экрана с «кипящими» краями,
+  которое при загрузке раскрывается с полного экрана и затем с инерцией
+  следует за курсором (откалибровано по оригиналу).
+
+  Почему легче: один шейдер в один проход вместо 5 слоёв Unicorn в двух
+  экземплярах; шум считается только возле края пятна; библиотека не нужна
+  (~5 КБ вместо ~150 КБ); рендер стоит на паузе, когда экран не виден
+  или вкладка свёрнута; на телефоне 30 кадров/с.
+-->
+<canvas class="ink-canvas" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;display:block;background:#eeeeee"></canvas>
+<script>
+(function () {
+  'use strict';
+  var canvas = document.currentScript.previousElementSibling;
+  var hero = canvas.closest('.hero') || canvas.parentElement;
+  var gl = canvas.getContext('webgl', { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: 'low-power', preserveDrawingBuffer: false });
+  if (!gl) return; // остаётся фон #EEEEEE
+
+  var coarse = matchMedia('(pointer: coarse)').matches;
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var DPR = Math.min(window.devicePixelRatio || 1, coarse ? 1 : 1.5);
+  var FRAME = coarse ? 1000 / 30 : 1000 / 60;
+
+  var VS = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+  var FS = [
+    'precision highp float;',
+    'uniform vec2 uRes;uniform float uTime;uniform vec2 uMouse;uniform float uWidth;uniform float uTrack;uniform float uSeed;',
+    // гладкий градиентный шум (собственная реализация)
+    'vec2 h2(vec2 p){p=vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3)));return fract(sin(p)*43758.5453)*2.-1.;}',
+    'float gnoise(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*f*(f*(f*6.-15.)+10.);',
+    ' return mix(mix(dot(h2(i),f),dot(h2(i+vec2(1,0)),f-vec2(1,0)),u.x),mix(dot(h2(i+vec2(0,1)),f-vec2(0,1)),dot(h2(i+vec2(1,1)),f-vec2(1,1)),u.x),u.y);}',
+    'float field(vec2 st,float t){float v=gnoise(st+vec2(t*.21,-t*.17))*.75+gnoise(st*2.03+vec2(-t*.13,t*.19)+7.3)*.25;return clamp(.5+.5*v*2.,0.,1.);}',
+    'float rnd(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233))+uSeed)*43758.5453);}',
+    'void main(){',
+    ' vec2 uv=gl_FragCoord.xy/uRes; uv.y=1.-uv.y;',
+    ' float asp=uRes.x/uRes.y;',
+    ' vec2 uc=vec2(.5)+(uMouse-.5)*uTrack+vec2(.085,-.082)*min(uTrack/.95,1.);',  // видимый центр пятна (откалиброван по оригиналу)
+    ' vec2 c=uc*.85+vec2(.075);',
+    ' float r=uWidth*.5;',                                // радиус в долях ширины
+    ' vec2 d0=(uv-c)*vec2(asp,1.);',
+    ' float a=0.;',
+    ' if(length((uv-uc)*vec2(asp,1.))<r*asp/.85+.2){',    // шум считаем только около пятна
+    '  vec2 st=(uv-vec2(.5,.5016))*vec2(asp,1.)*10.;',
+    '  float cs=cos(-.1357),sn=sin(-.1357); st=mat2(cs,-sn,sn,cs)*st;',
+    '  vec2 n=vec2(field(st,uTime),field(st+vec2(13.4,1.7),uTime));',
+    '  vec2 w=mix(uv,n,.15);',                             // как у оригинала: 15% «турбулентности»
+    '  float dist=length((w-c)*uRes)-r*uRes.x;',          // окружность в пикселях
+    '  a=1.-smoothstep(-.75,.75,dist);',
+    ' }',
+    ' vec3 bg=vec3(.93333);',
+    ' float lv=1./.07;',                                   // дизеринг-зерно, как у оригинала
+    ' bg=floor(bg*lv+rnd(floor(gl_FragCoord.xy))-.005)/lv;',
+    ' vec3 col=mix(bg,vec3(.0549),a);',
+    ' gl_FragColor=vec4(col,1.);',
+    '}'
+  ].join('\n');
+
+  function sh(t, s) { var o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); return o; }
+  var pr = gl.createProgram();
+  gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr);
+  if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return;
+  gl.useProgram(pr);
+  var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  var U = {}; ['uRes', 'uTime', 'uMouse', 'uWidth', 'uTrack', 'uSeed'].forEach(function (n) { U[n] = gl.getUniformLocation(pr, n); });
+
+  function resize() {
+    var w = Math.max(1, Math.round(canvas.clientWidth * DPR)), h = Math.max(1, Math.round(canvas.clientHeight * DPR));
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h); }
+    gl.uniform2f(U.uRes, w, h);
+  }
+  resize();
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas); else addEventListener('resize', resize);
+
+  // Мышь с инерцией
+  var tx = .5, ty = .5, mx = .5, my = .5;
+  if (!coarse) addEventListener('mousemove', function (e) {
+    var r = hero.getBoundingClientRect();
+    tx = (e.clientX - r.left) / r.width; ty = (e.clientY - r.top) / r.height; wake();
+  }, { passive: true });
+
+  // Раскрытие: ширина 1 → 0.27 за 2 с (easeInOutExpo), слежение 0 → 0.87 (easeInOutQuart)
+  var t0 = performance.now();
+  function eIOExpo(t) { return t <= 0 ? 0 : t >= 1 ? 1 : t < .5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2; }
+  function eIOQuart(t) { t = Math.max(0, Math.min(1, t)); return t < .5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2; }
+
+  var visible = true, running = false, last = 0, seedT = -1;
+  function frame(now) {
+    if (!visible || document.hidden) { running = false; return; }
+    requestAnimationFrame(frame);
+    if (now - last < FRAME - 1) return;
+    last = now;
+    var el = now - t0;
+    var w = 1 + (0.2698 - 1) * eIOExpo((el - 100) / 2000);
+    var tr = 0.95 * eIOQuart((el - 150) / 2000);
+    mx += (tx - mx) * 0.06; my += (ty - my) * 0.06;
+    var s = Math.floor(now / 1000);
+    if (s !== seedT) { seedT = s; gl.uniform1f(U.uSeed, (s * 7.13) % 100); }
+    gl.uniform1f(U.uTime, now / 1000 * 0.5);
+    gl.uniform2f(U.uMouse, mx, my);
+    gl.uniform1f(U.uWidth, w);
+    gl.uniform1f(U.uTrack, tr);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  function wake() { if (!running && visible && !document.hidden && !reduced) { running = true; requestAnimationFrame(frame); } }
+
+  if (reduced) { t0 = -1e6; frame(performance.now()); visible = false; return; }
+  new IntersectionObserver(function (es) { visible = es[0].isIntersecting; if (visible) wake(); }).observe(canvas);
+  document.addEventListener('visibilitychange', wake);
+  wake();
+})();
+</script>
