@@ -32,7 +32,7 @@ s_ms = lambda v: num(v / 1000, 2, 's')
 ms = lambda v: num(v, 0, 'ms')
 mb = lambda v: num(v / 1024, 2, 'MB')
 kb = lambda v: num(v, 0, 'KB')
-fps = lambda v: num(v, 0, 'fps')
+fps = lambda v: num(v, 1 if v < 10 else 0, 'fps')
 cnt = lambda v: num(v, 0)
 
 def block(mode, page, title_ru, title_en):
